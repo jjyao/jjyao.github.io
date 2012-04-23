@@ -9,7 +9,7 @@ categories: Coding
 库(Library)在wikipeida的定义如下：
 >In computer science, a library is a collection of resources used to develop software. These may include pre-written code and subroutines, classes, values or type specifications.
 
-在我们写程序的过程中几乎每时每刻使用着库。我们在编码的过程中享受着库带给我们的便利和好处。现在的编程语言都会提供丰富的库给开发者调用，比如C++的库有STL、Boost, Java的库有Swing。像PHP，Python等更是提供了强大的库来帮助程序员开发网站(当然这些语言不仅能用来开发网站)，这些库针对开发网站中遇到的常见问题提供了解决方案。举个例子来说，假设我们要将一个PHP数组用json的格式传到客户端，在没有库的情况下我们可能要遍历这个数组然后按照json的格式构建一个string，这样至少需要四五行代码，可是现在一个json_enode就可以搞定了。并且无论数组是几维的，json_encode都能正确的返回json格式的string。
+在我们写程序的过程中几乎每时每刻使用着库。我们在编码的过程中享受着库带给我们的便利和好处。现在的编程语言都会提供丰富的库给开发者调用，比如C++的库有STL、Boost, Java的库有Swing。像PHP，Python等更是提供了强大的库来帮助程序员开发网站(当然这些语言不仅能用来开发网站)，这些库针对网站开发中遇到的常见问题提供了解决方案。举个例子来说，假设我们要将一个PHP数组用json的格式传到客户端，在没有库的情况下我们可能要遍历整个数组然后按照json的格式构建一个string，这样至少需要四五行代码，可是现在一个json_enode就可以搞定了。并且无论数组是几维的，json_encode都能正确返回json格式的string。
 
 <div>
 <span>在我看来，使用库函数有如下三个好处:</span>
@@ -19,6 +19,8 @@ categories: Coding
 <li>提高效率</li>
 </ol>
 </div>
+
+<!-- more -->
 
 ###代码复用
 从软件工程的角度看，代码复用可以节约成本，提高开发效率，使代码易维护(只需维护一处地方即可)，除此之外代码复用也能提高整体软件的质量。当我们使用库的时候，自己写的代码量减少，这样出错的几率就相应的降低了，同时开发的速度也提高了。以前可能要花几分钟写的一段代码，现在只要一个调用就搞定了。从管理者的角度看软件的最大成本“人/月”得到了降低。
@@ -53,7 +55,7 @@ T power(T x, Integer n, MonoidOperation op){
 	}
 }
 ```
-从上面的代码可以看到这是一个power的非递归实现。为了效率作者没有使用递归的实现，尽管递归版本看上去更直观。为了效率作者连除法运算符都不敢用，都是用了移位和OR这些bitwise operator，这些bitwise operator在计算机中是算得最快的。我想我们自己写的power实现应该不会有它快吧。
+从上面的代码可以看到这是一个power的非递归实现。为了效率作者没有使用递归的实现，尽管递归版本看上去更直观。为了效率作者连除法运算符都不敢用，都是用了移位和OR这些bitwise operator，这些bitwise operator在计算机中是算得最快的。我想我们自己写的power实现应该不会比它快吧。
 
 第二个例子是SGI STL的copy算法，其脉络如图(来自侯捷老师的《STL源码剖析》):
 
@@ -90,7 +92,7 @@ static void atomic_copy64(volatile void *src, volatile void *dst){
 }
 ```
 
-我们又看到了memmove()，arraycopy的作者使用了JNI来调用了memmove()，为的就是效率。更恐怖的是这还有汇编指令，这些指令也能使数组拷贝变得十分高效。看到这，你觉得我们自己写的数组拷贝算法的效率能超过官方提供的吗？ 详细的如何剖析arraycopy方法请参见[勇点的博客](http://gutspot.com/2011/11/16/system-arraycopy%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/)
+我们又看到了memmove()，arraycopy的作者使用了JNI来调用了memmove()，为的就是效率。更恐怖的是这还有汇编指令，这些指令也能使数组拷贝变得十分高效。看到这，你觉得我们自己写的数组拷贝算法的效率能超过官方提供的吗？ 详细的如何剖析arraycopy方法请参见[勇点的博客](http://gutspot.com/2011/11/16/system-arraycopy%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/)。
 
 看了这三个例子，我们应该能感受到库提供程序的效率了吧。即使我们能写出和库一样效率的算法，我们要花多少时间，写完的质量怎么样，这些都要打个问号。想想Java的System.arraycopy吧。
 
