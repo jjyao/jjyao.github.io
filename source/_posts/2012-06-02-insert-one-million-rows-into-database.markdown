@@ -1,0 +1,56 @@
+---
+layout: post
+title: "Insert One Million Rows Into Database"
+date: 2012-06-02 15:30
+comments: true
+categories: [Database, Performance] 
+---
+
+数据库课的一次作业，要求是尽可能快的插入一百万条数据到数据库。这也是第一次和数据库性能接触，在做作业的过程中也有所感受所以决定写下来。这次作业我选择的是用C和MySQL来完成，并使用MySQL的C API。程序的逻辑很简单就是随机生成一百万条数据然后插入数据库，关键是如何能快速的插入。我进行了多次尝试，每次尝试都在插入数据上有所提升。
+
+<!-- more -->
+
+最开始的尝试就是使用InnoDB引擎，插入就是一个for循环做一百万次，每次循环里都调用mysql_query()执行一条插入语句。实验表明如果这样做的话非常慢我花了200分钟才插入了37万多条数据。显然这种插入方法是不行的。而这样插入非常慢的原因是InnoDB是事务型数据库，而默认情况下每一次调用mysql_query()执行的insert操作都会被看成是一个transaction，InnoDB对于transaction的处理花费了太多的时间，它需要进行写日志等操作。
+
+知道transaction对数据库插入速度有这样大的影响后，接下来就是要降低事务数，最好将一百万条插入操作都放在一个transaction中完成。于是我在程序里加了两行代码，第一行是调用mysql_autocommit()将auto commit关闭，这样MySQL就不会将每一次的插入操作都当成一个transaction了。第二行是在程序最后加上mysql_commit()手动提交transaction，就这两行代码导致插入时间大幅减少。我用time命令记录了程序的运行时间，结果如下：
+	real 1m8.693s
+	user 0m5.615s
+	sys  0m10.081s
+
+接下来的尝试就是使用MySQL的multiple insert也就是一条insert语句插入多条数据，语法像这样：INSERT INTO x (a, b) VALUES (1, 2), (2, 3), (3, 5); 。这个方法也是MySQL官网建议的提高插入速度的方法之一。我想做的事就是用一条insert语句插入一百万条数据。为了达到这个目的我就要先构造这样的一个insert语句，方法很简单就是先malloc一个很大的字符数组，然后不停的使用strcat()来向这个字符数组中填值，也就是说要调用一百万次strcat()来构造这样的一个insert语句。当我跑这个重新改后的程序时发现构造这样的一个insert语句非常慢，无法在有限的时间内完成。后来发现问题出在strcat()上，实现这个方法的算法很低效，这个算法是设计来让人们调用一次的而不是一百万次的，根据时间复杂度调用一百万次strcat()就会非常耗时，具体关于strcat()问题可以参见[Joel的文章](http://www.joelonsoftware.com/articles/fog0000000319.html)。问题的解决办法就是自己写一个高效的strcat()方法，这个在Joel的文章里也给出来了。把这个问题解决后构造一个insert语句就是瞬间的事了，在这里算法课上反复强调的时间复杂度得到了充分的体现。把这个问题解决后又出现了一个新的问题那就是我一跑程序就告诉我"MySQL server has gone away"，上网找了一下发现原因是发送的insert语句太大了超出了max_allowed_packet的大小，解决方案就是把MySQL配置文件里的max_allowed_packet大小改到足够大就可以了，顿时我就觉得为什么MySQL不能直接告诉我包过大呢，非要给出一个等于没说的信息，太不友好了。解决了所有问题后这种方案终于能跑了，插入时间也进一步减小了，对于这种方案能降低插入时间的原因我猜是不是因为减少了网络中包传输的次数。我用time命令记录了程序的运行时间，结果如下：
+	real 0m10.971s
+	user 0m0.514s
+	sys  0m0.008s
+
+接下来做的就是换个数据库引擎把transaction的开销给消除了，我用了MyISAM引擎，这是个非事务型引擎。改完引擎后再一次发现transaction的开销好大啊。我用time命令记录了程序的运行时间，结果如下:
+	real 0m3.863s
+	user 0m0.514s
+	sys  0m0.010s
+
+然后还尝试了一下MySQL的必杀技load data infile，这种方法可以使插入的效率提高数倍，很适合大批量数据的插入。程序运行结果如下：
+	real 0m2.481s
+	user 0m0.400s
+	sys  0m0.015s
+
+最后用openmp写了一个多线程的程序来同时插入，由于测试机子是四核的所以开了四个线程。然后分别在两种数据库引擎下都做了实验，结果如下：
+	MyISAM：
+	real 0m2.897s
+	user 0m0.686s
+	sys  0m0.019s
+
+	InnoDB：
+	real 0m10.780s
+	user 0m0.686s
+	sys  0m0.019s
+
+在做这次数据库作业的过程中有如下感受：
+<ol>
+<li>transaction非常耗时</li>
+<li>找准性能瓶颈很重要，strcat()就是一个例子</li>
+<li>性能优化是个很有趣的事，尤其是当你发现性能又提升了一个层级</li>
+</ol>
+
+最后附上整个程序的代码：
+{% gist 2860838 insert_test.c%}
+{% gist 2860838 table.sql%}
+

@@ -9,7 +9,7 @@ footer: true
 
 Welcome to my personal blog. My name is Jiajun Yao（姚嘉俊）and you can call me Jerome. I was born in Suzhou, China. Now I'm studying in Software Institute, Nanjing University.
 
-I like reading, watching movies, biking and thinking. In my fieled, I'm interested in C++, C, Linux, DBMS and some other underling technologies.
+I like reading, thinking, watching movies and biking. In my field, I'm interested in C++, C, Linux, DBMS and some other underling technologies.
 
 You can contact me via:  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Email: jeromeyjj@gmail.com
