@@ -35,24 +35,24 @@ categories: Coding
 ``` cpp
 template <class T, class Integer, class MonoidOperation>
 T power(T x, Integer n, MonoidOperation op){
-	if(n == 0)
-		return identity_element(op);
-	else{
-		while((n & 1) == 0){
-			n >>= 1;
-			x = op(x, x);
-		}
+    if(n == 0)
+        return identity_element(op);
+    else{
+        while((n & 1) == 0){
+            n >>= 1;
+            x = op(x, x);
+        }
 
-		T result = x;
-		n >>= 1;
-		while (n != 0){
-			x = op(x, x);
-			if((n & 1) != 0)
-				result = op(result, x);
-			n >>= 1;
-		}
-		return result;
-	}
+        T result = x;
+        n >>= 1;
+        while (n != 0){
+            x = op(x, x);
+            if((n & 1) != 0)
+                result = op(result, x);
+            n >>= 1;
+        }
+        return result;
+    }
 }
 ```
 从上面的代码可以看到这是一个power的非递归实现。为了效率作者没有使用递归的实现，尽管递归版本看上去更直观。为了效率作者连除法运算符都不敢用，都是用了移位和OR这些bitwise operator，这些bitwise operator在计算机中是算得最快的。我想我们自己写的power实现应该不会比它快吧。
@@ -68,26 +68,26 @@ T power(T x, Integer n, MonoidOperation op){
 为了高效的copy Java的数组，Java 类库专门提供了一个System.arraycopy的方法。那这个方法又有什么高级之处呢？通过查看源代码我们就可以发现这个方法是个native 方法。然后我们来看看OpenJDK是如何实现这个native方法的。经过一番查找可以找到以下代码代码片段：
 ``` c
 static void pd_conjoint_bytes(void* from, void* to, size_t count){
-	memmove(to, from, count);
+    memmove(to, from, count);
 }
 ```
 
 ``` c
 static void atomic_copy64(volatile void *src, volatile void *dst){
 #if defined(PPC) && !defined(_LP64)
-	double tmp;
-	asm volatile ("lfd %0,  0(%1)\n"
-			      "stfd %0, 0(%2)\n"
-				  : "=f"(tmp)
-				  : "b"(src), "b"(dst));
+    double tmp;
+    asm volatile ("lfd %0,  0(%1)\n"
+                  "stfd %0, 0(%2)\n"
+                  : "=f"(tmp)
+                  : "b"(src), "b"(dst));
 #elif defined(S390) && !defined(_LP64)
-	double tmp;
-	asm volatile ("ld %0,  0(%1)\n"
-				  "std %0, 0(%2)\n"
-				  : "=r"(tmp)
-				  : "a"(src), "a"(dst));
+    double tmp;
+    asm volatile ("ld %0,  0(%1)\n"
+                  "std %0, 0(%2)\n"
+                  : "=r"(tmp)
+                  : "a"(src), "a"(dst));
 #else
-	*(jlong *) dst = *(jlong *)src;
+    *(jlong *) dst = *(jlong *)src;
 #endif
 }
 ```
