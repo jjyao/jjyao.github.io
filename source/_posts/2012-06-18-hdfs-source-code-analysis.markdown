@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Hadoop Source Code Analysis"
+title: "HDFS Source Code Analysis"
 date: 2012-06-18 19:28
 comments: true
 categories: 
@@ -10,12 +10,15 @@ published: false
 1. [创建FileSystem](#instantiate_FileSystem)
 2. [HDFS客户端向服务器发送rpc请求](#hdfs_client_send_request)
 3. [HDFS服务器对客户端rpc请求的处理](#hdfs_server_handle_client_request)
+4. [DataNode中和数据相关的类](#hdfs_datanode_storage_related_class)
+5. [DataNode的启动](#hdfs_datanode_start)
+5. [参考资料](#reference)
 <!-- more -->
 
 ## <a id="instantiate_FileSystem"></a>创建FileSystem
 FileSystem在Hadoop中只是一个抽象类，它屏蔽了各种底层文件系统的实现，这有点Linux VFS的味道。在Hadoop中各个文件系统的实现都是继承了FileSystem这个抽象类的，因此用户只需要通过FileSystem的接口来操作底层的文件系统就可以了。Hadoop中具体的文件系统实现有很多，如DistributedFileSystem和LocalFileSystem。如何告知Hadoop要使用哪一个具体的文件系统实现是这节要讨论的。
 
-在这里我们可以通过在Hadoop的配置文件里指定fs.default.name来实现，当然也可以在程序中显示指定。假设我们指定fs.default.name的值为hdfs://localhost:9000，其中的*hdfs*就是告诉Hadoop要使用DistributedFileSystem。Hadoop会从fs.default.name中抽出hdfs，然后去配置文件里找fs.*hdfs*.impl，这个可以在core-default.xml中找到，值为org.apache.hadoop.hdfs.DistributedFileSystem，可以看出Hadoop已经成功找到具体要创建的文件系统实现是什么了，接下来Hadoop通过反射就能由类名创建出类实例来，然后返回给用户使用。类似的如果我们指定fs.default.name的值为file:///，那么Hadoop就会去配置文件里找fs.*file*.impl，这个的值就是org.apache.hadoop.fs.LocalFileSystem。当然我们还能给fs.default.name指定很多其他的值来告诉Hadoop要使用的底层文件系统实现是什么。在这里还要说明的是fs.default.name的默认值就是file:///。接下来给出一些关键代码：
+在这里我们可以通过在Hadoop的配置文件里指定fs.default.name来实现，当然也可以在程序中显式指定。假设我们指定fs.default.name的值为hdfs://localhost:9000，其中的*hdfs*就是告诉Hadoop要使用DistributedFileSystem。Hadoop会从fs.default.name中抽出hdfs，然后去配置文件里找fs.*hdfs*.impl，这个可以在core-default.xml中找到，值为org.apache.hadoop.hdfs.DistributedFileSystem，可以看出Hadoop已经成功找到具体要创建的文件系统实现是什么了，接下来Hadoop通过反射就能由类名创建出类实例来，然后返回给用户使用。类似的如果我们指定fs.default.name的值为file:///，那么Hadoop就会去配置文件里找fs.*file*.impl，这个的值就是org.apache.hadoop.fs.LocalFileSystem。当然我们还能给fs.default.name指定很多其他的值来告诉Hadoop要使用的底层文件系统实现是什么。在这里还要说明的是fs.default.name的默认值就是file:///。接下来给出一些关键代码：
 ``` java
 /** FileSystem.java **/
 
@@ -236,7 +239,7 @@ private Object invokeMethod(Method method, Object[] args) throws Throwable {
 ```
 可以看到对于namenode的方法调用都归结到RetryInvocationHandler的invoke()上了，而这个方法就通过反射再调用rpcNamenode的对应方法，只不过它会retry，也就是说如果调用失败的话，它还会重新尝试调用，这么一来可靠性就增强了，毕竟网络传输很容易出问题的。如果让DFSClient直接调用rpcNamenode的话，一旦失败就会立刻告诉用户，而其实如果多尝试几次还是可能会成功的，这就是为什么要引入namenode的原因了。至此我们就知道client是如何将用户对DistributedFileSystem的方法调用传递到server端的，最后用一张图来总结。
 
-{% img /images/post/hadoop-source-code-analysis/hdfs_client_send_request.png %}
+{% img /images/post/hdfs-source-code-analysis/hdfs_client_send_request.png %}
 
 参考链接：
 <a href="http://blog.csdn.net/historyasamirror/article/details/6159248">1</a>
@@ -714,9 +717,316 @@ private class Responder extends Thread {
 
 至此整个流程就讲完了，经过三大组件轮番处理后，总算功德圆满。老规矩，最后附图一张。
 
-{% img /images/post/hadoop-source-code-analysis/hdfs_server_handle_client_request.png %}
+{% img /images/post/hdfs-source-code-analysis/hdfs_server_handle_client_request.png %}
 
 参考链接：
 <a href="http://blog.csdn.net/xhh198781/article/details/7280084">1</a>
 <a href="http://blog.csdn.net/xhh198781/article/details/7268298">2</a>
 <a href="http://tutorials.jenkov.com/java-nio/selectors.html">3</a>
+
+## <a id="hdfs_datanode_storage_related_class"></a> DataNode中和数据相关的类
+我们知道DataNode中存放了具体的数据，也就是说HDFS文件系统中的数据(也就是文件)是分散存储在很多个DataNode之中的。但有一点要注意的是DataNode是以Block为单位来存放数据的，一个Block对应于DataNode本地硬盘上的一个文件。而我们认为的HDFS文件系统中的一个文件会被切割成多个Block进行存放，这里就有概念上的文件和实际上的文件的关联。对于client来说HDFS为我们抽象出了一个文件系统，这是个分布式的文件系统，但我们可以像普通文件系统一样来看待它和使用它。我们可以认为HDFS中有个文件A.txt(概念上的文件)，我们可以直接对这个文件进行读写操作，但在底层实现上这个文件会被拆成多个Block(实际上的文件)分散存放在多个DataNode的本地文件系统中。NameNode负责概念上的文件和实际上的文件的转化，比如NameNode知道一个概念上的文件由多少Block组成并且这些Block都在哪些DataNode上，同时NameNode也会维护概念上的目录结构，比如说A.txt在/jjyao/data/路径下。与NameNode相对的就是DataNode，它不知道任何概念上的东西，它不知道什么是A.txt，什么是/jjyao/data，它只知道一个个的Block文件，这些文件都存放在本地的文件系统中。  
+Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如我可以指定这些Block文件都存放在/datanode/data1和/datanode/data2这两个目录下(当然除了存放Block文件DataNode还会存放一些其他文件)。对于每个dfs.data.dir指定的根目录里面有current，detach等目录，其中current目录可以看成是存放Block文件的根目录，这个目录里面可以看成一颗树，树中各级目录下的文件就是Block文件和对应的meta文件。可能有人会问为什么不把所有的Block文件都直接放在current目录下呢，答案是如果Block文件很多的话，本地的文件系统可能不能很好的支持在一个目录下有太多的文件。现在我们大体知道DataNode存了什么数据(更详细的解释参加[这里](http://india.paxcel.net:6060/LargeDataMatters/wp-content/uploads/2010/09/HDFS1.pdf))，那么DataNode中哪些类和这些数据相关就是我们这节要讨论的问题。
+
+在介绍这些类之前写给出一张直观上的图。在这里假设dfs.data.dir规定了/datanode/data1和/datanode/data2两个地方来存放DataNode中的数据，那么就有如下的一张图
+
+{% img /images/post/hdfs-source-code-analysis/hdfs_datanode_storage_abstract.png %}
+
+可以看到DataNode通过DataStorage和FSDataset这两个类来管理着存放的数据。从这幅图中可以清晰看出来DataStorage和StorageDirectory属于一个阵营而FSDataset，FSVolumnSet，FSVolume和FSDir属于另一个阵营。它们虽然都用来管理DataNode中存放的数据，但是两块的功能不同。对于DataStorage和StorageDirectory来说主要完成的是HDFS的升级/回滚/提交操作。而对于另外一个阵营里面的类则是真正管理Block文件的，比如添加Block文件。其实只要看DataStorage和FSDataset的接口就可以知道这两个阵营所能做的事。
+
+## <a id="hdfs_datanode_start"></a> DataNode的启动
+对于DataNode集群的启动我们可以通过脚本start-all.sh来完成，这个脚本的命令会通过ssh传到各个DataNode所在的机器上，然后Java虚拟机会以DataNode.main()为入口启动DataNode。因此我们的分析也就是从DataNode.main()开始一层层深入，下面看源代码。
+``` java
+/* DataNode.java */
+public static void main(String args[]) {
+    secureMain(args, null);
+}
+
+public static void secureMain(String [] args, SecureResources resources) {
+    try {
+        DataNode datanode = createDataNode(args, null, resources);
+        if (datanode != null)
+            datanode.join(); // 等待DataNode的Daemon进程结束
+    } catch (Throwable e) {
+        System.exit(-1);
+    } finally {
+        System.exit(0);
+    }
+}
+
+public static DataNode createDataNode(String args[],
+        Configuration conf, SecureResources resources) throws IOException {
+    DataNode dn = instantiateDataNode(args, conf, resources);
+    runDatanodeDaemon(dn); // 把DataNode当作一个Daemon进程启动，运行DataNode.run()方法
+    return dn;
+}
+
+public static DataNode instantiateDataNode(String args[],
+        Configuration conf, SecureResources resources) throws IOException {
+    String[] dataDirs = conf.getStrings(DATA_DIR_KEY); // 获取配置项dfs.data.dir的值，也就是DataNode中存放数据的目录
+    return makeInstance(dataDirs, conf, resources);
+}
+
+public static DataNode makeInstance(String[] dataDirs, Configuration conf, 
+        SecureResources resources) throws IOException {
+    LocalFileSystem localFS = FileSystem.getLocal(conf);
+    ArrayList<File> dirs = new ArrayList<File>();
+    for (String dir : dataDirs) {
+        try {
+            // 检查配置项dfs.data.dir中给出的路径是否valid，比如确实是个目录而不是文件
+            DiskChecker.checkDir(localFS, new Path(dir), dataDirPermission); 
+            dirs.add(new File(dir));
+        } catch(IOException e) {
+            // omitted
+        }
+    }
+    if (dirs.size() > 0) // 至少要存在一个valid的目录，不然。。。
+        return new DataNode(conf, dirs, resources);
+    return null;
+}
+
+DataNode(final Configuration conf,
+        final AbstractList<File> dataDirs, SecureResources resources) throws IOException {
+    super(conf);
+    try {
+        startDataNode(conf, dataDirs, resources);
+    } catch (IOException ie) {
+        shutdown();
+        throw ie;
+    }   
+}
+
+// 启动的主要工作都在这里
+void startDataNode(Configuration conf, 
+        AbstractList<File> dataDirs, SecureResources resources) throws IOException {
+
+    // use configured nameserver & interface to get local hostname
+    if (conf.get("slave.host.name") != null) {
+        machineName = conf.get("slave.host.name");   
+    }
+
+    InetSocketAddress nameNodeAddr = NameNode.getServiceAddress(conf, true);
+
+    InetSocketAddress socAddr = DataNode.getStreamingAddr(conf);
+    int tmpPort = socAddr.getPort();
+    storage = new DataStorage();
+    // construct registration
+    this.dnRegistration = new DatanodeRegistration(machineName + ":" + tmpPort);
+
+    // connect to name node
+    this.namenode = (DatanodeProtocol) // 有没有很熟悉，和之前客户端向NameNode发送rpc请求的原理差不多
+        RPC.waitForProxy(DatanodeProtocol.class,
+                DatanodeProtocol.versionID,
+                nameNodeAddr, 
+                conf);
+    // get version and id info from the name-node
+    NamespaceInfo nsInfo = handshake(); // 获取NameNode的版本信息，用来确保DataNode和NameNode的版本是一样的
+    StartupOption startOpt = getStartupOption(conf);
+
+    // read storage info, lock data dirs and transition fs state if necessary
+    storage.recoverTransitionRead(nsInfo, dataDirs, startOpt);
+    // adjust
+    this.dnRegistration.setStorageInfo(storage);
+    // 创建一个FSDataset实例，创建完成后FSDataset内部就会有像上一节那样的图了
+    this.data = new FSDataset(storage, conf); 
+
+    // find free port or use privileged port provide
+    ServerSocket ss;
+    if(secureResources == null) {
+        ss = (socketWriteTimeout > 0) ? 
+            ServerSocketChannel.open().socket() : new ServerSocket();
+        Server.bind(ss, socAddr, 0);
+    } else {
+        ss = resources.getStreamingSocket();
+    }
+    // adjust machine name with the actual port
+    tmpPort = ss.getLocalPort();
+    selfAddr = new InetSocketAddress(ss.getInetAddress().getHostAddress(),
+            tmpPort);
+
+    this.threadGroup = new ThreadGroup("dataXceiverServer");
+    // 这个服务器是用来处理Client或者其他DataNode对于Block文件的处理请求，比如要求发送某个Block文件的内容
+    // 这个服务器上使用的不是RPC机制而是一种流式机制，因为要传输Block文件的内容嘛
+    this.dataXceiverServer = new Daemon(threadGroup,  
+            new DataXceiverServer(ss, conf, this));
+
+    DataNode.nameNodeAddr = nameNodeAddr;
+
+    //initialize periodic block scanner
+    // 单独的一个线程，定期对所有的Block文件进行扫描校验
+    blockScanner = new DataBlockScanner(this, (FSDataset)data, conf);
+
+    //create a servlet to serve full-file content
+    // 开启一个web服务器，运行通过浏览器来获得DataNode的状态
+    this.infoServer = (secureResources == null) 
+        ? new HttpServer("datanode", infoHost, tmpInfoPort, tmpInfoPort == 0, 
+                conf, SecurityUtil.getAdminAcls(conf, DFSConfigKeys.DFS_ADMIN))
+        : new HttpServer("datanode", infoHost, tmpInfoPort, tmpInfoPort == 0,
+                conf, SecurityUtil.getAdminAcls(conf, DFSConfigKeys.DFS_ADMIN),
+                secureResources.getListener());
+
+    this.infoServer.addServlet(null, "/blockScannerReport", 
+            DataBlockScanner.Servlet.class);
+
+    this.infoServer.start();
+
+    // BlockTokenSecretManager is created here, but it shouldn't be
+    // used until it is initialized in register().
+    this.blockTokenSecretManager = new BlockTokenSecretManager(false,
+            0, 0);
+    //init ipc server
+    InetSocketAddress ipcAddr = NetUtils.createSocketAddr(
+            conf.get("dfs.datanode.ipc.address"));
+    // 这个RPC服务器和NameNode上的RPC服务器是一样的实现
+    ipcServer = RPC.getServer(this, ipcAddr.getHostName(), ipcAddr.getPort(), 
+            conf.getInt("dfs.datanode.handler.count", 3), false, conf,
+            blockTokenSecretManager);
+}
+```
+总结一下DataNode初始化的时候大致干了些什么事。首先初始化了一个NameNode的Remote Proxy，这样以后和NameNode进行通信就方便啦。然后就把上一节介绍的两大阵营的类给初始化好，这样以后DataNode就可以通过FSDataset和DataStorage来操作DataNode中存储的所有数据了。接下来初始化了三个服务器和一个DataBlockScanner，三个服务器分别是流式机制的dataXceiverServer，web服务器infoServer和RPC服务器ipcServer。  
+所有这些都初始化好过后，createDataNode()方法就会调用DataNode的run()方法，然后DataNode就正式跑起来了，下面看源代码。
+``` java
+/* DataNode.java */
+public void run() {
+    dataXceiverServer.start();
+    ipcServer.start();
+
+    while (shouldRun) {
+        try {
+            startDistributedUpgradeIfNeeded();
+            offerService(); // 主要是这个函数
+        } catch (Exception ex) {
+            if (shouldRun) {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException ie) {
+                }
+            }
+        }
+    }
+    shutdown();
+}
+
+/**
+ * Main loop for the DataNode.  Runs until shutdown,
+ * forever calling remote NameNode functions.
+ */
+public void offerService() throws Exception {
+    while (shouldRun) {
+        try {
+            long startTime = now();
+
+            // 过一段时间执行一次
+            if (startTime - lastHeartbeat > heartBeatInterval) {
+                //
+                // All heartbeat messages include following info:
+                // -- Datanode name
+                // -- data transfer port
+                // -- Total capacity
+                // -- Bytes remaining
+                //
+                lastHeartbeat = startTime;
+                // 发送心跳包表明DataNode还活着，同时获得NameNode传给DataNode的指令
+                // NameNode和DataNode遵循严格的C/S架构，NameNode不会主动去联系DataNode的
+                // 只有在DataNode联系它的时候才借机传输点命令给DataNode
+                DatanodeCommand[] cmds = namenode.sendHeartbeat(dnRegistration,
+                        data.getCapacity(),
+                        data.getDfsUsed(),
+                        data.getRemaining(),
+                        xmitsInProgress.get(),
+                        getXceiverCount());
+                if (!processCommand(cmds))
+                    continue;
+            }
+
+            // check if there are newly received blocks
+            Block [] blockArray=null;
+            String [] delHintArray=null;
+            synchronized(receivedBlockList) {
+                synchronized(delHints) {
+                    int numBlocks = receivedBlockList.size();
+                    if (numBlocks > 0) {
+                        //
+                        // Send newly-received blockids to namenode
+                        //
+                        blockArray = receivedBlockList.toArray(new Block[numBlocks]);
+                        delHintArray = delHints.toArray(new String[numBlocks]);
+                    }
+                }
+            }
+            if (blockArray != null) {
+                // 告诉NameNode最新接收到的Block文件
+                namenode.blockReceived(dnRegistration, blockArray, delHintArray);
+                synchronized (receivedBlockList) {
+                    synchronized (delHints) {
+                        for(int i=0; i<blockArray.length; i++) {
+                            receivedBlockList.remove(blockArray[i]);
+                            delHints.remove(delHintArray[i]);
+                        }
+                    }
+                }
+            }
+
+            // Send latest blockinfo report if timer has expired.
+            if (startTime - lastBlockReport > blockReportInterval) {
+                if (data.isAsyncBlockReportReady()) {
+                    // Create block report
+                    long brCreateStartTime = now();
+                    Block[] bReport = data.retrieveAsyncBlockReport();
+
+                    // Send block report
+                    long brSendStartTime = now();
+                    // 报告Block文件的信息
+                    DatanodeCommand cmd = namenode.blockReport(dnRegistration,
+                            BlockListAsLongs.convertToArrayLongs(bReport));
+
+                    // omitted
+                    processCommand(cmd);
+                } else {
+                    data.requestAsyncBlockReport();
+                    if (lastBlockReport > 0) { // this isn't the first report
+                        // omitted
+                    }
+                }
+            }
+
+            // start block scanner
+            // 只会执行一次
+            if (blockScanner != null && blockScannerThread == null &&
+                    upgradeManager.isUpgradeCompleted()) {
+                blockScannerThread = new Daemon(blockScanner);
+                blockScannerThread.start();
+            }
+
+            //
+            // There is no work to do;  sleep until hearbeat timer elapses, 
+            // or work arrives, and then iterate again.
+            //
+            long waitTime = heartBeatInterval - (System.currentTimeMillis() - lastHeartbeat);
+            synchronized(receivedBlockList) {
+                if (waitTime > 0 && receivedBlockList.size() == 0) {
+                    try {
+                        receivedBlockList.wait(waitTime);
+                    } catch (InterruptedException ie) {
+                    }
+                    delayBeforeBlockReceived();
+                }
+            } // synchronized
+        } catch(RemoteException re) {
+            // omitted
+        } catch (IOException e) {
+        }
+    } // while (shouldRun)
+} // offerService
+```
+可以看到DataNode把那几个服务器和DataBlockScanner作为独立的线程启动后，自己也进入了一个while循环执行以下的操作：定期发送心跳包和Block信息报告，还发送最新接收到的Block文件信息。至此对于DataNode启动的分析就结束了，在这一过程中遇到的所有细节都没有深究，比如DataBlockScanner的原理是什么，这些都留到以后再介绍。
+
+参考链接：
+<a href="http://caibinbupt.iteye.com/blog/287870">1</a>
+
+## <a id="reference"></a> 参考资料
+在研究源码的过程中也找到了一些比较好的参考资料，仅供参考
+
+1. [xhh198781的博客](http://blog.csdn.net/xhh198781)
+2. [caibinbupt的博客](http://caibinbupt.iteye.com)
+3. [一份pdf文件](http://india.paxcel.net:6060/LargeDataMatters/wp-content/uploads/2010/09/HDFS1.pdf)
