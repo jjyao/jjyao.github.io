@@ -78,7 +78,7 @@ private static FileSystem createFileSystem(URI uri, Configuration conf
 ## <a id="hdfs_client_send_request"></a>HDFS客户端向服务器发送rpc请求
 对于HDFS来说我们是通过DistributedFileSystem来进行文件系统的操作的，在这里DistributedFileSystem就是client，而server就跑在NameNode上面。我们通过DistributedFileSystem发出的所有操作都会通过rpc传递到NameNode的server上，然后再执行最后将结果返回。这就是client和server之间的rpc。
 
-这节谈论client如何将用户对DistributedFileSystem的方法调用传递到server端。在这里我们以mkdirs()方法为例，假设用户调用了DistributedFileSystem的mkdirs()方法，代码如下：
+这节谈论client如何将用户对DistributedFileSystem的方法调用传递到server端。在这里我们以`mkdirs()`方法为例，假设用户调用了DistributedFileSystem的`mkdirs()`方法，代码如下：
 ``` java
 public boolean mkdirs(Path f, FsPermission permission) throws IOException {
     statistics.incrementWriteOps(1);
@@ -185,7 +185,7 @@ private static ClientProtocol createNamenode(ClientProtocol rpcNamenode)
             rpcNamenode, methodNameToPolicyMap);
 }
 ```
-可以看到DFSClient又将方法调用转交给了实例变量namenode，于是我们就要了解namenode和与其有关的rpcNamenode这两个实例变量。对于DFSClient的构造函数，这里只显示最重要的两样东西分别是namenode和rpcNamenode。要了解这两样东西首先需要了解Java的[Dynamic Proxy](http://docs.oracle.com/javase/1.4.2/docs/guide/reflection/proxy.html)。我们可以看到rpcNamenode实现了ClientProtocol接口，这个接口就规定了client能向server调用的所有方法。按照Dynamic Proxy的机制我们知道所有对rpcNamenode的方法调用全部归结到了Invoker的invoke()方法上了，这个方法就是将client的调用信息如调用的方法，参数等通过socket传递给server，并获得返回结果。对于Invoker的invoke()方法的剖析这里就不在描述了，可以通过参考链接了解更多。至此client的方法调用就顺利传递到server了。照这样看DFSClient就只要调用rpcNamenode的mkdirs()方法就好了，为什么还要namenode呢？要了解这个就需要RetryProxy的代码了：
+可以看到DFSClient又将方法调用转交给了实例变量namenode，于是我们就要了解namenode和与其有关的rpcNamenode这两个实例变量。对于DFSClient的构造函数，这里只显示最重要的两样东西分别是namenode和rpcNamenode。要了解这两样东西首先需要了解Java的[Dynamic Proxy](http://docs.oracle.com/javase/1.4.2/docs/guide/reflection/proxy.html)。我们可以看到rpcNamenode实现了ClientProtocol接口，这个接口就规定了client能向server调用的所有方法。按照Dynamic Proxy的机制我们知道所有对rpcNamenode的方法调用全部归结到了Invoker的`invoke()`方法上了，这个方法就是将client的调用信息如调用的方法，参数等通过socket传递给server，并获得返回结果。对于Invoker的`invoke()`方法的剖析这里就不在描述了，可以通过参考链接了解更多。至此client的方法调用就顺利传递到server了。照这样看DFSClient就只要调用rpcNamenode的`mkdirs()`方法就好了，为什么还要namenode呢？要了解这个就需要RetryProxy的代码了：
 ``` java
 /* RetryProxy.java */
 public static Object create(Class<?> iface, Object implementation,
@@ -237,7 +237,7 @@ private Object invokeMethod(Method method, Object[] args) throws Throwable {
     }
 }
 ```
-可以看到对于namenode的方法调用都归结到RetryInvocationHandler的invoke()上了，而这个方法就通过反射再调用rpcNamenode的对应方法，只不过它会retry，也就是说如果调用失败的话，它还会重新尝试调用，这么一来可靠性就增强了，毕竟网络传输很容易出问题的。如果让DFSClient直接调用rpcNamenode的话，一旦失败就会立刻告诉用户，而其实如果多尝试几次还是可能会成功的，这就是为什么要引入namenode的原因了。至此我们就知道client是如何将用户对DistributedFileSystem的方法调用传递到server端的，最后用一张图来总结。
+可以看到对于namenode的方法调用都归结到RetryInvocationHandler的`invoke()`上了，而这个方法就通过反射再调用rpcNamenode的对应方法，只不过它会retry，也就是说如果调用失败的话，它还会重新尝试调用，这么一来可靠性就增强了，毕竟网络传输很容易出问题的。如果让DFSClient直接调用rpcNamenode的话，一旦失败就会立刻告诉用户，而其实如果多尝试几次还是可能会成功的，这就是为什么要引入namenode的原因了。至此我们就知道client是如何将用户对DistributedFileSystem的方法调用传递到server端的，最后用一张图来总结。
 
 {% img /images/post/hdfs-source-code-analysis/hdfs_client_send_request.png %}
 
@@ -296,7 +296,7 @@ public static class Server extends org.apache.hadoop.ipc.Server { // RPC的一�
     }
 }
 ```
-最终建立的是org.apache.hadoop.ipc.Server的一个子类，这个类只是实现了父类的抽象方法call()，其他的功能都由父类提供了。因此我们主要专注org.apache.hadoop.ipc.Server类
+最终建立的是org.apache.hadoop.ipc.Server的一个子类，这个类只是实现了父类的抽象方法`call()`，其他的功能都由父类提供了。因此我们主要专注org.apache.hadoop.ipc.Server类
 ``` java
 /* Server.java */
 public abstract class Server {
@@ -509,7 +509,7 @@ public class Connection {
       incRpcCount();  // Increment the rpc count
     }
 ```
-代码跟踪到这就差不多结束了，这些代码大致做了如下的事：首先是readAndProcess()读取一个rpc请求的所有数据，然后一直传到processData()函数处理，processData()函数首先把这些数据转成一个Call对象，这其实可以和上一节介绍的客户端向服务器发送rpc请求对应起来看，可以看作一个序列化和解序列化的过程。这个Call对象就包含了调用的函数名和函数参数，同时之前也提到过Call对象还会保存函数调用过后的结果即返回值。最后将Call对象放入callQueue队列中等待被处理。如果上面还记得Server的代码的话就可以发现callQueue实际上是Server的一个实例变量。我们讨论到现在的Listener，Reader，Connection类和之后要讨论的Handler，Responder都是这个Server的内部类，所以对这些类来说callQueue就相当于一个全局变量了。之前我们提到Listener会有多个Reader来读取很多客户端的rpc请求，所有这些请求被转化成Call对象后都会放入这个全局的callQueue队列中等待被处理。好了，至此Listener组件就全部讲完了，下面是Handler组件。
+代码跟踪到这就差不多结束了，这些代码大致做了如下的事：首先是`readAndProcess()`读取一个rpc请求的所有数据，然后一直传到`processData()`函数处理，`processData()`函数首先把这些数据转成一个Call对象，这其实可以和上一节介绍的客户端向服务器发送rpc请求对应起来看，可以看作一个序列化和解序列化的过程。这个Call对象就包含了调用的函数名和函数参数，同时之前也提到过Call对象还会保存函数调用过后的结果即返回值。最后将Call对象放入callQueue队列中等待被处理。如果上面还记得Server的代码的话就可以发现callQueue实际上是Server的一个实例变量。我们讨论到现在的Listener，Reader，Connection类和之后要讨论的Handler，Responder都是这个Server的内部类，所以对这些类来说callQueue就相当于一个全局变量了。之前我们提到Listener会有多个Reader来读取很多客户端的rpc请求，所有这些请求被转化成Call对象后都会放入这个全局的callQueue队列中等待被处理。好了，至此Listener组件就全部讲完了，下面是Handler组件。
 
 ### Handler
 我们现在知道callQueue中包含了客户端对服务器的rpc调用请求，如何处理这些请求就是Handler的事了。看之前Server的源码我们可以知道Server中存在多个Handler，每个Handler都是一个线程，它们并发地从callQueue中取出一个一个的Call然后进行处理，下面来看看源代码。
@@ -573,7 +573,7 @@ private class Handler extends Thread {
     }
 }
 ```
-可以看到每个Handler线程做的就是从callQueue中取一个call，然后调用Server的call方法处理并获得结果，我们之前提到过这个call方法是抽象方法由具体的子类来实现，这个具体实现的子类我们之前也提到过在RPC.java文件中，具体的代码就不列出来了，只说一下它做了什么。具体call方法做的就是利用反射调用NameNode类的具体方法，在这里就是调用了mkdirs()，大家可以看看是不是NameNode里就有这个方法。获得完函数调用的结果后就把它放入对应的call对象里，然后调用responder.doRespond()方法来处理，于是就引出了Responder这个第三大组件。
+可以看到每个Handler线程做的就是从callQueue中取一个call，然后调用Server的call方法处理并获得结果，我们之前提到过这个call方法是抽象方法由具体的子类来实现，这个具体实现的子类我们之前也提到过在RPC.java文件中，具体的代码就不列出来了，只说一下它做了什么。具体call方法做的就是利用反射调用NameNode类的具体方法，在这里就是调用了`mkdirs()`，大家可以看看是不是NameNode里就有这个方法。获得完函数调用的结果后就把它放入对应的call对象里，然后调用`responder.doRespond()`方法来处理，于是就引出了Responder这个第三大组件。
 
 ``` java
 /* Server.java */
@@ -713,7 +713,7 @@ private class Responder extends Thread {
     }
 }
 ```
-下面就把上面的代码综合起来讲讲。首先在Handler线程中会调用doRespond()，这个方法就把call放入responseQueue中，如果队列中就这一个call就亲自调用processResponse()，也就是说从Handler线程中将返回结果发回给客户端，否则的话就等着到时候由Responder线程来处理。Responder线程通过writeSelector来管理和客户端的连接，不像readSelector关注的是read ready，writeSelector自然关注的是write ready，一旦某个客户端的连接可写后，Responder就找出这个连接对应的Connection对象，然后从Connection的responseQueue中取出call，将结果发送回客户端。可以看到将rpc结果返回给客户端可能发生在Handler线程，也有可能发生在Responder线程。
+下面就把上面的代码综合起来讲讲。首先在Handler线程中会调用`doRespond()`，这个方法就把call放入responseQueue中，如果队列中就这一个call就亲自调用`processResponse()`，也就是说从Handler线程中将返回结果发回给客户端，否则的话就等着到时候由Responder线程来处理。Responder线程通过writeSelector来管理和客户端的连接，不像readSelector关注的是read ready，writeSelector自然关注的是write ready，一旦某个客户端的连接可写后，Responder就找出这个连接对应的Connection对象，然后从Connection的responseQueue中取出call，将结果发送回客户端。可以看到将rpc结果返回给客户端可能发生在Handler线程，也有可能发生在Responder线程。
 
 至此整个流程就讲完了，经过三大组件轮番处理后，总算功德圆满。老规矩，最后附图一张。
 
@@ -884,7 +884,7 @@ void startDataNode(Configuration conf,
 }
 ```
 总结一下DataNode初始化的时候大致干了些什么事。首先初始化了一个NameNode的Remote Proxy，这样以后和NameNode进行通信就方便啦。然后就把上一节介绍的两大阵营的类给初始化好，这样以后DataNode就可以通过FSDataset和DataStorage来操作DataNode中存储的所有数据了。接下来初始化了三个服务器和一个DataBlockScanner，三个服务器分别是流式机制的dataXceiverServer，web服务器infoServer和RPC服务器ipcServer。  
-所有这些都初始化好过后，createDataNode()方法就会调用DataNode的run()方法，然后DataNode就正式跑起来了，下面看源代码。
+所有这些都初始化好过后，`createDataNode()`方法就会调用DataNode的`run()`方法，然后DataNode就正式跑起来了，下面看源代码。
 ``` java
 /* DataNode.java */
 public void run() {
