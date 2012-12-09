@@ -4,7 +4,7 @@ title: "HDFS Source Code Analysis"
 date: 2012-06-18 19:28
 comments: true
 categories: 
-published: false
+published: true
 ---
 
 1. [创建FileSystem](#instantiate_FileSystem)
