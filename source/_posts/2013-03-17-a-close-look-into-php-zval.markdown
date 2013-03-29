@@ -31,7 +31,7 @@ struct {
 ```
 接下来我们就从最简单的开始，逐一解释一下各个字段的含义。
 ### type
-首先是`type`字段，这个顾名思义就是表示PHP variable是什么类型的。由于PHP是动态类型语言，因此需要这个字段来标示，同时根据这个字段可以判断出`value`字段里的值到底是什么。
+首先是`type`字段，这个顾名思义就是表示PHP variable是什么类型的。由于PHP是动态类型语言，因此需要这个字段来标识，同时根据这个字段可以判断出`value`字段里的值到底是什么。
 
 ### value
 `value`字段存放的是PHP variable的值，可以看出这是个union类型，也就是说这个字段可以有多种解释，关键看`type`的值是什么，这不就有点像多态么。接下里我们就看看`type`和`value`的对应关系是什么： 
@@ -59,7 +59,7 @@ struct {
 } zend_object_value;
 ```
 
-在这里要说明的是一个ojbect的data并不是直接存放在zend_object_value里面的，而是放在object store中，也就是说每个object都有一个对应的object store（这应该也是用HashTable来实现的吧），里面放着object的data，也就是object属性的值，这些值本身也是一个个的zval。接下里PHP要做的就是建立object和object store的一一对应关系，而这个就是通过`zend_object_handle handle`来实现的，这是一个long值，相当于object store的identifier,通过这个handle就可以找到object的data在那里了。而`zend_object_handlers *handlers`指向了一些处理函数，比如用来访问object属性的函数等等，这个在这里就不再详述了，有兴趣的可以看[这里](https://wiki.php.net/internals/engine/objects)。讲到这里，我们应该知道了对于object的zval来说本身并没有存放object的data，而只是存放了一个整数型的handle。认识到这一点很重要，因为这会对接下来讨论的copy by reference和copy by value产生直接的影响。
+在这里要说明的是一个ojbect的data并不是直接存放在zend_object_value里面的，而是放在object store中，也就是说每个object都有一个对应的object store（这应该也是用HashTable来实现的吧），里面放着object的data，也就是object属性的值，这些值本身也是一个个的zval。接下里PHP要做的就是建立object和object store的一一对应关系，而这个就是通过`zend_object_handle handle`来实现的，这是一个long值，相当于object store的identifier,通过这个`handle`就可以找到object的data在那里了。而`zend_object_handlers *handlers`指向了一些处理函数，比如用来访问object属性的函数等等，这个在这里就不再详述了，有兴趣的可以看[这里](https://wiki.php.net/internals/engine/objects)。讲到这里，我们应该知道了对于object的zval来说本身并没有存放object的data，而只是存放了一个整数型的handle。认识到这一点很重要，因为这会对接下来讨论的copy by reference和copy by value产生直接的影响。
 
 #### Array
 PHP的Array是用HashTable来实现的，通过这个就可以存放Array中的Key-Value了。关于这个HashTable具体是如何实现的，可以看[这里](http://nikic.github.com/2012/03/28/Understanding-PHPs-internal-array-implementation.html)。我根据那个tutorial画了个示意图如下：
@@ -85,7 +85,7 @@ var_dump($a); // 'world'
 var_dump($b); // 'world'
 ```
 
-从上面一段代码可以看出如果$b是value type的话，它的值并不会随着$a的改变而改变，就好像在执行`$b = $a`时，`$a`的值(zval)被复制了一份，也就是说`$a`和`$b`拥有自己独立的zval，两者互不影响。而如果是reference type的话，就如同`$a`和`$b`共用了一个zval，不管是改变`$a`，还是`$b`，其实都是改变一个zval。但事实没有这么简单，如果真像上面所说的那样执行`$b = $a`时，zval复制了一份，那么效率也太低了，因为有可能`$b`和`$a`在接下来的使用过程中都是只读的，它们本可以共用一个zval而不会出问题。那么PHP究竟是如何实现的呢，答案就是通过`refcount`和`if_ref`实现了copy on write机制。而这个copy on write机制对于不同type的变量也会有些不同的表现，接下来我们就通过一系列的图例来理解这个机制。
+从上面一段代码可以看出如果$b是value type的话，它的值并不会随着$a的改变而改变，就好像在执行`$b = $a`时，`$a`的值(zval)被复制了一份，也就是说`$a`和`$b`拥有自己独立的zval，两者互不影响。而如果是reference type的话，就如同`$a`和`$b`共用了一个zval，不管是改变`$a`，还是`$b`，其实都是改变一个zval。但事实没有这么简单，如果真像上面所说的那样执行`$b = $a`时，zval复制了一份，那么效率也太低了，因为有可能`$b`和`$a`在接下来的使用过程中都是只读的，它们本可以共用一个zval而不会出问题。那么PHP究竟是如何实现的呢，答案就是通过`refcount`和`if_ref`实现了copy on write机制。而这个copy on write机制对于不同`type`的变量也会有些不同的表现，接下来我们就通过一系列的图例来理解这个机制。
 
 {% img /images/post/a-close-look-into-php-zval/zval.1.png %}
 {% img /images/post/a-close-look-into-php-zval/zval.2.png %}
