@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Debug | My Personal Blog]]></title>
+  <link href="http://JiajunYao.github.com/blog/categories/debug/atom.xml" rel="self"/>
+  <link href="http://JiajunYao.github.com/"/>
+  <updated>2013-03-29T23:34:06+08:00</updated>
+  <id>http://JiajunYao.github.com/</id>
+  <author>
+    <name><![CDATA[jjyao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[OpenSSL Read Ahead &amp; Epoll]]></title>
+    <link href="http://JiajunYao.github.com/blog/2012/08/28/openssl-read-ahead-and-epoll/"/>
+    <updated>2012-08-28T12:06:00+08:00</updated>
+    <id>http://JiajunYao.github.com/blog/2012/08/28/openssl-read-ahead-and-epoll</id>
+    <content type="html"><![CDATA[<p>Use epoll with a ssl socket and ignore the OpenSSL read ahead feature</p>
+
+<!-- more -->
+
+
+<h2>Scenario</h2>
+
+<p>I write a python program to implement IMAP client that uses the IDLE command. So I have a ssl client socket and I use epoll level triggered mode to implement non-blocking socket.</p>
+
+<p>However, epoll doesn't work correctly. For example, in the IDLE mode, IMAP server sends two lines at a time. My client <code>select.epoll()</code> function returns because the ssl socket is readable. Then I read one line and call <code>select.epoll()</code> again. Because I use epoll level triggered mode so the <code>select.epoll()</code> should return immediately because the socket still has one line that is ready for read. But in fact, when I call <code>select.epoll()</code> again, it blocks and doesn't return.</p>
+
+<h2>Bug</h2>
+
+<p>OpenSSL has read ahead feature, which means that it may read more data to its internal buffer. So when I read one line, it may indead read two lines, decrypt and store them to the internal buffer. That is why <code>select.epoll()</code> blocks because all the data in the underlying socket is read to the OpenSSL internal buffer and the socket is unreadable.</p>
+
+<h2>Solution</h2>
+
+<p>Use <code>pending()</code> method to see whether ssl has decrypted bytes that are available for read.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[PHP single quoted]]></title>
+    <link href="http://JiajunYao.github.com/blog/2012/08/07/php-single-quoted/"/>
+    <updated>2012-08-07T21:38:00+08:00</updated>
+    <id>http://JiajunYao.github.com/blog/2012/08/07/php-single-quoted</id>
+    <content type="html"><![CDATA[<p>Use PHP single quoted when I should use double quoted</p>
+
+<!-- more -->
+
+
+<h2>Scenario</h2>
+
+<p>I write a Python Twisted line receiver server, so the server reads one line at a time. Then I write a PHP client to send lines to server.</p>
+
+<p><code>php
+socket_write($socket, 'it is one line\r\n', strlen);
+</code></p>
+
+<p>However, my server can't receive a whole line and blocked to wait for <strong>\r\n</strong></p>
+
+<h2>Bug</h2>
+
+<p>In a single quoted string, escape sequences you might be used to, such as \r or \n, will be output literally as specified rahter than having any special meaning. So my server receive \r\n literally and doesn't think that it is a new line character.</p>
+
+<h2>Solution</h2>
+
+<p>Change single quotes to double quotes</p>
+
+<p><code>php
+socket_write($socket, "it is one line\r\n", strlen);
+</code></p>
+]]></content>
+  </entry>
+  
+</feed>

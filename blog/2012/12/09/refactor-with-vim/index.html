@@ -1,0 +1,334 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Refactor with Vim - My Personal Blog</title>
+  <meta name="author" content="jjyao">
+
+  
+  <meta name="description" content="使用IDE的一个大好处就是可以方便的进行重构，想想Eclipse那彪悍的重构功能吧。可是对于我们这种喜欢用Vim的人来说，要如何来进行代码重构呢？接下来我就介绍一些Tips，来让Vim也能干重构的事。 变量名、函数名、类名变更 如果这个变更只在一个文件中进行那就很方便了，可以使用Vim的替换命令 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://JiajunYao.github.com/blog/2012/12/09/refactor-with-vim">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Personal Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-32781930-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Personal Blog</a></h1>
+  
+    <h2>Stay hungry, Stay foolish.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:JiajunYao.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/categories/debug">Debug</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About Me</a></li>
+  <li><a href="/quotes/quotes.html">Quotes</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Refactor With Vim</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-09T23:28:00+08:00" pubdate data-updated="true">Dec 9<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>使用IDE的一个大好处就是可以方便的进行重构，想想Eclipse那彪悍的重构功能吧。可是对于我们这种喜欢用Vim的人来说，要如何来进行代码重构呢？接下来我就介绍一些Tips，来让Vim也能干重构的事。</p>
+
+<!-- more -->
+
+
+<h2>变量名、函数名、类名变更</h2>
+
+<p>如果这个变更只在一个文件中进行那就很方便了，可以使用Vim的替换命令：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>:%s/old/new/g</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可万一现在有很多文件呢，我们需要将每个出现的地方都进行变更，这时我们可以这样做：
+首先先写一个shell的函数，然后放到bashrc或者zshrc中去</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>function vr() {
+</span><span class='line'>    vim -c "bufdo %s/$1/$2/gc | update" $(ack-grep -i -l "$1") # 这里也可以使用grep命令，只是我觉得ack-grep要更好用一些
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样当想要替换的时候，只要在shell中执行以下命令就可以了：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>vr old new</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样当前目录及子目录下所有文件中的<em>old</em>都会替换成<em>new</em>，同时每次替换都会要求确认，这样就防止了可能出现的错误</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">jjyao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-09T23:28:00+08:00" pubdate data-updated="true">Dec 9<span>th</span>, 2012</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/08/28/openssl-read-ahead-and-epoll/" title="Previous Post: OpenSSL Read Ahead &amp; Epoll">&laquo; OpenSSL Read Ahead &amp; Epoll</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/01/25/who-are-you/" title="Next Post: Who Are You">Who Are You &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/03/17/a-close-look-into-php-zval/">A Close Look Into PHP zval</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/25/who-are-you/">Who Are You</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/09/refactor-with-vim/">Refactor with Vim</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/08/28/openssl-read-ahead-and-epoll/">OpenSSL Read Ahead &amp; Epoll</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/08/07/php-single-quoted/">PHP single quoted</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/JiajunYao">@JiajunYao</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'JiajunYao',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+
+<h1>Weibo</h1>
+<ul>
+<li>
+<iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=300&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=0&uid=2369955640&verifier=a2e3df32&dpc=1">
+</iframe>
+</li>
+</ul>
+
+</section>
+
+
+<section>
+
+<h1>Douban</h1>
+<ul>
+<li>
+<div><script type="text/javascript" src="http://www.douban.com/service/badge/51087586/?show=dolist&amp;n=4&amp;columns=2&amp;hidelogo=yes&amp;cat=book" ></script></div>
+</li>
+</ul>
+
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - jjyao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'jjyao';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://JiajunYao.github.com/blog/2012/12/09/refactor-with-vim/';
+        var disqus_url = 'http://JiajunYao.github.com/blog/2012/12/09/refactor-with-vim/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
