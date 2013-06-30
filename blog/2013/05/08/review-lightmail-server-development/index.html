@@ -5,11 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>About me - My Personal Blog</title>
+  <title>Review LightMail Server Development - My Personal Blog</title>
   <meta name="author" content="jjyao">
 
   
-  <meta name="description" content="About Me Apr 12th, 2012 Welcome to my personal blog. My name is Jiajun Yao（姚嘉俊）and you can call me Jerome. I was born in Suzhou, China. Now I&#8217; &hellip;">
+  <meta name="description" content="文档一定要看全，要仔细看，静下心来看，直到把所有的细节都弄明白。现在弄多了碎片阅读后，产生了阅读障碍，对大篇幅的技术文档没有耐心读完。
+在服务器端, 高并发，I/O bound的程序，异步编程比同步编程有巨大的优势，虽然说写出来的代码可能比较难阅读。
+Openssl会占很多内存， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +20,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://JiajunYao.github.com/about/index-compat.html">
+  <link rel="canonical" href="http://JiajunYao.github.com/blog/2013/05/08/review-lightmail-server-development">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -80,46 +82,15 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">About Me</h1>
-    <p class="meta">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-04-12T19:11:00+08:00" pubdate data-updated="true">Apr 12<span>th</span>, 2012</time></p>
-  </header>
-  
-  <p>Welcome to my personal blog. My name is Jiajun Yao（姚嘉俊）and you can call me Jerome. I was born in Suzhou, China. Now I&#8217;m studying in Software Institute, Nanjing University.</p>
-
-<p>I like reading, thinking, watching movies especially documentary and biking. In my field, I&#8217;m interested in C++, C, Linux, DBMS and some other underling technologies. I&#8217;m also interested in history, Buddism, psychology and philosophy.</p>
-
-<p>You can contact me via:<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Email: jeromeyjj@gmail.com</p>
-
-<p>You can know me better via:<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This blog<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://weibo.com/u/2369955640" title="Weibo">Weibo</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.douban.com/people/51087586/" title="Douban">Douban</a></p>
-
-<p>My resume:<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/about/resume-for-school.html">Resume for Graduate Schools</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/about/resume-for-incorporation.html">Resume for Incorporations</a></p>
-
-  
-    <footer>
+    
+      <h1 class="entry-title">Review LightMail Server Development</h1>
+    
+    
       <p class="meta">
         
-        
 
 
 
@@ -131,20 +102,73 @@
   
 
 
-<time datetime="2012-04-12T19:11:00+08:00" pubdate data-updated="true">Apr 12<span>th</span>, 2012</time>
+<time datetime="2013-05-08T18:02:00+08:00" pubdate data-updated="true">May 8<span>th</span>, 2013</time>
         
       </p>
+    
+  </header>
+
+
+<div class="entry-content"><ul>
+<li>文档一定要看全，要仔细看，静下心来看，直到把所有的细节都弄明白。现在弄多了碎片阅读后，产生了阅读障碍，对大篇幅的技术文档没有耐心读完。</li>
+<li>在服务器端, 高并发，I/O bound的程序，异步编程比同步编程有巨大的优势，虽然说写出来的代码可能比较难阅读。</li>
+<li>Openssl会占很多内存，MODE_RELEASE_BUFFERS可以减少一点内存的使用</li>
+<li>编写daemon程序一定要做好十足的错误处理，daemon进程是不能跪的</li>
+<li>能用编写良好的第三方库的时候就不要自己写</li>
+<li>不能把EC2当做Linode用，要看使用说明书</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
       
-        <div class="sharing">
+  
+
+<span class="byline author vcard">Posted by <span class="fn">jjyao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-08T18:02:00+08:00" pubdate data-updated="true">May 8<span>th</span>, 2013</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
   
   
   
 </div>
 
+    
+    <p class="meta">
       
-    </footer>
-  
+        <a class="basic-alignment left" href="/blog/2013/03/17/a-close-look-into-php-zval/" title="Previous Post: A Close Look Into PHP zval">&laquo; A Close Look Into PHP zval</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/06/16/review-on-american-dreams-in-china/" title="Next Post: Review on American Dreams in China">Review on American Dreams in China &raquo;</a>
+      
+    </p>
+  </footer>
 </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
 
@@ -249,6 +273,22 @@
 
 </footer>
   
+
+<script type="text/javascript">
+      var disqus_shortname = 'jjyao';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://JiajunYao.github.com/blog/2013/05/08/review-lightmail-server-development/';
+        var disqus_url = 'http://JiajunYao.github.com/blog/2013/05/08/review-lightmail-server-development/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
 
 
 
