@@ -20,3 +20,6 @@ OpenSSL has read ahead feature, which means that it may read more data to its in
 
 ## Solution
 Use `pending()` method to see whether ssl has decrypted bytes that are available for read.
+
+## Reference
+For more information about OpenSSL read ahead feature, you can refer to "SSL and TLS Designing and Building Secure Systems" section 8.9.
