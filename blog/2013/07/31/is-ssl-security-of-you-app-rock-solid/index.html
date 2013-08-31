@@ -1,0 +1,359 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Is SSL Security of Your App Rock Solid - My Personal Blog</title>
+  <meta name="author" content="jjyao">
+
+  
+  <meta name="description" content="SSL(Secure Sockets Layer)是目前广泛用来加密网络通信的加密协议。它的一个著名应用就是HTTPS，也就是对HTTP通信使用SSL加密协议加密从而使得HTTP通信更加安全。对于一个移动应用（其他类型的客户端也同理），为了保证其和服务器的通信安全， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://JiajunYao.github.com/blog/2013/07/31/is-ssl-security-of-you-app-rock-solid">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Personal Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-32781930-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Personal Blog</a></h1>
+  
+    <h2>Stay hungry, Stay foolish.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:JiajunYao.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/categories/debug">Debug</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About Me</a></li>
+  <li><a href="/quotes/quotes.html">Quotes</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Is SSL Security of Your App Rock Solid</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-31T20:32:00+08:00" pubdate data-updated="true">Jul 31<span>st</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>SSL(Secure Sockets Layer)是目前广泛用来加密网络通信的加密协议。它的一个著名应用就是HTTPS，也就是对HTTP通信使用SSL加密协议加密从而使得HTTP通信更加安全。对于一个移动应用（其他类型的客户端也同理），为了保证其和服务器的通信安全，开发者就会使用SSL来加密客户端和服务器之间的通信。这样理应是安全的，但由于很多开发者使用方式不对，导致客户端和服务器之间的SSL通信会受到中间人攻击(Man-in-the-middle attack)，从而使得安全性荡然无存。本文将首先简要介绍下SSL的原理和中间人攻击的原理，然后会提供一个中间人攻击的实例，最后本文介绍该如何防止中间人攻击。</p>
+
+<!-- more -->
+
+
+<h2>SSL原理</h2>
+
+<p>SSL加密本质上就是用一个只有客户端和服务器知道的对称密钥加密网络上的数据包以达到保密的目的。在这里最主要的问题是如何产生<strong>只有</strong>客户端和服务器知道的对称密钥，SSL协议解决这个问题的过程被称为SSL的握手(handshake)。下面就简要描述下客户端和服务器建立了socket连接后SSL握手的过程（这是个简化版的描述，详细内容可见本文给出的参考资料）：</p>
+
+<ol>
+<li>客户端向服务器发送一个ClientHello消息（明文），包括了客户端支持的一系列加密算法、压缩算法和一个随机数(ClientRandom)。</li>
+<li>服务器接收到ClientHello后就可以知道客户端支持哪些加密算法和压缩算法，然后服务器就可以选择一个客户端和服务器都支持的加密算法和压缩算法来作为接下来SSL连接中要使用的算法。选择好算法后服务器向客户端发送一个ServerHello消息（明文），包括了选择好的加密算法、压缩算法和一个随机数(ServerRandom)。</li>
+<li>发送完ServerHello消息后，服务器紧接着又发送了一个Certificate消息（明文），包括了服务器的证书。这个证书是由CA颁发用来验证服务器身份的，里面包含了服务器的公钥等信息。</li>
+<li>发送完Certificate消息后，服务器又发送了一个ServerHelloDone消息（明文），这是一个空的消息，表明服务器已经发送了这阶段要发送的全部信息，等待客户端的反馈。</li>
+<li>客户端验证服务器证书的有效性，如果确认有效那么客户端会向服务器发送一个ClientKeyExchange消息（密文），这个消息由服务器证书中提供的公钥加密，包括了一个PreMasterSecret。PreMasterSecret是一个48字节的值，由两个版本号字节以及46个随机产生的字节组成，可以将其看做是一个随机数。</li>
+<li>服务器收到ClientKeyExchange消息后用自己的私钥解密就可以得到PreMasterSecret。至此，客户端和服务器都拥有了三个随机数，分别是：ClientRandom, ServerRandom和PreMasterSecret。然后客户端和服务器都运行同一个密钥导出函数，将上述三个随机数作为input，产生的output中就包含了接下来用来加密应用数据的对称密钥。</li>
+<li>发送完ClientKeyExchange消息后，客户端又发送了ChangeCipherSpec消息和Finished消息来表明客户端已结束握手过程。</li>
+<li>最后服务器也发送了ChangeCipherSpec消息和Finished消息来表明服务器已结束握手过程。</li>
+<li>到此为止整个SSL握手过程就结束了，接下来客户端和服务器就开始用握手阶段得到的对称密钥来加密应用数据。</li>
+</ol>
+
+
+<p>从上面描述的握手过程可以得知PreMasterSecret是一个<strong>只有</strong>客户端和服务器知道的值（因为它是客户端生成的，所以客户端知道。同时它是用服务器的公钥加密后传给服务器的，所以只有服务器手上的私钥能够解密）。而PreMasterSecret是产生对称密钥的一个input，由于input只有客户端和服务器知道，因此产生的output也就是对称密钥就只有客户端和服务器知道了，所以使用SSL来加密通信数据是安全的。有人可能会问那么ClientRandom和ServerRandom是用来干什么的呢（剧透：防止replay攻击）？使用SSL加密后的数据是无法被第三者解密了，但是又如何保证数据的完整性呢（剧透：使用MAC）？SSL是不是还能防止其他各类攻击（剧透：还能防止截断攻击等）？SSL不是用来加密数据的么，为什么还涉及数据压缩（剧透：压缩得在加密之前）？上述的握手过程只是一个简化版本，那么完整的握手过程又是怎样的呢（剧透：完整的握手可能还涉及到会话恢复和客户端认证等）？上述问题以及可能产生的其他关于SSL的疑问都可以在《SSL and TLS - Designing and Building Secure Systems》中找到答案，这本书写的非常好，值得一读（中文翻译的也还行）。</p>
+
+<h2>中间人攻击原理</h2>
+
+<p>中间人攻击的本质就是客户端以为它在和服务器通信，实际上它是在和中间人通信。服务器以为它在和客户端通信，实际上它也在和中间人通信。对于SSL来说，客户端和服务器都以为它们和对方建立了一条SSL连接，而实际上它们分别和中间人建立了一条SSL连接。这样的后果就是中间人能够得到客户端和服务器之间传输数据的明文，还能任意更改数据。下图是中间人攻击的示意图：</p>
+
+<p><img src="/images/post/is-ssl-security-of-your-app-rock-solid/MITM.png"></p>
+
+<p>在上图中Mallory就是中间人，在Alice（客户端）和Bob（服务器）建立SSL连接的过程中，Mallory截获Alice发出的ClientHello等消息，然后假装自己是Bob回应ServerHello等信息，这样Alice和Mallory之间就建立了一条SSL连接。同时Mallory假装自己是Alice，和Bob之间也建立了一条SSL连接。这样Alice发出的数据Mallory可以解密并修改，然后Mallory可以将数据通过它和Bob之间的SSL连接再传给Bob。而Bob的返回数据Mallory也可以解密并修改，然后再传给Alice。</p>
+
+<p>从上面的描述可以看到中间人攻击的关键就是Alice把Mallory当成了Bob，而这实际上可以通过SSL握手过程中的验证服务器证书来避免的。只要Alice仔细检查收到的证书确实是Bob的，那中间人攻击就失效了。因为Mallory给Alice的一定是Mallory的证书，只有这样Mallory才有私钥来解密PreMasterSecret。假设Mallory给Alice的是Bob的证书，那么Mallory是没有Bob的私钥去解密PreMasterSecret的，也就说其不能得到对称密钥，自然也就无法解密Alice加密后的数据。</p>
+
+<h2>中间人攻击实例</h2>
+
+<p>很多App（客户端）的开发者没有正确地检查建立SSL连接时收到的服务器证书，从而使得中间人攻击成为了可能。我就对自己手机上装的一个App成功实施了中间人攻击，获取了它和服务器传输的内容，下面就简要介绍下攻击的过程：</p>
+
+<ol>
+<li>首先是在Mac上安装Charles，这是一个sniffer工具，支持中间人攻击。</li>
+<li>然后配置iPhone和Mac，使得iPhone把Mac作为代理连接网络，这样Charles就有机会截获iPhone上发出的数据包了。</li>
+<li>接着在iPhone上装Charles的根CA证书。Charles作为中间人发给客户端的是自己CA签署的证书，而这个CA不是iPhone默认认为的可信任CA，所以要手动把Clarese的CA加入可信任CA列表。</li>
+<li>打开手机上的App，然后在Charles中就可以发现App发出的数据了（尽管App使用的是SSL连接）。</li>
+</ol>
+
+
+<p>更详细的做法请参见<a href="https://www.cocoanetics.com/2010/12/how-to-spy-on-the-web-traffic-of-any-app/">这里</a>。下面就给出几张攻击的截图：</p>
+
+<p><img src="/images/post/is-ssl-security-of-your-app-rock-solid/example1.png"></p>
+
+<p><img src="/images/post/is-ssl-security-of-your-app-rock-solid/example2.png"></p>
+
+<p><img src="/images/post/is-ssl-security-of-your-app-rock-solid/example3.png"></p>
+
+<p>从截图中可以看出我已经获得了这个应用和服务器传输的所有数据。</p>
+
+<h2>防止中间人攻击</h2>
+
+<p>为了防止中间人攻击，客户端需要检查SSL握手时获得的证书确实来自其想要连接的服务器。最简单的做法就是在客户端存放服务器的证书，然后每次建立SSL连接的时候都将远程获得的证书和本地的相比较，只有两者完全一样才认为没有受到中间人攻击，否则就应该拒绝建立连接。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">jjyao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-31T20:32:00+08:00" pubdate data-updated="true">Jul 31<span>st</span>, 2013</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/06/16/review-on-american-dreams-in-china/" title="Previous Post: Review on American Dreams in China">&laquo; Review on American Dreams in China</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/07/31/is-ssl-security-of-you-app-rock-solid/">Is SSL Security of Your App Rock Solid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/06/16/review-on-american-dreams-in-china/">Review on American Dreams in China</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/08/review-lightmail-server-development/">Review LightMail Server Development</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/03/17/a-close-look-into-php-zval/">A Close Look Into PHP zval</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/25/who-are-you/">Who Are You</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/JiajunYao">@JiajunYao</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'JiajunYao',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+
+<h1>Weibo</h1>
+<ul>
+<li>
+<iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=300&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=0&uid=2369955640&verifier=a2e3df32&dpc=1">
+</iframe>
+</li>
+</ul>
+
+</section>
+
+
+<section>
+
+<h1>Douban</h1>
+<ul>
+<li>
+<div><script type="text/javascript" src="http://www.douban.com/service/badge/51087586/?show=dolist&amp;n=4&amp;columns=2&amp;hidelogo=yes&amp;cat=book" ></script></div>
+</li>
+</ul>
+
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - jjyao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'jjyao';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://JiajunYao.github.com/blog/2013/07/31/is-ssl-security-of-you-app-rock-solid/';
+        var disqus_url = 'http://JiajunYao.github.com/blog/2013/07/31/is-ssl-security-of-you-app-rock-solid/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
