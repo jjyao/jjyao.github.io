@@ -4,7 +4,7 @@ title: "Review LightMail Server Development"
 date: 2013-05-08 18:02
 comments: true
 categories: 
-publish: false
+published: false
 ---
 
 * 文档一定要看全，要仔细看，静下心来看，直到把所有的细节都弄明白。现在弄多了碎片阅读后，产生了阅读障碍，对大篇幅的技术文档没有耐心读完。
