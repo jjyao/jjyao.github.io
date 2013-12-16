@@ -4,7 +4,7 @@
   <title><![CDATA[My Personal Blog]]></title>
   <link href="http://JiajunYao.github.com/atom.xml" rel="self"/>
   <link href="http://JiajunYao.github.com/"/>
-  <updated>2013-12-17T00:47:54+08:00</updated>
+  <updated>2013-12-17T00:51:24+08:00</updated>
   <id>http://JiajunYao.github.com/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -12,34 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[Review Lightmail Android Development]]></title>
-    <link href="http://JiajunYao.github.com/blog/2013/10/23/review-lightmail-android-development/"/>
-    <updated>2013-10-23T18:21:00+08:00</updated>
-    <id>http://JiajunYao.github.com/blog/2013/10/23/review-lightmail-android-development</id>
-    <content type="html"><![CDATA[<p>The benefit of getter and setter: it helps you debug: you can print call stack inside setter or getter, iOS upgrade
-Software complexity
-people/month
-Fix a bug may spawn more bugs</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Several Things I Have Learned From Working At Qiduo]]></title>
-    <link href="http://JiajunYao.github.com/blog/2013/09/13/several-things-i-have-learned-from-working-at-qiduo/"/>
-    <updated>2013-09-13T20:42:00+08:00</updated>
-    <id>http://JiajunYao.github.com/blog/2013/09/13/several-things-i-have-learned-from-working-at-qiduo</id>
-    <content type="html"><![CDATA[<p>communication
-people/location
-minimal document: algorithm, design
-code review
-comments
-unqualified programmer can screw up the project
-product is 1 and others is 0
-iOS and Android should share the algorithm, so implementing with C is a good practice. LightMail is a lesson</p>
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[Is SSL Security of Your App Rock Solid]]></title>
@@ -141,23 +113,6 @@ iOS and Android should share the algorithm, so implementing with C is a good pra
 <h2>老俞的安眠药</h2>
 
 <p>人们往往只注意到那些成功人士（每个人对成功的定义不同，在这里姑且指那些创业成功的人吧）人前风光的一面，而没有看到他们背后付出的艰辛。就比如说人们往往只看到老俞在万千大学生面前做人生导师的风光，却没有看到他背后那一排安眠药。当然这个还能延伸到其他方面，比如人们往往只看到学霸那恐怖的成绩，却没有看到他们那日日夜夜蹲图书馆的日子。再比如人们往往只看到就业之星那令人羡慕的offer，却没有看到他们多年来为之做出的准备。很多人看到那些成功人士很是羡慕，都想要成为他们那样的人，但他们不知道要想成为这些成功人士，要付出多少的艰辛。所以当我们看那些成功人士时，除了要看他们表面的风光，还要特别留意他们背后的那排安眠药。当我们想要创业时，要想想我们已经准备好吃下老俞的安眠药了吗。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Review LightMail Server Development]]></title>
-    <link href="http://JiajunYao.github.com/blog/2013/05/08/review-lightmail-server-development/"/>
-    <updated>2013-05-08T18:02:00+08:00</updated>
-    <id>http://JiajunYao.github.com/blog/2013/05/08/review-lightmail-server-development</id>
-    <content type="html"><![CDATA[<ul>
-<li>文档一定要看全，要仔细看，静下心来看，直到把所有的细节都弄明白。现在弄多了碎片阅读后，产生了阅读障碍，对大篇幅的技术文档没有耐心读完。</li>
-<li>在服务器端, 高并发，I/O bound的程序，异步编程比同步编程有巨大的优势，虽然说写出来的代码可能比较难阅读。</li>
-<li>Openssl会占很多内存，MODE_RELEASE_BUFFERS可以减少一点内存的使用</li>
-<li>编写daemon程序一定要做好十足的错误处理，daemon进程是不能跪的</li>
-<li>能用编写良好的第三方库的时候就不要自己写</li>
-<li>不能把EC2当做Linode用，要看使用说明书</li>
-</ul>
-
 ]]></content>
   </entry>
   
