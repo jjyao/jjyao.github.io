@@ -4,7 +4,7 @@
   <title><![CDATA[My Personal Blog]]></title>
   <link href="http://JiajunYao.github.com/atom.xml" rel="self"/>
   <link href="http://JiajunYao.github.com/"/>
-  <updated>2013-08-31T16:18:56+08:00</updated>
+  <updated>2013-12-17T00:47:54+08:00</updated>
   <id>http://JiajunYao.github.com/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -12,6 +12,34 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Review Lightmail Android Development]]></title>
+    <link href="http://JiajunYao.github.com/blog/2013/10/23/review-lightmail-android-development/"/>
+    <updated>2013-10-23T18:21:00+08:00</updated>
+    <id>http://JiajunYao.github.com/blog/2013/10/23/review-lightmail-android-development</id>
+    <content type="html"><![CDATA[<p>The benefit of getter and setter: it helps you debug: you can print call stack inside setter or getter, iOS upgrade
+Software complexity
+people/month
+Fix a bug may spawn more bugs</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Several Things I Have Learned From Working At Qiduo]]></title>
+    <link href="http://JiajunYao.github.com/blog/2013/09/13/several-things-i-have-learned-from-working-at-qiduo/"/>
+    <updated>2013-09-13T20:42:00+08:00</updated>
+    <id>http://JiajunYao.github.com/blog/2013/09/13/several-things-i-have-learned-from-working-at-qiduo</id>
+    <content type="html"><![CDATA[<p>communication
+people/location
+minimal document: algorithm, design
+code review
+comments
+unqualified programmer can screw up the project
+product is 1 and others is 0
+iOS and Android should share the algorithm, so implementing with C is a good practice. LightMail is a lesson</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Is SSL Security of Your App Rock Solid]]></title>

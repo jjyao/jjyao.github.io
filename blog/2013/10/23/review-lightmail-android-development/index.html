@@ -5,11 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>PHP single quoted - My Personal Blog</title>
+  <title>Review Lightmail Android Development - My Personal Blog</title>
   <meta name="author" content="jjyao">
 
   
-  <meta name="description" content="Use PHP single quoted when I should use double quoted Scenario I write a Python Twisted line receiver server, so the server reads one line at a time &hellip;">
+  <meta name="description" content="The benefit of getter and setter: it helps you debug: you can print call stack inside setter or getter, iOS upgrade
+Software complexity
+people/month &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +20,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://JiajunYao.github.com/blog/2012/08/07/php-single-quoted">
+  <link rel="canonical" href="http://JiajunYao.github.com/blog/2013/10/23/review-lightmail-android-development">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="My Personal Blog" type="application/atom+xml">
@@ -83,7 +85,7 @@
   
   <header>
     
-      <h1 class="entry-title">PHP Single Quoted</h1>
+      <h1 class="entry-title">Review Lightmail Android Development</h1>
     
     
       <p class="meta">
@@ -99,43 +101,17 @@
   
 
 
-<time datetime="2012-08-07T21:38:00+08:00" pubdate data-updated="true">Aug 7<span>th</span>, 2012</time>
+<time datetime="2013-10-23T18:21:00+08:00" pubdate data-updated="true">Oct 23<span>rd</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Use PHP single quoted when I should use double quoted</p>
-
-<!-- more -->
-
-
-<h2>Scenario</h2>
-
-<p>I write a Python Twisted line receiver server, so the server reads one line at a time. Then I write a PHP client to send lines to server.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">socket_write($socket, &#39;it is one line\r\n&#39;, strlen);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>However, my server can&#8217;t receive a whole line and blocked to wait for <strong>\r\n</strong></p>
-
-<h2>Bug</h2>
-
-<p>In a single quoted string, escape sequences you might be used to, such as \r or \n, will be output literally as specified rahter than having any special meaning. So my server receive \r\n literally and doesn&#8217;t think that it is a new line character.</p>
-
-<h2>Solution</h2>
-
-<p>Change single quotes to double quotes</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">socket_write($socket, &quot;it is one line\r\n&quot;, strlen);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
+<div class="entry-content"><p>The benefit of getter and setter: it helps you debug: you can print call stack inside setter or getter, iOS upgrade
+Software complexity
+people/month
+Fix a bug may spawn more bugs</p>
 </div>
 
 
@@ -158,14 +134,8 @@
   
 
 
-<time datetime="2012-08-07T21:38:00+08:00" pubdate data-updated="true">Aug 7<span>th</span>, 2012</time>
+<time datetime="2013-10-23T18:21:00+08:00" pubdate data-updated="true">Oct 23<span>rd</span>, 2013</time>
       
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/debug/'>Debug</a>
-  
-</span>
 
 
     </p>
@@ -179,10 +149,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/07/21/read-practice-think/" title="Previous Post: 阅读·实践·思考">&laquo; 阅读·实践·思考</a>
+        <a class="basic-alignment left" href="/blog/2013/09/13/several-things-i-have-learned-from-working-at-qiduo/" title="Previous Post: Several Things I Have Learned From Working At Qiduo">&laquo; Several Things I Have Learned From Working At Qiduo</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/08/28/openssl-read-ahead-and-epoll/" title="Next Post: OpenSSL Read Ahead &amp; Epoll">OpenSSL Read Ahead &amp; Epoll &raquo;</a>
       
     </p>
   </footer>
@@ -303,8 +271,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://JiajunYao.github.com/blog/2012/08/07/php-single-quoted/';
-        var disqus_url = 'http://JiajunYao.github.com/blog/2012/08/07/php-single-quoted/';
+        var disqus_identifier = 'http://JiajunYao.github.com/blog/2013/10/23/review-lightmail-android-development/';
+        var disqus_url = 'http://JiajunYao.github.com/blog/2013/10/23/review-lightmail-android-development/';
         var disqus_script = 'embed.js';
       
     (function () {
