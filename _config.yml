@@ -54,7 +54,7 @@ default_asides: [asides/recent_posts.html, asides/github.html, custom/asides/wei
 # page_asides:
 
 # Control which posts show on the front page
-front_page_categories: [Debug] # A list of categories for the front page
+front_page_categories: [] # A list of categories for the front page
 front_page_categories_op: 'hide' # Whether to show or hide the list of categories from front_page_categories
 
 # ----------------------- #
