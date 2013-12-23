@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Is SSL Security of Your App Rock Solid - My Personal Blog</title>
+  <title>Does Your App Have a Rock Solid SSL Connection - My Personal Blog</title>
   <meta name="author" content="jjyao">
 
   
-  <meta name="description" content="SSL(Secure Sockets Layer)是目前广泛用来加密网络通信的加密协议。它的一个著名应用就是HTTPS，也就是对HTTP通信使用SSL加密协议加密从而使得HTTP通信更加安全。对于一个移动应用（其他类型的客户端也同理），为了保证其和服务器的通信安全， &hellip;">
+  <meta name="description" content="SSL(Secure Sockets Layer)是目前广泛用来加密网络通信的加密协议。它的一个著名应用就是HTTPS，也就是使用SSL协议对HTTP进行加密从而使得整个通信更加安全。对于一个移动应用（其他类型的客户端也同理），为了保证其和服务器的通信安全， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://JiajunYao.github.com/blog/2013/07/31/is-ssl-security-of-you-app-rock-solid">
+  <link rel="canonical" href="http://JiajunYao.github.com/blog/2013/07/31/does-your-app-have-a-rock-solid-ssl-connection">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="My Personal Blog" type="application/atom+xml">
@@ -83,7 +83,7 @@
   
   <header>
     
-      <h1 class="entry-title">Is SSL Security of Your App Rock Solid</h1>
+      <h1 class="entry-title">Does Your App Have a Rock Solid SSL Connection</h1>
     
     
       <p class="meta">
@@ -106,7 +106,7 @@
   </header>
 
 
-<div class="entry-content"><p>SSL(Secure Sockets Layer)是目前广泛用来加密网络通信的加密协议。它的一个著名应用就是HTTPS，也就是对HTTP通信使用SSL加密协议加密从而使得HTTP通信更加安全。对于一个移动应用（其他类型的客户端也同理），为了保证其和服务器的通信安全，开发者就会使用SSL来加密客户端和服务器之间的通信。这样理应是安全的，但由于很多开发者使用方式不对，导致客户端和服务器之间的SSL通信会受到中间人攻击(Man-in-the-middle attack)，从而使得安全性荡然无存。本文将首先简要介绍下SSL的原理和中间人攻击的原理，然后会提供一个中间人攻击的实例，最后本文介绍该如何防止中间人攻击。</p>
+<div class="entry-content"><p>SSL(Secure Sockets Layer)是目前广泛用来加密网络通信的加密协议。它的一个著名应用就是HTTPS，也就是使用SSL协议对HTTP进行加密从而使得整个通信更加安全。对于一个移动应用（其他类型的客户端也同理），为了保证其和服务器的通信安全，开发者就会使用SSL来加密客户端和服务器之间的通信。这样理应是安全的，但由于很多开发者使用方式不对，导致客户端和服务器之间的SSL通信会受到中间人攻击(Man-in-the-middle attack)，从而使得安全性荡然无存。本文将首先介绍下SSL和中间人攻击的原理，然后会提供一个中间人攻击的实例，最后本文介绍该如何防止中间人攻击。</p>
 
 <!-- more -->
 
@@ -164,7 +164,7 @@
 
 <h2>防止中间人攻击</h2>
 
-<p>为了防止中间人攻击，客户端需要检查SSL握手时获得的证书确实来自其想要连接的服务器。最简单的做法就是在客户端存放服务器的证书，然后每次建立SSL连接的时候都将远程获得的证书和本地的相比较，只有两者完全一样才认为没有受到中间人攻击，否则就应该拒绝建立连接。</p>
+<p>为了防止中间人攻击，客户端需要检查SSL握手时获得的证书确实来自其想要连接的服务器，使用的技术叫做Certificate and Public Key Pinning。最简单的做法就是在客户端存放服务器的证书，然后每次建立SSL连接的时候都将远程获得的证书和本地的相比较，只有两者完全一样才认为没有受到中间人攻击，否则就应该拒绝建立连接。这种做法虽然实现简单，但问题是证书的内容很容易改变（比如证书过期后就需要重新获得一个全新的证书），因此每当证书变化时旧版应用就无法连接服务器了，需要让用户升级应用，对用户来说这显然不够好。另一种较好的方法是只比较证书中subjectPublicKeyInfo部分而不是整个证书。相对于整个证书而言，这个部分变动概率很小并且其包含了要验证的最主要东西也就是服务器的公钥，因为只要公钥对了，那么加密的数据就只有拥有对应私钥的服务器才能解密了。对于pinning的更多资料请参见<a href="https://www.owasp.org/index.php/Certificate_and_Public_Key_Pinning">这里</a>。</p>
 </div>
 
 
@@ -224,7 +224,7 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2013/07/31/is-ssl-security-of-you-app-rock-solid/">Is SSL Security of Your App Rock Solid</a>
+        <a href="/blog/2013/07/31/does-your-app-have-a-rock-solid-ssl-connection/">Does Your App Have a Rock Solid SSL Connection</a>
       </li>
     
       <li class="post">
@@ -324,8 +324,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://JiajunYao.github.com/blog/2013/07/31/is-ssl-security-of-you-app-rock-solid/';
-        var disqus_url = 'http://JiajunYao.github.com/blog/2013/07/31/is-ssl-security-of-you-app-rock-solid/';
+        var disqus_identifier = 'http://JiajunYao.github.com/blog/2013/07/31/does-your-app-have-a-rock-solid-ssl-connection/';
+        var disqus_url = 'http://JiajunYao.github.com/blog/2013/07/31/does-your-app-have-a-rock-solid-ssl-connection/';
         var disqus_script = 'embed.js';
       
     (function () {
