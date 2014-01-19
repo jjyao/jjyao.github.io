@@ -20,7 +20,7 @@
     </url>
     <url>
         <loc>http://JiajunYao.github.com/blog/2012/08/07/php-single-quoted/</loc>
-        <lastmod>2013-03-17T23:07:01+08:00</lastmod>
+        <lastmod>2014-01-19T18:38:09+08:00</lastmod>
     </url>
     <url>
         <loc>http://JiajunYao.github.com/blog/2012/08/28/openssl-read-ahead-and-epoll/</loc>
@@ -39,6 +39,12 @@
         <lastmod>2013-03-29T23:18:12+08:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://JiajunYao.github.com/blog/2013/05/08/review-lightmail-server-development/
+        </loc>
+        <lastmod>2013-12-17T00:43:05+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://JiajunYao.github.com/blog/2013/06/16/review-on-american-dreams-in-china/</loc>
         <lastmod>2013-07-07T22:46:58+08:00</lastmod>
     </url>
@@ -49,16 +55,34 @@
         <lastmod>2013-12-24T00:05:11+08:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://JiajunYao.github.com/blog/2013/09/13/several-things-i-have-learned-from-working-at-qiduo/
+        </loc>
+        <lastmod>2013-12-17T00:42:29+08:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://JiajunYao.github.com/blog/2013/10/23/review-lightmail-android-development/
+        </loc>
+        <lastmod>2013-12-17T00:42:38+08:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://JiajunYao.github.com/blog/2014/01/19/android-dot-os-dot-message-dot-what/
+        </loc>
+        <lastmod>2014-01-19T21:50:50+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://JiajunYao.github.com/about/index-compat.html</loc>
         <lastmod>2013-12-17T00:40:34+08:00</lastmod>
     </url>
     <url>
         <loc>http://JiajunYao.github.com/blog/archives/</loc>
-        <lastmod>2014-01-16T23:32:00+08:00</lastmod>
+        <lastmod>2014-01-19T21:50:50+08:00</lastmod>
     </url>
     <url>
         <loc>http://JiajunYao.github.com/</loc>
-        <lastmod>2014-01-16T23:32:00+08:00</lastmod>
+        <lastmod>2014-01-19T21:50:50+08:00</lastmod>
     </url>
     <url>
         <loc>http://JiajunYao.github.com/quotes/it-quotes.html</loc>

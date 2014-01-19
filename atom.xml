@@ -4,7 +4,7 @@
   <title><![CDATA[My Personal Blog]]></title>
   <link href="http://JiajunYao.github.com/atom.xml" rel="self"/>
   <link href="http://JiajunYao.github.com/"/>
-  <updated>2014-01-16T23:32:38+08:00</updated>
+  <updated>2014-01-19T21:53:58+08:00</updated>
   <id>http://JiajunYao.github.com/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -12,6 +12,83 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[android.os.Message.what]]></title>
+    <link href="http://JiajunYao.github.com/blog/2014/01/19/android-dot-os-dot-message-dot-what/"/>
+    <updated>2014-01-19T18:36:00+08:00</updated>
+    <id>http://JiajunYao.github.com/blog/2014/01/19/android-dot-os-dot-message-dot-what</id>
+    <content type="html"><![CDATA[<p>Send an android.os.Message whose <em>what</em> is 0 and then remove it, which unexpectedly removes all posted Runnables</p>
+
+<!-- more -->
+
+
+<h2>Scenario</h2>
+
+<p>I write a Runnable and post it to the main thread, however the Runnable is not executed.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// callback from the background thread</span>
+</span><span class='line'><span class="kd">private</span> <span class="kt">void</span> <span class="nf">callback</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">mHandler</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">// update UI in the main thread</span>
+</span><span class='line'>    <span class="o">});</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Bug</h2>
+
+<p>After posting the Runnable, someone executes the following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// CUSTOM_MESSAGE_WHAT is 0</span>
+</span><span class='line'><span class="n">mHandler</span><span class="o">.</span><span class="na">removeMessages</span><span class="o">(</span><span class="n">CUSTOM_MESSAGE_WHAT</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and it not only removes the custom message but also removes all posted Runnables in the MessageQueue. The reason is that <strong>android.os.Handler wraps every posted Runnable in an android.os.Message whose <em>what</em> is 0</strong> which conflicts with the <em>what</em> value of the custom message.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/** Handler.java **/</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">final</span> <span class="kt">boolean</span> <span class="nf">post</span><span class="o">(</span><span class="n">Runnable</span> <span class="n">r</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nf">sendMessageDelayed</span><span class="o">(</span><span class="n">getPostMessage</span><span class="o">(</span><span class="n">r</span><span class="o">),</span> <span class="mi">0</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="n">Message</span> <span class="nf">getPostMessage</span><span class="o">(</span><span class="n">Runnable</span> <span class="n">r</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Message</span> <span class="n">m</span> <span class="o">=</span> <span class="n">Message</span><span class="o">.</span><span class="na">obtain</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">m</span><span class="o">.</span><span class="na">callback</span> <span class="o">=</span> <span class="n">r</span><span class="o">;</span>
+</span><span class='line'>    <span class="c1">// if not specified otherwise, m.what is 0 which is the default value</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">m</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Solution</h2>
+
+<p>Never use 0 as the <em>what</em> value of custom messages</p>
+
+<h2>Reference</h2>
+
+<p>The source code for android.os.Handler, android.os.Message and android.os.MessageQueue</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Does Your App Have a Rock Solid SSL Connection]]></title>
@@ -472,7 +549,7 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[PHP single quoted]]></title>
+    <title type="html"><![CDATA[PHP Single Quoted]]></title>
     <link href="http://JiajunYao.github.com/blog/2012/08/07/php-single-quoted/"/>
     <updated>2012-08-07T21:38:00+08:00</updated>
     <id>http://JiajunYao.github.com/blog/2012/08/07/php-single-quoted</id>
