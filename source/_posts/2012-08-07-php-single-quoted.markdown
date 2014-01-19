@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "PHP single quoted"
+title: "PHP Single Quoted"
 date: 2012-08-07 21:38
 comments: true
 categories: Debug 
