@@ -25,3 +25,4 @@ iOS and Android should share the algorithm, so implementing with C is a good pra
 说话要有分寸，不要不小心让人厌恶
 有什么不满和意见讲出来好好谈
 一定要尽心尽力干活，周围的人都会在心里默默评价你，不要让别人觉得你无能
+不自知
