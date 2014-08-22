@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Refactor with Vim - My Personal Blog</title>
+  <title>Refactor With Vim - My Personal Blog</title>
   <meta name="author" content="jjyao">
 
   
@@ -18,13 +18,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://JiajunYao.github.com/blog/2012/12/09/refactor-with-vim">
+  <link rel="canonical" href="http://blog.jjyao.me/blog/2012/12/09/refactor-with-vim">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="My Personal Blog" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -60,9 +60,9 @@
   
 </ul>
   
-<form action="http://google.com/search" method="get">
+<form action="https://www.google.com/search" method="get">
   <fieldset role="search">
-    <input type="hidden" name="q" value="site:JiajunYao.github.com" />
+    <input type="hidden" name="q" value="site:blog.jjyao.me" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
@@ -92,14 +92,7 @@
 
 
 
-
-
-
-
-  
-
-
-<time datetime="2012-12-09T23:28:00+08:00" pubdate data-updated="true">Dec 9<span>th</span>, 2012</time>
+<time class='entry-date' datetime='2012-12-09T23:28:00-05:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2012</span></span> <span class='time'>11:28 pm</span></time>
         
       </p>
     
@@ -115,25 +108,25 @@
 
 <p>如果这个变更只在一个文件中进行那就很方便了，可以使用Vim的替换命令：</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>:%s/old/new/g</span></code></pre></td></tr></table></div></figure>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>:%s/old/new/g</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>可万一现在有很多文件呢，我们需要将每个出现的地方都进行变更，这时我们可以这样做：
 首先先写一个shell的函数，然后放到bashrc或者zshrc中去</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>function vr() {
 </span><span class='line'>    vim -c "bufdo %s/$1/$2/gc | update" $(ack-grep -i -l "$1") # 这里也可以使用grep命令，只是我觉得ack-grep要更好用一些
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>这样当想要替换的时候，只要在shell中执行以下命令就可以了：</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>vr old new</span></code></pre></td></tr></table></div></figure>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>vr old new</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>这样当前目录及子目录下所有文件中的<em>old</em>都会替换成<em>new</em>，同时每次替换都会要求确认，这样就防止了可能出现的错误</p>
@@ -152,14 +145,7 @@
 
 
 
-
-
-
-
-  
-
-
-<time datetime="2012-12-09T23:28:00+08:00" pubdate data-updated="true">Dec 9<span>th</span>, 2012</time>
+<time class='entry-date' datetime='2012-12-09T23:28:00-05:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2012</span></span> <span class='time'>11:28 pm</span></time>
       
 
 
@@ -198,6 +184,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/08/17/several-things-i-have-learned-from-working-at-qiduo/">Several Things I Have Learned From Working at Qiduo</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/01/19/android-dot-os-dot-message-dot-what/">android.os.Message.what</a>
       </li>
     
@@ -210,11 +200,7 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2013/03/17/a-close-look-into-php-zval/">A Close Look Into PHP zval</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/01/25/who-are-you/">Who Are You</a>
+        <a href="/blog/2013/03/17/a-close-look-into-php-zval/">A Close Look Into PHP Zval</a>
       </li>
     
   </ul>
@@ -226,7 +212,7 @@
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/JiajunYao">@JiajunYao</a> on GitHub
+  <a href="https://github.com/jjyao">@jjyao</a> on GitHub
   
   <script type="text/javascript">
     $(document).ready(function(){
@@ -239,7 +225,7 @@
         }
 
         github.showRepos({
-            user: 'JiajunYao',
+            user: 'jjyao',
             count: 0,
             skip_forks: true,
             target: '#gh_repos'
@@ -298,13 +284,13 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://JiajunYao.github.com/blog/2012/12/09/refactor-with-vim/';
-        var disqus_url = 'http://JiajunYao.github.com/blog/2012/12/09/refactor-with-vim/';
+        var disqus_identifier = 'http://blog.jjyao.me/blog/2012/12/09/refactor-with-vim/';
+        var disqus_url = 'http://blog.jjyao.me/blog/2012/12/09/refactor-with-vim/';
         var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -320,7 +306,7 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

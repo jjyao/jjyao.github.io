@@ -23,13 +23,13 @@ DataNode的启动
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://JiajunYao.github.com/blog/2012/06/18/hdfs-source-code-analysis">
+  <link rel="canonical" href="http://blog.jjyao.me/blog/2012/06/18/hdfs-source-code-analysis">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="My Personal Blog" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -65,9 +65,9 @@ DataNode的启动
   
 </ul>
   
-<form action="http://google.com/search" method="get">
+<form action="https://www.google.com/search" method="get">
   <fieldset role="search">
-    <input type="hidden" name="q" value="site:JiajunYao.github.com" />
+    <input type="hidden" name="q" value="site:blog.jjyao.me" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
@@ -97,14 +97,7 @@ DataNode的启动
 
 
 
-
-
-
-
-  
-
-
-<time datetime="2012-06-18T19:28:00+08:00" pubdate data-updated="true">Jun 18<span>th</span>, 2012</time>
+<time class='entry-date' datetime='2012-06-18T19:28:00-04:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2012</span></span> <span class='time'>7:28 pm</span></time>
         
       </p>
     
@@ -130,7 +123,7 @@ DataNode的启动
 
 <p>在这里我们可以通过在Hadoop的配置文件里指定fs.default.name来实现，当然也可以在程序中显式指定。假设我们指定fs.default.name的值为hdfs://localhost:9000，其中的<em>hdfs</em>就是告诉Hadoop要使用DistributedFileSystem。Hadoop会从fs.default.name中抽出hdfs，然后去配置文件里找fs.<em>hdfs</em>.impl，这个可以在core-default.xml中找到，值为org.apache.hadoop.hdfs.DistributedFileSystem，可以看出Hadoop已经成功找到具体要创建的文件系统实现是什么了，接下来Hadoop通过反射就能由类名创建出类实例来，然后返回给用户使用。类似的如果我们指定fs.default.name的值为file:///，那么Hadoop就会去配置文件里找fs.<em>file</em>.impl，这个的值就是org.apache.hadoop.fs.LocalFileSystem。当然我们还能给fs.default.name指定很多其他的值来告诉Hadoop要使用的底层文件系统实现是什么。在这里还要说明的是fs.default.name的默认值就是file:///。接下来给出一些关键代码：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -196,7 +189,7 @@ DataNode的启动
 </span><span class='line'><span class="o">}</span>
 </span><span class='line'>
 </span><span class='line'><span class="n">FileSystem</span> <span class="nf">get</span><span class="o">(</span><span class="n">URI</span> <span class="n">uri</span><span class="o">,</span> <span class="n">Configuration</span> <span class="n">conf</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">{</span>
-</span><span class='line'>    <span class="n">Key</span> <span class="n">key</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Key</span><span class="o">(</span><span class="n">uri</span><span class="o">,</span> <span class="n">conf</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">Key</span> <span class="n">key</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Key</span><span class="o">(</span><span class="n">uri</span><span class="o">,</span> <span class="n">conf</span><span class="o">);</span>
 </span><span class='line'>    <span class="n">FileSystem</span> <span class="n">fs</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
 </span><span class='line'>    <span class="kd">synchronized</span> <span class="o">(</span><span class="k">this</span><span class="o">)</span> <span class="o">{</span>
 </span><span class='line'>        <span class="n">fs</span> <span class="o">=</span> <span class="n">map</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
@@ -236,7 +229,7 @@ DataNode的启动
 </span><span class='line'>    <span class="n">fs</span><span class="o">.</span><span class="na">initialize</span><span class="o">(</span><span class="n">uri</span><span class="o">,</span> <span class="n">conf</span><span class="o">);</span>
 </span><span class='line'>    <span class="k">return</span> <span class="n">fs</span><span class="o">;</span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <h2><a id="hdfs_client_send_request"></a>HDFS客户端向服务器发送rpc请求</h2>
@@ -245,7 +238,7 @@ DataNode的启动
 
 <p>这节谈论client如何将用户对DistributedFileSystem的方法调用传递到server端。在这里我们以<code>mkdirs()</code>方法为例，假设用户调用了DistributedFileSystem的<code>mkdirs()</code>方法，代码如下：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -253,7 +246,7 @@ DataNode的启动
 </span><span class='line'>    <span class="n">statistics</span><span class="o">.</span><span class="na">incrementWriteOps</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
 </span><span class='line'>    <span class="k">return</span> <span class="n">dfs</span><span class="o">.</span><span class="na">mkdirs</span><span class="o">(</span><span class="n">getPathName</span><span class="o">(</span><span class="n">f</span><span class="o">),</span> <span class="n">permission</span><span class="o">);</span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>可以看到DistributedFileSystem将方法调用转交给了实例变量dfs，这个就是DFSClient的实例，这个是rpc的一个关键点，官方文档对这个类的描述是</p>
@@ -262,7 +255,7 @@ DataNode的启动
 
 <p>可以看出DistributedFileSystem将所有对文件系统的操作都转交给了DFSClient来处理。接下来我们就看看DFSClient是怎么处理的。代码如下：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -365,7 +358,7 @@ DataNode的启动
 </span><span class='line'>    <span class="o">}</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="n">InetSocketAddress</span> <span class="n">namenode</span> <span class="o">=</span> <span class="n">NameNode</span><span class="o">.</span><span class="na">getAddress</span><span class="o">(</span><span class="n">uri</span><span class="o">.</span><span class="na">getAuthority</span><span class="o">());</span>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">dfs</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DFSClient</span><span class="o">(</span><span class="n">namenode</span><span class="o">,</span> <span class="n">conf</span><span class="o">,</span> <span class="n">statistics</span><span class="o">);</span> <span class="c1">// 创建了DFSClient的实例</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">dfs</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DFSClient</span><span class="o">(</span><span class="n">namenode</span><span class="o">,</span> <span class="n">conf</span><span class="o">,</span> <span class="n">statistics</span><span class="o">);</span> <span class="c1">// 创建了DFSClient的实例</span>
 </span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">uri</span> <span class="o">=</span> <span class="n">URI</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">uri</span><span class="o">.</span><span class="na">getScheme</span><span class="o">()+</span><span class="s">&quot;://&quot;</span><span class="o">+</span><span class="n">uri</span><span class="o">.</span><span class="na">getAuthority</span><span class="o">());</span>
 </span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">workingDir</span> <span class="o">=</span> <span class="n">getHomeDirectory</span><span class="o">();</span>
 </span><span class='line'><span class="o">}</span>
@@ -446,12 +439,12 @@ DataNode的启动
 </span><span class='line'>    <span class="k">return</span> <span class="o">(</span><span class="n">ClientProtocol</span><span class="o">)</span> <span class="n">RetryProxy</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">ClientProtocol</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
 </span><span class='line'>            <span class="n">rpcNamenode</span><span class="o">,</span> <span class="n">methodNameToPolicyMap</span><span class="o">);</span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>可以看到DFSClient又将方法调用转交给了实例变量namenode，于是我们就要了解namenode和与其有关的rpcNamenode这两个实例变量。对于DFSClient的构造函数，这里只显示最重要的两样东西分别是namenode和rpcNamenode。要了解这两样东西首先需要了解Java的<a href="http://docs.oracle.com/javase/1.4.2/docs/guide/reflection/proxy.html">Dynamic Proxy</a>。我们可以看到rpcNamenode实现了ClientProtocol接口，这个接口就规定了client能向server调用的所有方法。按照Dynamic Proxy的机制我们知道所有对rpcNamenode的方法调用全部归结到了Invoker的<code>invoke()</code>方法上了，这个方法就是将client的调用信息如调用的方法，参数等通过socket传递给server，并获得返回结果。对于Invoker的<code>invoke()</code>方法的剖析这里就不在描述了，可以通过参考链接了解更多。至此client的方法调用就顺利传递到server了。照这样看DFSClient就只要调用rpcNamenode的<code>mkdirs()</code>方法就好了，为什么还要namenode呢？要了解这个就需要RetryProxy的代码了：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -549,7 +542,7 @@ DataNode的启动
 </span><span class='line'>        <span class="k">throw</span> <span class="n">e</span><span class="o">.</span><span class="na">getCause</span><span class="o">();</span>
 </span><span class='line'>    <span class="o">}</span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>可以看到对于namenode的方法调用都归结到RetryInvocationHandler的<code>invoke()</code>上了，而这个方法就通过反射再调用rpcNamenode的对应方法，只不过它会retry，也就是说如果调用失败的话，它还会重新尝试调用，这么一来可靠性就增强了，毕竟网络传输很容易出问题的。如果让DFSClient直接调用rpcNamenode的话，一旦失败就会立刻告诉用户，而其实如果多尝试几次还是可能会成功的，这就是为什么要引入namenode的原因了。至此我们就知道client是如何将用户对DistributedFileSystem的方法调用传递到server端的，最后用一张图来总结。</p>
@@ -568,7 +561,7 @@ DataNode的启动
 
 <p>上面我们提到了客户端如何将rpc方法调用的请求传送给了HDFS服务器也就是namenode，在这一节就要看一下服务器是如何接受请求并处理的。首先看的是org.apache.hadoop.hdfs.server.namenode的代码，这个类代表了HDFS中的namenode。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -606,12 +599,12 @@ DataNode的启动
 </span><span class='line'>    <span class="o">}</span>
 </span><span class='line'>    <span class="c1">// omitted</span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>可以看到在初始化NameNode时一共开启了三个服务器，其中serviceRpcServer是用来处理datanode的请求，比如datanode要定期发送心跳包。server是用来处理client的请求。最后还有一个http服务器。因此我们这里只关心server服务器而忽略其他两个。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -653,12 +646,12 @@ DataNode的启动
 </span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">verbose</span> <span class="o">=</span> <span class="n">verbose</span><span class="o">;</span>
 </span><span class='line'>    <span class="o">}</span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>最终建立的是org.apache.hadoop.ipc.Server的一个子类，这个类只是实现了父类的抽象方法<code>call()</code>，其他的功能都由父类提供了。因此我们主要专注org.apache.hadoop.ipc.Server类</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -693,12 +686,12 @@ DataNode的启动
 </span><span class='line'>      <span class="n">handlers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">[</span><span class="n">handlerCount</span><span class="o">];</span>
 </span><span class='line'>
 </span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">handlerCount</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">handlers</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">handlers</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Handler</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
 </span><span class='line'>          <span class="n">handlers</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">start</span><span class="o">();</span>
 </span><span class='line'>      <span class="o">}</span>
 </span><span class='line'>  <span class="o">}</span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>这里就截取了比较重要的代码片段，其中包含这一节要主要介绍的Listener，Responder，Handler，它们就是Server中的3大组件。这三个类都继承了Thread，也就是说它们的每个实例都将是一个线程。下面分别来介绍这三大组件。</p>
@@ -707,7 +700,7 @@ DataNode的启动
 
 <p>首先我们先来看一下Listener的一部分源码</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -800,7 +793,7 @@ DataNode的启动
 </span><span class='line'>    <span class="c1">// omitted</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="kd">public</span> <span class="nf">Listener</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">address</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InetSocketAddress</span><span class="o">(</span><span class="n">bindAddress</span><span class="o">,</span> <span class="n">port</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">address</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">InetSocketAddress</span><span class="o">(</span><span class="n">bindAddress</span><span class="o">,</span> <span class="n">port</span><span class="o">);</span>
 </span><span class='line'>        <span class="c1">// Create a new server socket and set to non blocking mode</span>
 </span><span class='line'>        <span class="n">acceptChannel</span> <span class="o">=</span> <span class="n">ServerSocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
 </span><span class='line'>        <span class="n">acceptChannel</span><span class="o">.</span><span class="na">configureBlocking</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
@@ -814,7 +807,7 @@ DataNode的启动
 </span><span class='line'>        <span class="n">readPool</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="na">newFixedThreadPool</span><span class="o">(</span><span class="n">readThreads</span><span class="o">);</span>
 </span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">readThreads</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
 </span><span class='line'>            <span class="n">Selector</span> <span class="n">readSelector</span> <span class="o">=</span> <span class="n">Selector</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
-</span><span class='line'>            <span class="n">Reader</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Reader</span><span class="o">(</span><span class="n">readSelector</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">Reader</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Reader</span><span class="o">(</span><span class="n">readSelector</span><span class="o">);</span>
 </span><span class='line'>            <span class="n">readers</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">reader</span><span class="o">;</span>
 </span><span class='line'>            <span class="n">readPool</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">reader</span><span class="o">);</span>
 </span><span class='line'>        <span class="o">}</span>
@@ -863,7 +856,7 @@ DataNode的启动
 </span><span class='line'>            <span class="k">try</span> <span class="o">{</span>
 </span><span class='line'>                <span class="n">reader</span><span class="o">.</span><span class="na">startAdd</span><span class="o">();</span>
 </span><span class='line'>                <span class="n">SelectionKey</span> <span class="n">readKey</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="na">registerChannel</span><span class="o">(</span><span class="n">channel</span><span class="o">);</span> <span class="c1">// 将这个channel交由reader来处理</span>
-</span><span class='line'>                <span class="n">c</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Connection</span><span class="o">(</span><span class="n">readKey</span><span class="o">,</span> <span class="n">channel</span><span class="o">,</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">());</span>
+</span><span class='line'>                <span class="n">c</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Connection</span><span class="o">(</span><span class="n">readKey</span><span class="o">,</span> <span class="n">channel</span><span class="o">,</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">());</span>
 </span><span class='line'>                <span class="n">readKey</span><span class="o">.</span><span class="na">attach</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
 </span><span class='line'>                <span class="kd">synchronized</span> <span class="o">(</span><span class="n">connectionList</span><span class="o">)</span> <span class="o">{</span>
 </span><span class='line'>                    <span class="n">connectionList</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">numConnections</span><span class="o">,</span> <span class="n">c</span><span class="o">);</span>
@@ -875,13 +868,13 @@ DataNode的启动
 </span><span class='line'>        <span class="o">}</span>
 </span><span class='line'>    <span class="o">}</span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>Listener主要做的事就是处理客户端的连接请求，它在acceptChannel(相当于listening socket)上监听客户端的连接请求，然后创建一个新的channel(相当于connected socket)作为接下来该客户端和服务器的通讯通道，然后将这个channel分配到某个reader上，让其来处理后续的客户端请求。同时还创建了一个Connection来表示客户端和服务器建立起来的连接，这个类内部有channel的引用，因此其知道这个连接底层的channel(或者说socket)是什么。为了要完全理解上面的代码还需要知道的是Java NIO中的<a href="http://tutorials.jenkov.com/java-nio/selectors.html">Selector</a>。<br/>
 我们现在知道真正获取(读取)客户端rpc请求的是Reader类，它实现了Runnable接口即作为一个线程运行，这个类在Listener中只有固定多的实例(可以通过配置文件修改)，因此需要一个reader处理多个客户端的请求，这个在Selector的帮助下将会很容易实现，Reader类中有一个readerSelector的实例来帮助reader处理请求。下面看一下Reader的部分源代码。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -995,12 +988,12 @@ DataNode的启动
 </span><span class='line'>        <span class="n">c</span><span class="o">.</span><span class="na">setLastContact</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">());</span>
 </span><span class='line'>    <span class="o">}</span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>可以看到Reader做的就是不停地找它所管理的客户端连接中有数据可读的，然后找到这个连接对应的Connection对象，交由相应的connection来处理，于是目光就转向了Connection类。之前说过Connection类表示一个客户端已建立的连接，这个类有一个channel的引用，表示这个连接底层使用的channel(可以理解成socket)。其实Connection类的内容远不止这些，接下来就看看Connection类的代码。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -1062,17 +1055,17 @@ DataNode的启动
 </span><span class='line'>
 </span><span class='line'>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">processData</span><span class="o">(</span><span class="kt">byte</span><span class="o">[]</span> <span class="n">buf</span><span class="o">)</span> <span class="kd">throws</span>  <span class="n">IOException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
 </span><span class='line'>      <span class="n">DataInputStream</span> <span class="n">dis</span> <span class="o">=</span>
-</span><span class='line'>        <span class="k">new</span> <span class="nf">DataInputStream</span><span class="o">(</span><span class="k">new</span> <span class="n">ByteArrayInputStream</span><span class="o">(</span><span class="n">buf</span><span class="o">));</span>
+</span><span class='line'>        <span class="k">new</span> <span class="nf">DataInputStream</span><span class="o">(</span><span class="k">new</span> <span class="nf">ByteArrayInputStream</span><span class="o">(</span><span class="n">buf</span><span class="o">));</span>
 </span><span class='line'>      <span class="kt">int</span> <span class="n">id</span> <span class="o">=</span> <span class="n">dis</span><span class="o">.</span><span class="na">readInt</span><span class="o">();</span>                    <span class="c1">// try to read an id</span>
 </span><span class='line'>
 </span><span class='line'>      <span class="n">Writable</span> <span class="n">param</span> <span class="o">=</span> <span class="n">ReflectionUtils</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="n">paramClass</span><span class="o">,</span> <span class="n">conf</span><span class="o">);</span><span class="c1">//read param</span>
 </span><span class='line'>      <span class="n">param</span><span class="o">.</span><span class="na">readFields</span><span class="o">(</span><span class="n">dis</span><span class="o">);</span>
 </span><span class='line'>
-</span><span class='line'>      <span class="n">Call</span> <span class="n">call</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Call</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">param</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">Call</span> <span class="n">call</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Call</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">param</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
 </span><span class='line'>      <span class="n">callQueue</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">call</span><span class="o">);</span>              <span class="c1">// queue the call; maybe blocked here</span>
 </span><span class='line'>      <span class="n">incRpcCount</span><span class="o">();</span>  <span class="c1">// Increment the rpc count</span>
 </span><span class='line'>    <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>代码跟踪到这就差不多结束了，这些代码大致做了如下的事：首先是<code>readAndProcess()</code>读取一个rpc请求的所有数据，然后一直传到<code>processData()</code>函数处理，<code>processData()</code>函数首先把这些数据转成一个Call对象，这其实可以和上一节介绍的客户端向服务器发送rpc请求对应起来看，可以看作一个序列化和解序列化的过程。这个Call对象就包含了调用的函数名和函数参数，同时之前也提到过Call对象还会保存函数调用过后的结果即返回值。最后将Call对象放入callQueue队列中等待被处理。如果上面还记得Server的代码的话就可以发现callQueue实际上是Server的一个实例变量。我们讨论到现在的Listener，Reader，Connection类和之后要讨论的Handler，Responder都是这个Server的内部类，所以对这些类来说callQueue就相当于一个全局变量了。之前我们提到Listener会有多个Reader来读取很多客户端的rpc请求，所有这些请求被转化成Call对象后都会放入这个全局的callQueue队列中等待被处理。好了，至此Listener组件就全部讲完了，下面是Handler组件。</p>
@@ -1081,7 +1074,7 @@ DataNode的启动
 
 <p>我们现在知道callQueue中包含了客户端对服务器的rpc调用请求，如何处理这些请求就是Handler的事了。看之前Server的源码我们可以知道Server中存在多个Handler，每个Handler都是一个线程，它们并发地从callQueue中取出一个一个的Call然后进行处理，下面来看看源代码。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -1183,7 +1176,7 @@ DataNode的启动
 </span><span class='line'>                    <span class="c1">// Discard the large buf and reset it back to </span>
 </span><span class='line'>                    <span class="c1">// smaller size to freeup heap</span>
 </span><span class='line'>                    <span class="k">if</span> <span class="o">(</span><span class="n">buf</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;</span> <span class="n">maxRespSize</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>                      <span class="n">buf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">(</span><span class="n">INITIAL_RESP_BUF_SIZE</span><span class="o">);</span>
+</span><span class='line'>                      <span class="n">buf</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ByteArrayOutputStream</span><span class="o">(</span><span class="n">INITIAL_RESP_BUF_SIZE</span><span class="o">);</span>
 </span><span class='line'>                    <span class="o">}</span>
 </span><span class='line'>                    <span class="n">responder</span><span class="o">.</span><span class="na">doRespond</span><span class="o">(</span><span class="n">call</span><span class="o">);</span> <span class="c1">// 处理返回结果</span>
 </span><span class='line'>                <span class="o">}</span>
@@ -1197,12 +1190,12 @@ DataNode的启动
 </span><span class='line'>        <span class="o">}</span>
 </span><span class='line'>    <span class="o">}</span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>可以看到每个Handler线程做的就是从callQueue中取一个call，然后调用Server的call方法处理并获得结果，我们之前提到过这个call方法是抽象方法由具体的子类来实现，这个具体实现的子类我们之前也提到过在RPC.java文件中，具体的代码就不列出来了，只说一下它做了什么。具体call方法做的就是利用反射调用NameNode类的具体方法，在这里就是调用了<code>mkdirs()</code>，大家可以看看是不是NameNode里就有这个方法。获得完函数调用的结果后就把它放入对应的call对象里，然后调用<code>responder.doRespond()</code>方法来处理，于是就引出了Responder这个第三大组件。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -1474,7 +1467,7 @@ DataNode的启动
 </span><span class='line'>        <span class="o">}</span>
 </span><span class='line'>    <span class="o">}</span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>下面就把上面的代码综合起来讲讲。首先在Handler线程中会调用<code>doRespond()</code>，这个方法就把call放入responseQueue中，如果队列中就这一个call就亲自调用<code>processResponse()</code>，也就是说从Handler线程中将返回结果发回给客户端，否则的话就等着到时候由Responder线程来处理。Responder线程通过writeSelector来管理和客户端的连接，不像readSelector关注的是read ready，writeSelector自然关注的是write ready，一旦某个客户端的连接可写后，Responder就找出这个连接对应的Connection对象，然后从Connection的responseQueue中取出call，将结果发送回客户端。可以看到将rpc结果返回给客户端可能发生在Handler线程，也有可能发生在Responder线程。</p>
@@ -1503,7 +1496,7 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
 
 <p>对于DataNode集群的启动我们可以通过脚本start-all.sh来完成，这个脚本的命令会通过ssh传到各个DataNode所在的机器上，然后Java虚拟机会以DataNode.main()为入口启动DataNode。因此我们的分析也就是从DataNode.main()开始一层层深入，下面看源代码。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -1685,8 +1678,8 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
 </span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">dir</span> <span class="o">:</span> <span class="n">dataDirs</span><span class="o">)</span> <span class="o">{</span>
 </span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
 </span><span class='line'>            <span class="c1">// 检查配置项dfs.data.dir中给出的路径是否valid，比如确实是个目录而不是文件</span>
-</span><span class='line'>            <span class="n">DiskChecker</span><span class="o">.</span><span class="na">checkDir</span><span class="o">(</span><span class="n">localFS</span><span class="o">,</span> <span class="k">new</span> <span class="n">Path</span><span class="o">(</span><span class="n">dir</span><span class="o">),</span> <span class="n">dataDirPermission</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">dirs</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="n">dir</span><span class="o">));</span>
+</span><span class='line'>            <span class="n">DiskChecker</span><span class="o">.</span><span class="na">checkDir</span><span class="o">(</span><span class="n">localFS</span><span class="o">,</span> <span class="k">new</span> <span class="nf">Path</span><span class="o">(</span><span class="n">dir</span><span class="o">),</span> <span class="n">dataDirPermission</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">dirs</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nf">File</span><span class="o">(</span><span class="n">dir</span><span class="o">));</span>
 </span><span class='line'>        <span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
 </span><span class='line'>            <span class="c1">// omitted</span>
 </span><span class='line'>        <span class="o">}</span>
@@ -1720,9 +1713,9 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
 </span><span class='line'>
 </span><span class='line'>    <span class="n">InetSocketAddress</span> <span class="n">socAddr</span> <span class="o">=</span> <span class="n">DataNode</span><span class="o">.</span><span class="na">getStreamingAddr</span><span class="o">(</span><span class="n">conf</span><span class="o">);</span>
 </span><span class='line'>    <span class="kt">int</span> <span class="n">tmpPort</span> <span class="o">=</span> <span class="n">socAddr</span><span class="o">.</span><span class="na">getPort</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">storage</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataStorage</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">storage</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DataStorage</span><span class="o">();</span>
 </span><span class='line'>    <span class="c1">// construct registration</span>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">dnRegistration</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DatanodeRegistration</span><span class="o">(</span><span class="n">machineName</span> <span class="o">+</span> <span class="s">&quot;:&quot;</span> <span class="o">+</span> <span class="n">tmpPort</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">dnRegistration</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DatanodeRegistration</span><span class="o">(</span><span class="n">machineName</span> <span class="o">+</span> <span class="s">&quot;:&quot;</span> <span class="o">+</span> <span class="n">tmpPort</span><span class="o">);</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="c1">// connect to name node</span>
 </span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">namenode</span> <span class="o">=</span> <span class="o">(</span><span class="n">DatanodeProtocol</span><span class="o">)</span> <span class="c1">// 有没有很熟悉，和之前客户端向NameNode发送rpc请求的原理差不多</span>
@@ -1739,40 +1732,40 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
 </span><span class='line'>    <span class="c1">// adjust</span>
 </span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">dnRegistration</span><span class="o">.</span><span class="na">setStorageInfo</span><span class="o">(</span><span class="n">storage</span><span class="o">);</span>
 </span><span class='line'>    <span class="c1">// 创建一个FSDataset实例，创建完成后FSDataset内部就会有像上一节那样的图了</span>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">data</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FSDataset</span><span class="o">(</span><span class="n">storage</span><span class="o">,</span> <span class="n">conf</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">data</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">FSDataset</span><span class="o">(</span><span class="n">storage</span><span class="o">,</span> <span class="n">conf</span><span class="o">);</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="c1">// find free port or use privileged port provide</span>
 </span><span class='line'>    <span class="n">ServerSocket</span> <span class="n">ss</span><span class="o">;</span>
 </span><span class='line'>    <span class="k">if</span><span class="o">(</span><span class="n">secureResources</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
 </span><span class='line'>        <span class="n">ss</span> <span class="o">=</span> <span class="o">(</span><span class="n">socketWriteTimeout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">?</span>
-</span><span class='line'>            <span class="n">ServerSocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">().</span><span class="na">socket</span><span class="o">()</span> <span class="o">:</span> <span class="k">new</span> <span class="n">ServerSocket</span><span class="o">();</span>
+</span><span class='line'>            <span class="n">ServerSocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">().</span><span class="na">socket</span><span class="o">()</span> <span class="o">:</span> <span class="k">new</span> <span class="nf">ServerSocket</span><span class="o">();</span>
 </span><span class='line'>        <span class="n">Server</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">ss</span><span class="o">,</span> <span class="n">socAddr</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
 </span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
 </span><span class='line'>        <span class="n">ss</span> <span class="o">=</span> <span class="n">resources</span><span class="o">.</span><span class="na">getStreamingSocket</span><span class="o">();</span>
 </span><span class='line'>    <span class="o">}</span>
 </span><span class='line'>    <span class="c1">// adjust machine name with the actual port</span>
 </span><span class='line'>    <span class="n">tmpPort</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="na">getLocalPort</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">selfAddr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InetSocketAddress</span><span class="o">(</span><span class="n">ss</span><span class="o">.</span><span class="na">getInetAddress</span><span class="o">().</span><span class="na">getHostAddress</span><span class="o">(),</span>
+</span><span class='line'>    <span class="n">selfAddr</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">InetSocketAddress</span><span class="o">(</span><span class="n">ss</span><span class="o">.</span><span class="na">getInetAddress</span><span class="o">().</span><span class="na">getHostAddress</span><span class="o">(),</span>
 </span><span class='line'>            <span class="n">tmpPort</span><span class="o">);</span>
 </span><span class='line'>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">threadGroup</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ThreadGroup</span><span class="o">(</span><span class="s">&quot;dataXceiverServer&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">threadGroup</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ThreadGroup</span><span class="o">(</span><span class="s">&quot;dataXceiverServer&quot;</span><span class="o">);</span>
 </span><span class='line'>    <span class="c1">// 这个服务器是用来处理Client或者其他DataNode对于Block文件的处理请求，比如要求发送某个Block文件的内容</span>
 </span><span class='line'>    <span class="c1">// 这个服务器上使用的不是RPC机制而是一种流式机制，因为要传输Block文件的内容嘛</span>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">dataXceiverServer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Daemon</span><span class="o">(</span><span class="n">threadGroup</span><span class="o">,</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">dataXceiverServer</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Daemon</span><span class="o">(</span><span class="n">threadGroup</span><span class="o">,</span>
 </span><span class='line'>            <span class="k">new</span> <span class="nf">DataXceiverServer</span><span class="o">(</span><span class="n">ss</span><span class="o">,</span> <span class="n">conf</span><span class="o">,</span> <span class="k">this</span><span class="o">));</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="n">DataNode</span><span class="o">.</span><span class="na">nameNodeAddr</span> <span class="o">=</span> <span class="n">nameNodeAddr</span><span class="o">;</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="c1">//initialize periodic block scanner</span>
 </span><span class='line'>    <span class="c1">// 单独的一个线程，定期对所有的Block文件进行扫描校验</span>
-</span><span class='line'>    <span class="n">blockScanner</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataBlockScanner</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="o">(</span><span class="n">FSDataset</span><span class="o">)</span><span class="n">data</span><span class="o">,</span> <span class="n">conf</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">blockScanner</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DataBlockScanner</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="o">(</span><span class="n">FSDataset</span><span class="o">)</span><span class="n">data</span><span class="o">,</span> <span class="n">conf</span><span class="o">);</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="c1">//create a servlet to serve full-file content</span>
 </span><span class='line'>    <span class="c1">// 开启一个web服务器，运行通过浏览器来获得DataNode的状态</span>
 </span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">infoServer</span> <span class="o">=</span> <span class="o">(</span><span class="n">secureResources</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
-</span><span class='line'>        <span class="o">?</span> <span class="k">new</span> <span class="n">HttpServer</span><span class="o">(</span><span class="s">&quot;datanode&quot;</span><span class="o">,</span> <span class="n">infoHost</span><span class="o">,</span> <span class="n">tmpInfoPort</span><span class="o">,</span> <span class="n">tmpInfoPort</span> <span class="o">==</span> <span class="mi">0</span><span class="o">,</span>
+</span><span class='line'>        <span class="o">?</span> <span class="k">new</span> <span class="nf">HttpServer</span><span class="o">(</span><span class="s">&quot;datanode&quot;</span><span class="o">,</span> <span class="n">infoHost</span><span class="o">,</span> <span class="n">tmpInfoPort</span><span class="o">,</span> <span class="n">tmpInfoPort</span> <span class="o">==</span> <span class="mi">0</span><span class="o">,</span>
 </span><span class='line'>                <span class="n">conf</span><span class="o">,</span> <span class="n">SecurityUtil</span><span class="o">.</span><span class="na">getAdminAcls</span><span class="o">(</span><span class="n">conf</span><span class="o">,</span> <span class="n">DFSConfigKeys</span><span class="o">.</span><span class="na">DFS_ADMIN</span><span class="o">))</span>
-</span><span class='line'>        <span class="o">:</span> <span class="k">new</span> <span class="n">HttpServer</span><span class="o">(</span><span class="s">&quot;datanode&quot;</span><span class="o">,</span> <span class="n">infoHost</span><span class="o">,</span> <span class="n">tmpInfoPort</span><span class="o">,</span> <span class="n">tmpInfoPort</span> <span class="o">==</span> <span class="mi">0</span><span class="o">,</span>
+</span><span class='line'>        <span class="o">:</span> <span class="k">new</span> <span class="nf">HttpServer</span><span class="o">(</span><span class="s">&quot;datanode&quot;</span><span class="o">,</span> <span class="n">infoHost</span><span class="o">,</span> <span class="n">tmpInfoPort</span><span class="o">,</span> <span class="n">tmpInfoPort</span> <span class="o">==</span> <span class="mi">0</span><span class="o">,</span>
 </span><span class='line'>                <span class="n">conf</span><span class="o">,</span> <span class="n">SecurityUtil</span><span class="o">.</span><span class="na">getAdminAcls</span><span class="o">(</span><span class="n">conf</span><span class="o">,</span> <span class="n">DFSConfigKeys</span><span class="o">.</span><span class="na">DFS_ADMIN</span><span class="o">),</span>
 </span><span class='line'>                <span class="n">secureResources</span><span class="o">.</span><span class="na">getListener</span><span class="o">());</span>
 </span><span class='line'>
@@ -1783,7 +1776,7 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
 </span><span class='line'>
 </span><span class='line'>    <span class="c1">// BlockTokenSecretManager is created here, but it shouldn&#39;t be</span>
 </span><span class='line'>    <span class="c1">// used until it is initialized in register().</span>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">blockTokenSecretManager</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BlockTokenSecretManager</span><span class="o">(</span><span class="kc">false</span><span class="o">,</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">blockTokenSecretManager</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">BlockTokenSecretManager</span><span class="o">(</span><span class="kc">false</span><span class="o">,</span>
 </span><span class='line'>            <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
 </span><span class='line'>    <span class="c1">//init ipc server</span>
 </span><span class='line'>    <span class="n">InetSocketAddress</span> <span class="n">ipcAddr</span> <span class="o">=</span> <span class="n">NetUtils</span><span class="o">.</span><span class="na">createSocketAddr</span><span class="o">(</span>
@@ -1793,13 +1786,13 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
 </span><span class='line'>            <span class="n">conf</span><span class="o">.</span><span class="na">getInt</span><span class="o">(</span><span class="s">&quot;dfs.datanode.handler.count&quot;</span><span class="o">,</span> <span class="mi">3</span><span class="o">),</span> <span class="kc">false</span><span class="o">,</span> <span class="n">conf</span><span class="o">,</span>
 </span><span class='line'>            <span class="n">blockTokenSecretManager</span><span class="o">);</span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>总结一下DataNode初始化的时候大致干了些什么事。首先初始化了一个NameNode的Remote Proxy，这样以后和NameNode进行通信就方便啦。然后就把上一节介绍的两大阵营的类给初始化好，这样以后DataNode就可以通过FSDataset和DataStorage来操作DataNode中存储的所有数据了。接下来初始化了三个服务器和一个DataBlockScanner，三个服务器分别是流式机制的dataXceiverServer，web服务器infoServer和RPC服务器ipcServer。<br/>
 所有这些都初始化好过后，<code>createDataNode()</code>方法就会调用DataNode的<code>run()</code>方法，然后DataNode就正式跑起来了，下面看源代码。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -2039,7 +2032,7 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
 </span><span class='line'>            <span class="c1">// 只会执行一次</span>
 </span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">blockScanner</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">blockScannerThread</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span>
 </span><span class='line'>                    <span class="n">upgradeManager</span><span class="o">.</span><span class="na">isUpgradeCompleted</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>                <span class="n">blockScannerThread</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Daemon</span><span class="o">(</span><span class="n">blockScanner</span><span class="o">);</span>
+</span><span class='line'>                <span class="n">blockScannerThread</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Daemon</span><span class="o">(</span><span class="n">blockScanner</span><span class="o">);</span>
 </span><span class='line'>                <span class="n">blockScannerThread</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
 </span><span class='line'>            <span class="o">}</span>
 </span><span class='line'>
@@ -2063,7 +2056,7 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
 </span><span class='line'>        <span class="o">}</span>
 </span><span class='line'>    <span class="o">}</span> <span class="c1">// while (shouldRun)</span>
 </span><span class='line'><span class="o">}</span> <span class="c1">// offerService</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>可以看到DataNode把那几个服务器和DataBlockScanner作为独立的线程启动后，自己也进入了一个while循环执行以下的操作：定期发送心跳包和Block信息报告，还发送最新接收到的Block文件信息。至此对于DataNode启动的分析就结束了，在这一过程中遇到的所有细节都没有深究，比如DataBlockScanner的原理是什么，这些都留到以后再介绍。</p>
@@ -2096,14 +2089,7 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
 
 
 
-
-
-
-
-  
-
-
-<time datetime="2012-06-18T19:28:00+08:00" pubdate data-updated="true">Jun 18<span>th</span>, 2012</time>
+<time class='entry-date' datetime='2012-06-18T19:28:00-04:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2012</span></span> <span class='time'>7:28 pm</span></time>
       
 
 
@@ -2142,6 +2128,10 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/08/17/several-things-i-have-learned-from-working-at-qiduo/">Several Things I Have Learned From Working at Qiduo</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/01/19/android-dot-os-dot-message-dot-what/">android.os.Message.what</a>
       </li>
     
@@ -2154,11 +2144,7 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
       </li>
     
       <li class="post">
-        <a href="/blog/2013/03/17/a-close-look-into-php-zval/">A Close Look Into PHP zval</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/01/25/who-are-you/">Who Are You</a>
+        <a href="/blog/2013/03/17/a-close-look-into-php-zval/">A Close Look Into PHP Zval</a>
       </li>
     
   </ul>
@@ -2170,7 +2156,7 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/JiajunYao">@JiajunYao</a> on GitHub
+  <a href="https://github.com/jjyao">@jjyao</a> on GitHub
   
   <script type="text/javascript">
     $(document).ready(function(){
@@ -2183,7 +2169,7 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
         }
 
         github.showRepos({
-            user: 'JiajunYao',
+            user: 'jjyao',
             count: 0,
             skip_forks: true,
             target: '#gh_repos'
@@ -2242,13 +2228,13 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://JiajunYao.github.com/blog/2012/06/18/hdfs-source-code-analysis/';
-        var disqus_url = 'http://JiajunYao.github.com/blog/2012/06/18/hdfs-source-code-analysis/';
+        var disqus_identifier = 'http://blog.jjyao.me/blog/2012/06/18/hdfs-source-code-analysis/';
+        var disqus_url = 'http://blog.jjyao.me/blog/2012/06/18/hdfs-source-code-analysis/';
         var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -2264,7 +2250,7 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

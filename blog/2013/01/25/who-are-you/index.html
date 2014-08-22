@@ -18,13 +18,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://JiajunYao.github.com/blog/2013/01/25/who-are-you">
+  <link rel="canonical" href="http://blog.jjyao.me/blog/2013/01/25/who-are-you">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="My Personal Blog" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -60,9 +60,9 @@
   
 </ul>
   
-<form action="http://google.com/search" method="get">
+<form action="https://www.google.com/search" method="get">
   <fieldset role="search">
-    <input type="hidden" name="q" value="site:JiajunYao.github.com" />
+    <input type="hidden" name="q" value="site:blog.jjyao.me" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
@@ -92,14 +92,7 @@
 
 
 
-
-
-
-
-  
-
-
-<time datetime="2013-01-25T22:20:00+08:00" pubdate data-updated="true">Jan 25<span>th</span>, 2013</time>
+<time class='entry-date' datetime='2013-01-25T22:20:00-05:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>10:20 pm</span></time>
         
       </p>
     
@@ -114,15 +107,11 @@
 
 <h2>问题</h2>
 
-<p>大家都知道微博会提供一些第三方插件(widget)用来放在其他网站上，其中有一个就是关注按钮。通过这个关注按钮用户就可以在第三方网站上直接关注某个人，如果当前访问用户已经关注过了，则该关注按钮会显示已关注。接下来我们就要看看在一个第三方的网站上新浪微博是怎样知道当前访问用户是否已经关注了某个账号，而这个涉及到<a href="http://en.wikipedia.org/wiki/Same_origin_policy">JavaScript跨域问题</a>。通过查看插件的js代码和浏览器的http请求，发现如果引入关注按钮插件的话会有如下的一个http请求：</p>
+<p>大家都知道微博会提供一些第三方插件(widget)用来放在其他网站上，其中有一个就是关注按钮。通过这个关注按钮用户就可以在第三方网站上直接关注某个人，如果当前访问用户已经关注过了，则该关注按钮会显示已关注。接下来我们就要看看在一个第三方的网站上新浪微博是怎样知道当前访问用户是否已经关注了某个账号，而这个涉及到<a href="http://en.wikipedia.org/wiki/Same_origin_policy">JavaScript跨域问题</a>。通过查看插件的js代码和浏览器的http请求，发现如果引入关注按钮插件的话会有如下的一个http请求：
+    <a href="http://widget.weibo.com/public/aj_relationship.php?fuid=2991975565&amp;callback=STK_13591259816211">http://widget.weibo.com/public/aj_relationship.php?fuid=2991975565&amp;callback=STK_13591259816211</a></p>
 
-<pre><code>http://widget.weibo.com/public/aj_relationship.php?fuid=2991975565&amp;callback=STK_13591259816211
-</code></pre>
-
-<p>返回结果是：</p>
-
-<pre><code>STK_13591259816211({"code":"100000","msg":"success","data":{"relation":3,"login":true,"uid":2369955640}})
-</code></pre>
+<p>返回结果是：
+    STK_13591259816211({&ldquo;code&rdquo;:&ldquo;100000&rdquo;,&ldquo;msg&rdquo;:&ldquo;success&rdquo;,&ldquo;data&rdquo;:{&ldquo;relation&rdquo;:3,&ldquo;login&rdquo;:true,&ldquo;uid&rdquo;:2369955640}})</p>
 
 <p>从这个http请求来看新浪采用了<a href="http://en.wikipedia.org/wiki/JSONP">jsonp</a>技术来解决跨域问题。从返回结果猜测data.relation应该表明当前用户和fuid用户之间的关系，可能是是否关注fuid，是否双向关注等等。问题的关键是新浪把当前用户的uid也返回回来了，如果第三方网站能获取这个uid，就能知道当前访问用户是谁了。</p>
 
@@ -130,7 +119,7 @@
 
 <p>接下来我就写了一个demo来模拟这个过程。首先是先写一个第三方网页：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -168,15 +157,12 @@
 </span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;http://widget.weibo.com/public/aj_relationship.php?fuid=2991975565&amp;callback=STK_1&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
 </span><span class='line'><span class="nt">&lt;/body&gt;</span>
 </span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<p>每当用户访问这个网页的时候就在后面发一个aj_relationship.php的请求，然后指定一个已经定义好的callback，这样等请求结果返回后指定的callback就会被执行，于是就可以获取到当前登陆用户的微博uid了，最后要做的就是将这个uid传回给服务器保存起来。而这个可以通过服务器的log来实现，比如Nginx有access log，会将每个访问的url记录在日志中，结果如下：</p>
-
-<pre><code>219.219.125.217 - - [25/Jan/2013:14:38:39 +0000] "GET /evil.php?uid=2369955640 HTTP/1.1" 200 31 "http://www.jjyao.me/index.html" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.56 Safari/537.17"
-</code></pre>
-
-<p>于是在服务器端就可以统计有哪些微博用户访问了这个网站，他们都是谁。</p>
+<p>每当用户访问这个网页的时候就在后面发一个aj_relationship.php的请求，然后指定一个已经定义好的callback，这样等请求结果返回后指定的callback就会被执行，于是就可以获取到当前登陆用户的微博uid了，最后要做的就是将这个uid传回给服务器保存起来。而这个可以通过服务器的log来实现，比如Nginx有access log，会将每个访问的url记录在日志中，结果如下：
+    219.219.125.217 - - [25/Jan/2013:14:38:39 +0000] &ldquo;GET /evil.php?uid=2369955640 HTTP/1.1&rdquo; 200 31 &ldquo;<a href="http://www.jjyao.me/index.html">http://www.jjyao.me/index.html</a>&rdquo; &ldquo;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.56 Safari/537.17&rdquo;
+于是在服务器端就可以统计有哪些微博用户访问了这个网站，他们都是谁。</p>
 
 <p>正如上面所说的那样，只要添加一些简单的代码，一个网站就可以知道哪些用户访问了，因为知道微博账号实际上很大程度等于知道了用户的真实身份。也就是说通过微博的这么一个漏洞，我们的隐私被泄露了，我们实际上没有匿名访问一个网站，而都是实名在访问，想想还是蛮可怕的。</p>
 
@@ -206,14 +192,7 @@
 
 
 
-
-
-
-
-  
-
-
-<time datetime="2013-01-25T22:20:00+08:00" pubdate data-updated="true">Jan 25<span>th</span>, 2013</time>
+<time class='entry-date' datetime='2013-01-25T22:20:00-05:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>10:20 pm</span></time>
       
 
 
@@ -252,6 +231,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/08/17/several-things-i-have-learned-from-working-at-qiduo/">Several Things I Have Learned From Working at Qiduo</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/01/19/android-dot-os-dot-message-dot-what/">android.os.Message.what</a>
       </li>
     
@@ -264,11 +247,7 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2013/03/17/a-close-look-into-php-zval/">A Close Look Into PHP zval</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/01/25/who-are-you/">Who Are You</a>
+        <a href="/blog/2013/03/17/a-close-look-into-php-zval/">A Close Look Into PHP Zval</a>
       </li>
     
   </ul>
@@ -280,7 +259,7 @@
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/JiajunYao">@JiajunYao</a> on GitHub
+  <a href="https://github.com/jjyao">@jjyao</a> on GitHub
   
   <script type="text/javascript">
     $(document).ready(function(){
@@ -293,7 +272,7 @@
         }
 
         github.showRepos({
-            user: 'JiajunYao',
+            user: 'jjyao',
             count: 0,
             skip_forks: true,
             target: '#gh_repos'
@@ -352,13 +331,13 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://JiajunYao.github.com/blog/2013/01/25/who-are-you/';
-        var disqus_url = 'http://JiajunYao.github.com/blog/2013/01/25/who-are-you/';
+        var disqus_identifier = 'http://blog.jjyao.me/blog/2013/01/25/who-are-you/';
+        var disqus_url = 'http://blog.jjyao.me/blog/2013/01/25/who-are-you/';
         var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -374,7 +353,7 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

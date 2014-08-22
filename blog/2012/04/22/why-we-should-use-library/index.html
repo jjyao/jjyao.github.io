@@ -18,13 +18,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://JiajunYao.github.com/blog/2012/04/22/why-we-should-use-library">
+  <link rel="canonical" href="http://blog.jjyao.me/blog/2012/04/22/why-we-should-use-library">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="My Personal Blog" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -60,9 +60,9 @@
   
 </ul>
   
-<form action="http://google.com/search" method="get">
+<form action="https://www.google.com/search" method="get">
   <fieldset role="search">
-    <input type="hidden" name="q" value="site:JiajunYao.github.com" />
+    <input type="hidden" name="q" value="site:blog.jjyao.me" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
@@ -92,14 +92,7 @@
 
 
 
-
-
-
-
-  
-
-
-<time datetime="2012-04-22T12:39:00+08:00" pubdate data-updated="true">Apr 22<span>nd</span>, 2012</time>
+<time class='entry-date' datetime='2012-04-22T12:39:00-04:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2012</span></span> <span class='time'>12:39 pm</span></time>
         
       </p>
     
@@ -133,7 +126,7 @@
 
 <h3>保证质量</h3>
 
-<p>这里的质量指的是库的质量。一般而言，官方提供的库的质量都是相当高的。这些代码都经过大量的测试和用户使用的考验。一旦有什么bug很容易发现，并且及时改正过来。同时编写这些库的人都是领域中的大牛，他们有着许多年的开发经验，写的代码照理说肯定比我们自己写的要质量高。在Effective C++中有这么一个Item: &#8220;Familiarize yourself with Boost&#8221;，在这个Item里面Meyers介绍了一个库在被Boost接受前经历的步骤，包括公开的同级评审(peer review)，评审经理的审查(review manager)，社区的正式评审(official review)。整个过程被boost概述为“讨论、精炼、多次提交直到感到满意”的循环。有着这样严格的审查过程，Boost库的质量可想而知。</p>
+<p>这里的质量指的是库的质量。一般而言，官方提供的库的质量都是相当高的。这些代码都经过大量的测试和用户使用的考验。一旦有什么bug很容易发现，并且及时改正过来。同时编写这些库的人都是领域中的大牛，他们有着许多年的开发经验，写的代码照理说肯定比我们自己写的要质量高。在Effective C++中有这么一个Item: &ldquo;Familiarize yourself with Boost"，在这个Item里面Meyers介绍了一个库在被Boost接受前经历的步骤，包括公开的同级评审(peer review)，评审经理的审查(review manager)，社区的正式评审(official review)。整个过程被boost概述为“讨论、精炼、多次提交直到感到满意”的循环。有着这样严格的审查过程，Boost库的质量可想而知。</p>
 
 <h3>提高效率</h3>
 
@@ -141,7 +134,7 @@
 
 <p>第一个例子是SGI STL的power算法，其代码如下：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -183,7 +176,7 @@
 </span><span class='line'>        <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
 </span><span class='line'>    <span class="p">}</span>
 </span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>从上面的代码可以看到这是一个power的非递归实现。为了效率作者没有使用递归的实现，尽管递归版本看上去更直观。为了效率作者连除法运算符都不敢用，都是用了移位和OR这些bitwise operator，这些bitwise operator在计算机中是算得最快的。我想我们自己写的power实现应该不会比它快吧。</p>
@@ -192,23 +185,23 @@
 
 <p><img src="/images/post/why-we-should-use-library/sgi-stl-copy.png"></p>
 
-<p>从上图可以看出，虽然copy算法给我们的是一个统一的接口，但其内部却是有多个实现方式，目的是针对不同的情况给出最佳的copy实现。为了利用memmove()，作者想尽了一切办法，又是泛化又是特化。同时作者对于for(;first!=last;&#8230;)和for(&#8230;; n &lt; last-first; &#8230;)这样两种循环方式的效率差异性都进行了考虑。所有这一切的目的只有一个就是提高效率。用侯捷老师的话说就是<q>强化效率无所不用其极</q>。关于更多SGI STL copy算法的实现，可以参考侯捷老师的《STL源码剖析》。</p>
+<p>从上图可以看出，虽然copy算法给我们的是一个统一的接口，但其内部却是有多个实现方式，目的是针对不同的情况给出最佳的copy实现。为了利用memmove()，作者想尽了一切办法，又是泛化又是特化。同时作者对于for(;first!=last;&hellip;)和for(&hellip;; n &lt; last-first; &hellip;)这样两种循环方式的效率差异性都进行了考虑。所有这一切的目的只有一个就是提高效率。用侯捷老师的话说就是<q>强化效率无所不用其极</q>。关于更多SGI STL copy算法的实现，可以参考侯捷老师的《STL源码剖析》。</p>
 
 <p>第三个例子是Java的数组拷贝算法：
 为了高效的copy Java的数组，Java 类库专门提供了一个System.arraycopy的方法。那这个方法又有什么高级之处呢？通过查看源代码我们就可以发现这个方法是个native 方法。然后我们来看看OpenJDK是如何实现这个native方法的。经过一番查找可以找到以下代码代码片段：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">static</span> <span class="kt">void</span> <span class="n">pd_conjoint_bytes</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">from</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">to</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">count</span><span class="p">){</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">static</span> <span class="kt">void</span> <span class="nf">pd_conjoint_bytes</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">from</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">to</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">count</span><span class="p">){</span>
 </span><span class='line'>    <span class="n">memmove</span><span class="p">(</span><span class="n">to</span><span class="p">,</span> <span class="n">from</span><span class="p">,</span> <span class="n">count</span><span class="p">);</span>
 </span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -225,7 +218,7 @@
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
 <span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">static</span> <span class="kt">void</span> <span class="n">atomic_copy64</span><span class="p">(</span><span class="k">volatile</span> <span class="kt">void</span> <span class="o">*</span><span class="n">src</span><span class="p">,</span> <span class="k">volatile</span> <span class="kt">void</span> <span class="o">*</span><span class="n">dst</span><span class="p">){</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">static</span> <span class="kt">void</span> <span class="nf">atomic_copy64</span><span class="p">(</span><span class="k">volatile</span> <span class="kt">void</span> <span class="o">*</span><span class="n">src</span><span class="p">,</span> <span class="k">volatile</span> <span class="kt">void</span> <span class="o">*</span><span class="n">dst</span><span class="p">){</span>
 </span><span class='line'><span class="cp">#if defined(PPC) &amp;&amp; !defined(_LP64)</span>
 </span><span class='line'>    <span class="kt">double</span> <span class="n">tmp</span><span class="p">;</span>
 </span><span class='line'>    <span class="n">asm</span> <span class="k">volatile</span> <span class="p">(</span><span class="s">&quot;lfd %0,  0(%1)</span><span class="se">\n</span><span class="s">&quot;</span>
@@ -242,14 +235,14 @@
 </span><span class='line'>    <span class="o">*</span><span class="p">(</span><span class="n">jlong</span> <span class="o">*</span><span class="p">)</span> <span class="n">dst</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">jlong</span> <span class="o">*</span><span class="p">)</span><span class="n">src</span><span class="p">;</span>
 </span><span class='line'><span class="cp">#endif</span>
 </span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>我们又看到了memmove()，arraycopy的作者使用了JNI来调用了memmove()，为的就是效率。更恐怖的是这还有汇编指令，这些指令也能使数组拷贝变得十分高效。看到这，你觉得我们自己写的数组拷贝算法的效率能超过官方提供的吗？ 详细的如何剖析arraycopy方法请参见<a href="http://gutspot.com/2011/11/16/system-arraycopy%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">勇点的博客</a>。</p>
 
 <p>看了这三个例子，我们应该能感受到库提供程序的效率了吧。即使我们能写出和库一样效率的算法，我们要花多少时间，写完的质量怎么样，这些都要打个问号。想想Java的System.arraycopy吧。</p>
 
-<p>总的来说能使用库的时候尽量使用，这会使你的代码质量更高，效率更高。在软件工程中有句名言<q>Don&#8217;t Reinvent the Wheel</q>，这就是我们对待库的态度。当然作为学生来讲，我们不仅要能熟练的使用库，最好还能深入库的源代码，像大师们取经，这会让我们受益匪浅。</p>
+<p>总的来说能使用库的时候尽量使用，这会使你的代码质量更高，效率更高。在软件工程中有句名言<q>Don&rsquo;t Reinvent the Wheel</q>，这就是我们对待库的态度。当然作为学生来讲，我们不仅要能熟练的使用库，最好还能深入库的源代码，像大师们取经，这会让我们受益匪浅。</p>
 </div>
 
 
@@ -265,19 +258,12 @@
 
 
 
-
-
-
-
-  
-
-
-<time datetime="2012-04-22T12:39:00+08:00" pubdate data-updated="true">Apr 22<span>nd</span>, 2012</time>
+<time class='entry-date' datetime='2012-04-22T12:39:00-04:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2012</span></span> <span class='time'>12:39 pm</span></time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/coding/'>Coding</a>
+    <a class='category' href='/blog/categories/coding/'>coding</a>
   
 </span>
 
@@ -315,6 +301,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/08/17/several-things-i-have-learned-from-working-at-qiduo/">Several Things I Have Learned From Working at Qiduo</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/01/19/android-dot-os-dot-message-dot-what/">android.os.Message.what</a>
       </li>
     
@@ -327,11 +317,7 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2013/03/17/a-close-look-into-php-zval/">A Close Look Into PHP zval</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/01/25/who-are-you/">Who Are You</a>
+        <a href="/blog/2013/03/17/a-close-look-into-php-zval/">A Close Look Into PHP Zval</a>
       </li>
     
   </ul>
@@ -343,7 +329,7 @@
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/JiajunYao">@JiajunYao</a> on GitHub
+  <a href="https://github.com/jjyao">@jjyao</a> on GitHub
   
   <script type="text/javascript">
     $(document).ready(function(){
@@ -356,7 +342,7 @@
         }
 
         github.showRepos({
-            user: 'JiajunYao',
+            user: 'jjyao',
             count: 0,
             skip_forks: true,
             target: '#gh_repos'
@@ -415,13 +401,13 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://JiajunYao.github.com/blog/2012/04/22/why-we-should-use-library/';
-        var disqus_url = 'http://JiajunYao.github.com/blog/2012/04/22/why-we-should-use-library/';
+        var disqus_identifier = 'http://blog.jjyao.me/blog/2012/04/22/why-we-should-use-library/';
+        var disqus_url = 'http://blog.jjyao.me/blog/2012/04/22/why-we-should-use-library/';
         var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -437,7 +423,7 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

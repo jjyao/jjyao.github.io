@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[My Personal Blog]]></title>
-  <link href="http://JiajunYao.github.com/atom.xml" rel="self"/>
-  <link href="http://JiajunYao.github.com/"/>
-  <updated>2014-01-19T21:53:58+08:00</updated>
-  <id>http://JiajunYao.github.com/</id>
+  <link href="http://blog.jjyao.me/atom.xml" rel="self"/>
+  <link href="http://blog.jjyao.me/"/>
+  <updated>2014-08-21T21:07:31-04:00</updated>
+  <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
     
@@ -14,10 +14,75 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Several Things I Have Learned From Working at Qiduo]]></title>
+    <link href="http://blog.jjyao.me/blog/2014/08/17/several-things-i-have-learned-from-working-at-qiduo/"/>
+    <updated>2014-08-17T20:42:00-04:00</updated>
+    <id>http://blog.jjyao.me/blog/2014/08/17/several-things-i-have-learned-from-working-at-qiduo</id>
+    <content type="html"><![CDATA[<p>转眼之间，我已经在奇多度过了两年的时光。在这两年里我经历了这家公司的创立和发展，经历了产品的设计、开发和运营，同时我也经历了公司发展过程中遇到的种种困难。现在我已离开公司，写下这篇博客权当总结吧，总结下这两年内我学到的东西。</p>
+
+<ol>
+<li>人与团队</li>
+<li>北京与南京</li>
+<li>职业化</li>
+<li>其他</li>
+</ol>
+
+
+<!-- more -->
+
+
+<h2>人与团队</h2>
+
+<p><strong><em>作为一家创业公司，一定要有业界顶尖的人才，一定要有强大战斗力、执行力和丰富经验的团队。</em></strong>就拿开发团队来说，一个优秀的团队是产品的保证。由于是创业公司，团队往往是从零开始开发一个软件，那么一开始的架构就显得尤为重要了，因为以后的版本都要基于这个初始版本进行开发。架构的好，那么以后每一个新版本开发地就快，产品的迭代速度就快，而这一点对于当今的互联网公司来说是极其重要的。但如果架构的不好，那么软件可能很难添加新的功能，因为牵一发而动全身，可能添加一个小feature就会引入一堆bug，而这会严重影响产品的开发进度。与此同时，创业公司不可能像大公司那样有庞大的QA团队，因此要求开发人员的代码质量非常高，不能产生大量的bug。否则版本发出去以后就只能一直处于修bug状态，哪里还有时间开发新功能，更别说因为bug而流失的用户。我们公司就曾因为软件架构和质量问题，将一个应用推倒重新开发，这前前后后就花费了好多时间和金钱，而这些很有可能直接导致创业公司的倒闭。因此，创业公司从一开始就要组建优秀的开发团队，从而保证软件的质量和开发进度。既然创业公司需要组建优秀的团队，那么<strong><em>找人</em></strong>就是创业初期极其重要的任务。对于创业初期找人，我觉得很重要的一点就是<strong><em>创始人亲自找</em></strong>，千万别把这个事情全部交给HR去做。首先，最了解公司需要什么样人才的是创始人而不是HR。其次，创始人亲自打电话约面谈能显示出诚意，而这也能吸引人才。最后，创始人靠不靠谱是决定人才愿不愿意来公司的一个主要原因，所以创始人亲自面试时散发出的人格魅力，其身上的各种title和光环，其所描绘的公司愿景都是吸引人才的主要因素。总的来说，在找人这件事上创始人一定不能偷懒。</p>
+
+<p>下面摘录些我在这两年内看到的关于人与团队的句子，大家感受一下:</p>
+
+<ul>
+<li>招应届毕业生：别人走过的弯路，新手会几乎不落地走一遍，谁来买单，公司呗。 —— 《创业时，我们在知乎聊什么》</li>
+<li>初创者，一开始必须找到由几个精兵强将组成的团队，没有找到就继续找，<strong><em>宁缺勿滥</em></strong>，否则你的步伐会越走越慢，越走越难受。 —— 《创业时，我们在知乎聊什么》</li>
+<li>创业公司应该不同员工不同对待。给予其所需。<strong><em>刚毕业的要给他们更多发展机会，对他能力的相信和培养，就可以留住他。</em></strong>有3-5年工作经验的员工需要高的薪水，需要给他们画饼，给未来画个大饼。5-10年工作经验的员工要和他们聊创业梦想。 —— 《创业时，我们在知乎聊什么》</li>
+<li>创业公司CEO除了找方向，早期最重要的事情莫过于找人。 —— 《创业时，我们在知乎聊什么》</li>
+<li>给每个新员工配一个师傅，这个师傅最好是公司早期员工，有利于公司文化的传承。 —— 《创业时，我们在知乎聊什么》</li>
+<li>其实抱怨找不到人的创业者是因为在找人上花的时间是不够的，其实找人是天底下最难的事情。—— 雷军</li>
+<li>三件事情别人永远无法代劳，设定公司的愿景，寻找合适的人才，保持足够业务运转的现金可以用。—— 王兴</li>
+</ul>
+
+
+<h2>北京与南京</h2>
+
+<p>公司成立于南京，后来又在北京创立了分公司，而我有幸在这两个地方都工作过，给我的总体感觉是<strong><em>要创业还是去北京比较好</em></strong>。首先北京拥有更多的互联网人才（我感觉整个海淀都是码农。。。），这就意味着创业公司更有可能从中找到合适的员工，这一点至关重要。事实上促使我们公司在北京成立分公司的一个重要原因就是南京很难招到足够的优秀人才，因此只能转战北京。但有一点需要注意的是，北京的互联网公司如此之多，所以需要付出更多的努力才能吸引优秀的人才加入（难度可能超出你的想象）。另外我觉得北京拥有更好的创业氛围（想要感受这种氛围的可以去3W咖啡和车库咖啡坐坐），这使得北京的互联网人才拥有更多的创业热情，这种热情也是创业公司所需要的。</p>
+
+<h2>职业化</h2>
+
+<p>进入职场的新人要学习的一项重要内容就是职业化。职业化表现在很多方面，其中很重要的一点就是要有责任心，对自己的工作负责，对自己的代码负责，这就要求我们工作的时候一定要尽心尽力（公司花钱是让我们产出更大的价值，而不是让我们养老的）。</p>
+
+<h2>其他</h2>
+
+<p>这两年内我也经常和同事聊工作，聊创业，聊公司。很多话于我心有戚戚焉，同时我自己也有点感悟，这里列出一些:</p>
+
+<ul>
+<li>创业者不仅要有高智商同样要有高情商。</li>
+<li>产品是1，其他是0，这不说明其他不重要。</li>
+<li>创业过程中沟通很重要，有什么不满和意见一定要拿出来公开地坦诚交流。</li>
+<li>人要自知并自省。</li>
+<li>言行合一，做老板最难的事之一。你怎么要求你员工的，你自己就得做到。</li>
+<li>出力大的人得分到大蛋糕，不过前提是得有蛋糕。</li>
+<li>老板得让大家觉得我们是一个team，这样才能激发大家的干劲。</li>
+<li>老板得让员工有创业者心态，而不是打工者心态。</li>
+<li>一个项目做太久而不发版，员工的战斗力就会一点点消失殆尽。</li>
+<li>公司要打造良好的氛围和企业文化，要让员工工作得开心。</li>
+</ul>
+
+
+<p><strong><em>以上我所说的每一句话都是错的。</em></strong></p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[android.os.Message.what]]></title>
-    <link href="http://JiajunYao.github.com/blog/2014/01/19/android-dot-os-dot-message-dot-what/"/>
-    <updated>2014-01-19T18:36:00+08:00</updated>
-    <id>http://JiajunYao.github.com/blog/2014/01/19/android-dot-os-dot-message-dot-what</id>
+    <link href="http://blog.jjyao.me/blog/2014/01/19/android-dot-os-dot-message-dot-what/"/>
+    <updated>2014-01-19T18:36:00-05:00</updated>
+    <id>http://blog.jjyao.me/blog/2014/01/19/android-dot-os-dot-message-dot-what</id>
     <content type="html"><![CDATA[<p>Send an android.os.Message whose <em>what</em> is 0 and then remove it, which unexpectedly removes all posted Runnables</p>
 
 <!-- more -->
@@ -35,7 +100,7 @@
 <span class='line-number'>6</span>
 </pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// callback from the background thread</span>
 </span><span class='line'><span class="kd">private</span> <span class="kt">void</span> <span class="nf">callback</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">mHandler</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">mHandler</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="k">new</span> <span class="nf">Runnable</span><span class="o">()</span> <span class="o">{</span>
 </span><span class='line'>        <span class="c1">// update UI in the main thread</span>
 </span><span class='line'>    <span class="o">});</span>
 </span><span class='line'><span class="o">}</span>
@@ -92,9 +157,9 @@
   
   <entry>
     <title type="html"><![CDATA[Does Your App Have a Rock Solid SSL Connection]]></title>
-    <link href="http://JiajunYao.github.com/blog/2013/07/31/does-your-app-have-a-rock-solid-ssl-connection/"/>
-    <updated>2013-07-31T20:32:00+08:00</updated>
-    <id>http://JiajunYao.github.com/blog/2013/07/31/does-your-app-have-a-rock-solid-ssl-connection</id>
+    <link href="http://blog.jjyao.me/blog/2013/07/31/does-your-app-have-a-rock-solid-ssl-connection/"/>
+    <updated>2013-07-31T20:32:00-04:00</updated>
+    <id>http://blog.jjyao.me/blog/2013/07/31/does-your-app-have-a-rock-solid-ssl-connection</id>
     <content type="html"><![CDATA[<p>SSL(Secure Sockets Layer)是目前广泛用来加密网络通信的加密协议。它的一个著名应用就是HTTPS，也就是使用SSL协议对HTTP进行加密从而使得整个通信更加安全。对于一个移动应用（其他类型的客户端也同理），为了保证其和服务器的通信安全，开发者就会使用SSL来加密客户端和服务器之间的通信。这样理应是安全的，但由于很多开发者使用方式不对，导致客户端和服务器之间的SSL通信会受到中间人攻击(Man-in-the-middle attack)，从而使得安全性荡然无存。本文将首先介绍下SSL和中间人攻击的原理，然后会提供一个中间人攻击的实例，最后本文介绍该如何防止中间人攻击。</p>
 
 <!-- more -->
@@ -123,7 +188,7 @@
 
 <p>中间人攻击的本质就是客户端以为它在和服务器通信，实际上它是在和中间人通信。服务器以为它在和客户端通信，实际上它也在和中间人通信。对于SSL来说，客户端和服务器都以为它们和对方建立了一条SSL连接，而实际上它们分别和中间人建立了一条SSL连接。这样的后果就是中间人能够得到客户端和服务器之间传输数据的明文，还能任意更改数据。下图是中间人攻击的示意图：</p>
 
-<p><img src="http://JiajunYao.github.com/images/post/is-ssl-security-of-your-app-rock-solid/MITM.png"></p>
+<p><img src="http://blog.jjyao.me/images/post/is-ssl-security-of-your-app-rock-solid/MITM.png"></p>
 
 <p>在上图中Mallory就是中间人，在Alice（客户端）和Bob（服务器）建立SSL连接的过程中，Mallory截获Alice发出的ClientHello等消息，然后假装自己是Bob回应ServerHello等信息，这样Alice和Mallory之间就建立了一条SSL连接。同时Mallory假装自己是Alice，和Bob之间也建立了一条SSL连接。这样Alice发出的数据Mallory可以解密并修改，然后Mallory可以将数据通过它和Bob之间的SSL连接再传给Bob。而Bob的返回数据Mallory也可以解密并修改，然后再传给Alice。</p>
 
@@ -143,11 +208,11 @@
 
 <p>更详细的做法请参见<a href="https://www.cocoanetics.com/2010/12/how-to-spy-on-the-web-traffic-of-any-app/">这里</a>。下面就给出几张攻击的截图：</p>
 
-<p><img src="http://JiajunYao.github.com/images/post/is-ssl-security-of-your-app-rock-solid/example1.png"></p>
+<p><img src="http://blog.jjyao.me/images/post/is-ssl-security-of-your-app-rock-solid/example1.png"></p>
 
-<p><img src="http://JiajunYao.github.com/images/post/is-ssl-security-of-your-app-rock-solid/example2.png"></p>
+<p><img src="http://blog.jjyao.me/images/post/is-ssl-security-of-your-app-rock-solid/example2.png"></p>
 
-<p><img src="http://JiajunYao.github.com/images/post/is-ssl-security-of-your-app-rock-solid/example3.png"></p>
+<p><img src="http://blog.jjyao.me/images/post/is-ssl-security-of-your-app-rock-solid/example3.png"></p>
 
 <p>从截图中可以看出我已经获得了这个应用和服务器传输的所有数据。</p>
 
@@ -159,9 +224,9 @@
   
   <entry>
     <title type="html"><![CDATA[Review on American Dreams in China]]></title>
-    <link href="http://JiajunYao.github.com/blog/2013/06/16/review-on-american-dreams-in-china/"/>
-    <updated>2013-06-16T11:35:00+08:00</updated>
-    <id>http://JiajunYao.github.com/blog/2013/06/16/review-on-american-dreams-in-china</id>
+    <link href="http://blog.jjyao.me/blog/2013/06/16/review-on-american-dreams-in-china/"/>
+    <updated>2013-06-16T11:35:00-04:00</updated>
+    <id>http://blog.jjyao.me/blog/2013/06/16/review-on-american-dreams-in-china</id>
     <content type="html"><![CDATA[<p>这两天看了陈可辛导演的《中国合伙人》和柴静对新东方三位联合创始人的采访，感受颇多。创业奋斗路上风风雨雨，有太多的东西值得我们去学习，去感悟。下面就聊聊我所感悟到的东西：</p>
 
 <ol>
@@ -194,10 +259,10 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[A Close Look Into PHP zval]]></title>
-    <link href="http://JiajunYao.github.com/blog/2013/03/17/a-close-look-into-php-zval/"/>
-    <updated>2013-03-17T13:43:00+08:00</updated>
-    <id>http://JiajunYao.github.com/blog/2013/03/17/a-close-look-into-php-zval</id>
+    <title type="html"><![CDATA[A Close Look Into PHP Zval]]></title>
+    <link href="http://blog.jjyao.me/blog/2013/03/17/a-close-look-into-php-zval/"/>
+    <updated>2013-03-17T13:43:00-04:00</updated>
+    <id>http://blog.jjyao.me/blog/2013/03/17/a-close-look-into-php-zval</id>
     <content type="html"><![CDATA[<p>最近研究了一下PHP variable的内部实现也就是zval，以及引申出来的Copy on Write, Reference等概念和机制。为了检验一下我是不是真的弄懂了，一个好的方法就是看能不能把它清楚地写下来并让人能够读懂。</p>
 
 <!-- more -->
@@ -253,51 +318,51 @@
 <table>
 <thead>
 <tr>
-<th align="center">PHP variable type </th>
-<th align="center"> zval value            </th>
-<th align="center"> Notes</th>
+<th style="text-align:center;">PHP variable type </th>
+<th style="text-align:center;"> zval value            </th>
+<th style="text-align:center;"> Notes</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td align="center">Long              </td>
-<td align="center"> long lval             </td>
+<td style="text-align:center;">Long              </td>
+<td style="text-align:center;"> long lval             </td>
 <td></td>
 </tr>
 <tr>
-<td align="center">Double            </td>
-<td align="center"> double dval           </td>
+<td style="text-align:center;">Double            </td>
+<td style="text-align:center;"> double dval           </td>
 <td></td>
 </tr>
 <tr>
-<td align="center">String            </td>
-<td align="center"> struct{…} str         </td>
+<td style="text-align:center;">String            </td>
+<td style="text-align:center;"> struct{…} str         </td>
 <td></td>
 </tr>
 <tr>
-<td align="center">Resource          </td>
-<td align="center"> long lval             </td>
-<td align="center"> 存放的只是resource的identifier,而不是resource本身</td>
+<td style="text-align:center;">Resource          </td>
+<td style="text-align:center;"> long lval             </td>
+<td style="text-align:center;"> 存放的只是resource的identifier,而不是resource本身</td>
 </tr>
 <tr>
-<td align="center">Boolean           </td>
-<td align="center"> long lval             </td>
-<td align="center"> 0表示FALSE，1表示TRUE</td>
+<td style="text-align:center;">Boolean           </td>
+<td style="text-align:center;"> long lval             </td>
+<td style="text-align:center;"> 0表示FALSE，1表示TRUE</td>
 </tr>
 <tr>
-<td align="center">Array             </td>
-<td align="center"> HashTable *ht         </td>
-<td align="center"> PHP的很多东西都是用HashTable来实现的</td>
+<td style="text-align:center;">Array             </td>
+<td style="text-align:center;"> HashTable *ht         </td>
+<td style="text-align:center;"> PHP的很多东西都是用HashTable来实现的</td>
 </tr>
 <tr>
-<td align="center">Ojbect            </td>
-<td align="center"> zend_object_value obj </td>
+<td style="text-align:center;">Ojbect            </td>
+<td style="text-align:center;"> zend_object_value obj </td>
 <td></td>
 </tr>
 <tr>
-<td align="center">NULL              </td>
-<td align="center">                       </td>
-<td align="center"> NULL本身也是一种类型，但它不需要使用<code>value</code>字段</td>
+<td style="text-align:center;">NULL              </td>
+<td style="text-align:center;">                       </td>
+<td style="text-align:center;"> NULL本身也是一种类型，但它不需要使用<code>value</code>字段</td>
 </tr>
 </tbody>
 </table>
@@ -326,7 +391,7 @@
 
 <p>PHP的Array是用HashTable来实现的，通过这个就可以存放Array中的Key-Value了。关于这个HashTable具体是如何实现的，可以看<a href="http://nikic.github.com/2012/03/28/Understanding-PHPs-internal-array-implementation.html">这里</a>。我根据那个tutorial画了个示意图如下：</p>
 
-<p><img src="http://JiajunYao.github.com/images/post/a-close-look-into-php-zval/zval.6.png"></p>
+<p><img src="http://blog.jjyao.me/images/post/a-close-look-into-php-zval/zval.6.png"></p>
 
 <p>在这里我们要知道的是Key-Value中的value也就是一个个的zval，就和object的属性值一样，HashTable中就存放着指向这些zval的指针。</p>
 
@@ -345,30 +410,30 @@
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='PHP'><span class='line'><span class="x">$a = &#39;hello&#39;;</span>
-</span><span class='line'><span class="x">$b = $a; // $b is value type</span>
-</span><span class='line'><span class="x">$a = &#39;world&#39;;</span>
-</span><span class='line'><span class="x">var_dump($a); // &#39;world&#39;</span>
-</span><span class='line'><span class="x">var_dump($b); // &#39;hello&#39;</span>
+</pre></td><td class='code'><pre><code class='PHP'><span class='line'><span class="nv">$a</span> <span class="o">=</span> <span class="s1">&#39;hello&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$b</span> <span class="o">=</span> <span class="nv">$a</span><span class="p">;</span> <span class="c1">// $b is value type</span>
+</span><span class='line'><span class="nv">$a</span> <span class="o">=</span> <span class="s1">&#39;world&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nb">var_dump</span><span class="p">(</span><span class="nv">$a</span><span class="p">);</span> <span class="c1">// &#39;world&#39;</span>
+</span><span class='line'><span class="nb">var_dump</span><span class="p">(</span><span class="nv">$b</span><span class="p">);</span> <span class="c1">// &#39;hello&#39;</span>
 </span><span class='line'>
-</span><span class='line'><span class="x">$a = &#39;hello&#39;;</span>
-</span><span class='line'><span class="x">$b = &amp;$a; // $b is reference type</span>
-</span><span class='line'><span class="x">$a = &#39;world&#39;;</span>
-</span><span class='line'><span class="x">var_dump($a); // &#39;world&#39;</span>
-</span><span class='line'><span class="x">var_dump($b); // &#39;world&#39;</span>
+</span><span class='line'><span class="nv">$a</span> <span class="o">=</span> <span class="s1">&#39;hello&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$b</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nv">$a</span><span class="p">;</span> <span class="c1">// $b is reference type</span>
+</span><span class='line'><span class="nv">$a</span> <span class="o">=</span> <span class="s1">&#39;world&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nb">var_dump</span><span class="p">(</span><span class="nv">$a</span><span class="p">);</span> <span class="c1">// &#39;world&#39;</span>
+</span><span class='line'><span class="nb">var_dump</span><span class="p">(</span><span class="nv">$b</span><span class="p">);</span> <span class="c1">// &#39;world&#39;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>从上面一段代码可以看出如果$b是value type的话，它的值并不会随着$a的改变而改变，就好像在执行<code>$b = $a</code>时，<code>$a</code>的值(zval)被复制了一份，也就是说<code>$a</code>和<code>$b</code>拥有自己独立的zval，两者互不影响。而如果是reference type的话，就如同<code>$a</code>和<code>$b</code>共用了一个zval，不管是改变<code>$a</code>，还是<code>$b</code>，其实都是改变一个zval。但事实没有这么简单，如果真像上面所说的那样执行<code>$b = $a</code>时，zval复制了一份，那么效率也太低了，因为有可能<code>$b</code>和<code>$a</code>在接下来的使用过程中都是只读的，它们本可以共用一个zval而不会出问题。那么PHP究竟是如何实现的呢，答案就是通过<code>refcount</code>和<code>if_ref</code>实现了copy on write机制。而这个copy on write机制对于不同<code>type</code>的变量也会有些不同的表现，接下来我们就通过一系列的图例来理解这个机制。</p>
 
-<p><img src="http://JiajunYao.github.com/images/post/a-close-look-into-php-zval/zval.1.png">
-<img src="http://JiajunYao.github.com/images/post/a-close-look-into-php-zval/zval.2.png">
-<img src="http://JiajunYao.github.com/images/post/a-close-look-into-php-zval/zval.3.png"></p>
+<p><img src="http://blog.jjyao.me/images/post/a-close-look-into-php-zval/zval.1.png">
+<img src="http://blog.jjyao.me/images/post/a-close-look-into-php-zval/zval.2.png">
+<img src="http://blog.jjyao.me/images/post/a-close-look-into-php-zval/zval.3.png"></p>
 
 <p>前两张图大家应该很好理解，可以清楚的看到copy on write的发生并可以看到<code>if_ref</code>和<code>refcount</code>的作用，PHP正是依赖于<code>if_ref</code>和<code>refcount</code>来决定是否需要copy on write。而从第三张图中可以看到在没有<code>write</code>发生的情况下就发生了<code>copy</code>，而这是为什么呢，貌似<code>$a</code>、<code>$b</code>和<code>$c</code>可以共用一个zval的呀。原因其实很简单，那就是如果这三个变量共用一个zval那么<code>is_ref</code>的值就不知道该填什么了，<code>0</code>或<code>1</code>都不正确，因为这三个变量中既有value type又有reference type。如果<code>is_ref</code>为<code>0</code>那么<code>$a</code>和<code>$c</code>是reference关系这个信息就无法表达,PHP会认为<code>$a</code>、<code>$b</code>和<code>$c</code>是value type，改变其中任何一个的值并不会对另外两个造成影响，这显然不对。如果<code>is_ref</code>为<code>1</code>那么PHP会认为<code>$a</code>、<code>$b</code>和<code>$c</code>是reference type，改变其中任何一个的值都会反映在另外两个上，这显然也是不对的。综上所述在这种情况下只能copy出一份zval出来，这样才能保证接下来不管是操作<code>$a</code>、<code>$b</code>或者<code>$c</code>都不会出问题。之前的这三种图展示的是type为Long的variable的情况，而Boolean、Double、String和Long是一样的，就不再画出来了，而Array和Object比较复杂，情况也特殊，所以拿出来单独讨论。</p>
 
-<p><img src="http://JiajunYao.github.com/images/post/a-close-look-into-php-zval/zval.4.png">
-<img src="http://JiajunYao.github.com/images/post/a-close-look-into-php-zval/zval.5.png"></p>
+<p><img src="http://blog.jjyao.me/images/post/a-close-look-into-php-zval/zval.4.png">
+<img src="http://blog.jjyao.me/images/post/a-close-look-into-php-zval/zval.5.png"></p>
 
 <p>从上面两张图看出Array和Object的行为存在着显著的不同，Array拥有<code>by-value semantics</code>而Object拥有<code>by-reference semantics</code>。Array的表现更像之前提到的Long type，也会有Copy on Write行为，而它的Copy从上图中可以看出比较智能，只Copy那些必须的zval。而Object则不一样，不管是value type还是reference type，它们都共用一个object store，也就是说任何属性的值发生了变化，所有指向这个object的variable都能知道，就好像Copy on Write对Object不起作用了。为了强制Copy，最后执行了<code>$c = &amp;$a</code>这条语句，为什么这条语句能强制使zval copy一份的原理在上面已经讲过了，这里就不再复述。这里有趣的是zval确实copy了一份，但是两个zval还是指向了同一个object store，也就是说不管通过<code>$a</code>、<code>$b</code>或者<code>$c</code>改变了某个属性，这三个变量都能知道。那么zval的copy到底做了什么呢？还记得上面提到过<code>zend_object_value</code>中只是存放了一个整型的<code>handle</code>字段，而通过这个字段可以找到object store在哪，那么zval的copy也就只会将这个<code>handle</code>字段copy一份，于是两个zval中拥有同样的<code>handle</code>值，它们就当然指向了同一个object store。那么如何让Object发生像Array那样类似的Copy呢，PHP为此提供了<code>clone</code>关键字。</p>
 
@@ -378,9 +443,9 @@
 
 <ol>
 <li><a href="http://devzone.zend.com/317/extension-writing-part-ii-parameters-arrays-and-zvals/">Extension Writing Part II: Parameters, Arrays, and ZVALs</a></li>
-<li><a href="http://blog.ircmaxell.com/2012/03/phps-source-code-for-php-developers_21.html">PHP&#8217;s Source Code For PHP Developers - Part 3 - Variables</a></li>
+<li><a href="http://blog.ircmaxell.com/2012/03/phps-source-code-for-php-developers_21.html">PHP&rsquo;s Source Code For PHP Developers - Part 3 - Variables</a></li>
 <li><a href="http://andrey.hristov.com/projects/php_stuff/Internals%20Exposed.pdf">Zend Engine 2 - Internals Exposed</a></li>
-<li><a href="http://nikic.github.com/2012/03/28/Understanding-PHPs-internal-array-implementation.html">Understanding PHP&#8217;s internal array implementation (PHP&#8217;s Source Code for PHP Developers - Part 4 )</a></li>
+<li><a href="http://nikic.github.com/2012/03/28/Understanding-PHPs-internal-array-implementation.html">Understanding PHP&rsquo;s internal array implementation (PHP&rsquo;s Source Code for PHP Developers - Part 4 )</a></li>
 </ol>
 
 ]]></content>
@@ -388,9 +453,9 @@
   
   <entry>
     <title type="html"><![CDATA[Who Are You]]></title>
-    <link href="http://JiajunYao.github.com/blog/2013/01/25/who-are-you/"/>
-    <updated>2013-01-25T22:20:00+08:00</updated>
-    <id>http://JiajunYao.github.com/blog/2013/01/25/who-are-you</id>
+    <link href="http://blog.jjyao.me/blog/2013/01/25/who-are-you/"/>
+    <updated>2013-01-25T22:20:00-05:00</updated>
+    <id>http://blog.jjyao.me/blog/2013/01/25/who-are-you</id>
     <content type="html"><![CDATA[<p>这两天在研究新浪微博的第三方插件实现，无意中发现通过利用新浪微博的某个URL能让我获取当前访问这个URL的用户的微博uid。也就是说只要在某个网站中嵌入一段代码，这段代码在后台偷偷地访问那个URL，然后就可以把访问这个网站的用户的微博uid获取到，于是隐私就被泄露了…… 也就是说一个网站可以知道有哪些微博用户访问了它，然后可以就此采取一系列的措施……<br/>
 下面就具体讲讲这个漏洞是怎么回事。</p>
 
@@ -399,15 +464,11 @@
 
 <h2>问题</h2>
 
-<p>大家都知道微博会提供一些第三方插件(widget)用来放在其他网站上，其中有一个就是关注按钮。通过这个关注按钮用户就可以在第三方网站上直接关注某个人，如果当前访问用户已经关注过了，则该关注按钮会显示已关注。接下来我们就要看看在一个第三方的网站上新浪微博是怎样知道当前访问用户是否已经关注了某个账号，而这个涉及到<a href="http://en.wikipedia.org/wiki/Same_origin_policy">JavaScript跨域问题</a>。通过查看插件的js代码和浏览器的http请求，发现如果引入关注按钮插件的话会有如下的一个http请求：</p>
+<p>大家都知道微博会提供一些第三方插件(widget)用来放在其他网站上，其中有一个就是关注按钮。通过这个关注按钮用户就可以在第三方网站上直接关注某个人，如果当前访问用户已经关注过了，则该关注按钮会显示已关注。接下来我们就要看看在一个第三方的网站上新浪微博是怎样知道当前访问用户是否已经关注了某个账号，而这个涉及到<a href="http://en.wikipedia.org/wiki/Same_origin_policy">JavaScript跨域问题</a>。通过查看插件的js代码和浏览器的http请求，发现如果引入关注按钮插件的话会有如下的一个http请求：
+    <a href="http://widget.weibo.com/public/aj_relationship.php?fuid=2991975565&amp;callback=STK_13591259816211">http://widget.weibo.com/public/aj_relationship.php?fuid=2991975565&amp;callback=STK_13591259816211</a></p>
 
-<pre><code>http://widget.weibo.com/public/aj_relationship.php?fuid=2991975565&amp;callback=STK_13591259816211
-</code></pre>
-
-<p>返回结果是：</p>
-
-<pre><code>STK_13591259816211({"code":"100000","msg":"success","data":{"relation":3,"login":true,"uid":2369955640}})
-</code></pre>
+<p>返回结果是：
+    STK_13591259816211({&ldquo;code&rdquo;:&ldquo;100000&rdquo;,&ldquo;msg&rdquo;:&ldquo;success&rdquo;,&ldquo;data&rdquo;:{&ldquo;relation&rdquo;:3,&ldquo;login&rdquo;:true,&ldquo;uid&rdquo;:2369955640}})</p>
 
 <p>从这个http请求来看新浪采用了<a href="http://en.wikipedia.org/wiki/JSONP">jsonp</a>技术来解决跨域问题。从返回结果猜测data.relation应该表明当前用户和fuid用户之间的关系，可能是是否关注fuid，是否双向关注等等。问题的关键是新浪把当前用户的uid也返回回来了，如果第三方网站能获取这个uid，就能知道当前访问用户是谁了。</p>
 
@@ -456,12 +517,9 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>每当用户访问这个网页的时候就在后面发一个aj_relationship.php的请求，然后指定一个已经定义好的callback，这样等请求结果返回后指定的callback就会被执行，于是就可以获取到当前登陆用户的微博uid了，最后要做的就是将这个uid传回给服务器保存起来。而这个可以通过服务器的log来实现，比如Nginx有access log，会将每个访问的url记录在日志中，结果如下：</p>
-
-<pre><code>219.219.125.217 - - [25/Jan/2013:14:38:39 +0000] "GET /evil.php?uid=2369955640 HTTP/1.1" 200 31 "http://www.jjyao.me/index.html" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.56 Safari/537.17"
-</code></pre>
-
-<p>于是在服务器端就可以统计有哪些微博用户访问了这个网站，他们都是谁。</p>
+<p>每当用户访问这个网页的时候就在后面发一个aj_relationship.php的请求，然后指定一个已经定义好的callback，这样等请求结果返回后指定的callback就会被执行，于是就可以获取到当前登陆用户的微博uid了，最后要做的就是将这个uid传回给服务器保存起来。而这个可以通过服务器的log来实现，比如Nginx有access log，会将每个访问的url记录在日志中，结果如下：
+    219.219.125.217 - - [25/Jan/2013:14:38:39 +0000] &ldquo;GET /evil.php?uid=2369955640 HTTP/1.1&rdquo; 200 31 &ldquo;<a href="http://www.jjyao.me/index.html">http://www.jjyao.me/index.html</a>&rdquo; &ldquo;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.56 Safari/537.17&rdquo;
+于是在服务器端就可以统计有哪些微博用户访问了这个网站，他们都是谁。</p>
 
 <p>正如上面所说的那样，只要添加一些简单的代码，一个网站就可以知道哪些用户访问了，因为知道微博账号实际上很大程度等于知道了用户的真实身份。也就是说通过微博的这么一个漏洞，我们的隐私被泄露了，我们实际上没有匿名访问一个网站，而都是实名在访问，想想还是蛮可怕的。</p>
 
@@ -480,10 +538,10 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Refactor with Vim]]></title>
-    <link href="http://JiajunYao.github.com/blog/2012/12/09/refactor-with-vim/"/>
-    <updated>2012-12-09T23:28:00+08:00</updated>
-    <id>http://JiajunYao.github.com/blog/2012/12/09/refactor-with-vim</id>
+    <title type="html"><![CDATA[Refactor With Vim]]></title>
+    <link href="http://blog.jjyao.me/blog/2012/12/09/refactor-with-vim/"/>
+    <updated>2012-12-09T23:28:00-05:00</updated>
+    <id>http://blog.jjyao.me/blog/2012/12/09/refactor-with-vim</id>
     <content type="html"><![CDATA[<p>使用IDE的一个大好处就是可以方便的进行重构，想想Eclipse那彪悍的重构功能吧。可是对于我们这种喜欢用Vim的人来说，要如何来进行代码重构呢？接下来我就介绍一些Tips，来让Vim也能干重构的事。</p>
 
 <!-- more -->
@@ -520,9 +578,9 @@
   
   <entry>
     <title type="html"><![CDATA[OpenSSL Read Ahead &amp; Epoll]]></title>
-    <link href="http://JiajunYao.github.com/blog/2012/08/28/openssl-read-ahead-and-epoll/"/>
-    <updated>2012-08-28T12:06:00+08:00</updated>
-    <id>http://JiajunYao.github.com/blog/2012/08/28/openssl-read-ahead-and-epoll</id>
+    <link href="http://blog.jjyao.me/blog/2012/08/28/openssl-read-ahead-and-epoll/"/>
+    <updated>2012-08-28T12:06:00-04:00</updated>
+    <id>http://blog.jjyao.me/blog/2012/08/28/openssl-read-ahead-and-epoll</id>
     <content type="html"><![CDATA[<p>Use epoll with a ssl socket and ignore the OpenSSL read ahead feature</p>
 
 <!-- more -->
@@ -532,7 +590,7 @@
 
 <p>I write a python program to implement IMAP client that uses the IDLE command. So I have a ssl client socket and I use epoll level triggered mode to implement non-blocking socket.</p>
 
-<p>However, epoll doesn&#8217;t work correctly. For example, in the IDLE mode, IMAP server sends two lines at a time. My client <code>select.epoll()</code> function returns because the ssl socket is readable. Then I read one line and call <code>select.epoll()</code> again. Because I use epoll level triggered mode so the <code>select.epoll()</code> should return immediately because the socket still has one line that is ready for read. But in fact, when I call <code>select.epoll()</code> again, it blocks and doesn&#8217;t return.</p>
+<p>However, epoll doesn&rsquo;t work correctly. For example, in the IDLE mode, IMAP server sends two lines at a time. My client <code>select.epoll()</code> function returns because the ssl socket is readable. Then I read one line and call <code>select.epoll()</code> again. Because I use epoll level triggered mode so the <code>select.epoll()</code> should return immediately because the socket still has one line that is ready for read. But in fact, when I call <code>select.epoll()</code> again, it blocks and doesn&rsquo;t return.</p>
 
 <h2>Bug</h2>
 
@@ -544,15 +602,15 @@
 
 <h2>Reference</h2>
 
-<p>For more information about OpenSSL read ahead feature, you can refer to &#8220;SSL and TLS Designing and Building Secure Systems&#8221; section 8.9.</p>
+<p>For more information about OpenSSL read ahead feature, you can refer to &ldquo;SSL and TLS Designing and Building Secure Systems&rdquo; section 8.9.</p>
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[PHP Single Quoted]]></title>
-    <link href="http://JiajunYao.github.com/blog/2012/08/07/php-single-quoted/"/>
-    <updated>2012-08-07T21:38:00+08:00</updated>
-    <id>http://JiajunYao.github.com/blog/2012/08/07/php-single-quoted</id>
+    <link href="http://blog.jjyao.me/blog/2012/08/07/php-single-quoted/"/>
+    <updated>2012-08-07T21:38:00-04:00</updated>
+    <id>http://blog.jjyao.me/blog/2012/08/07/php-single-quoted</id>
     <content type="html"><![CDATA[<p>Use PHP single quoted when I should use double quoted</p>
 
 <!-- more -->
@@ -563,22 +621,22 @@
 <p>I write a Python Twisted line receiver server, so the server reads one line at a time. Then I write a PHP client to send lines to server.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">socket_write($socket, &#39;it is one line\r\n&#39;, strlen);</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nb">socket_write</span><span class="p">(</span><span class="nv">$socket</span><span class="p">,</span> <span class="s1">&#39;it is one line\r\n&#39;</span><span class="p">,</span> <span class="nb">strlen</span><span class="p">);</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>However, my server can&#8217;t receive a whole line and blocked to wait for <strong>\r\n</strong></p>
+<p>However, my server can&rsquo;t receive a whole line and blocked to wait for <strong>\r\n</strong></p>
 
 <h2>Bug</h2>
 
-<p>In a single quoted string, escape sequences you might be used to, such as \r or \n, will be output literally as specified rahter than having any special meaning. So my server receive \r\n literally and doesn&#8217;t think that it is a new line character.</p>
+<p>In a single quoted string, escape sequences you might be used to, such as \r or \n, will be output literally as specified rahter than having any special meaning. So my server receive \r\n literally and doesn&rsquo;t think that it is a new line character.</p>
 
 <h2>Solution</h2>
 
 <p>Change single quotes to double quotes</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">socket_write($socket, &quot;it is one line\r\n&quot;, strlen);</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nb">socket_write</span><span class="p">(</span><span class="nv">$socket</span><span class="p">,</span> <span class="s2">&quot;it is one line</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">strlen</span><span class="p">);</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -588,9 +646,9 @@
   
   <entry>
     <title type="html"><![CDATA[阅读·实践·思考]]></title>
-    <link href="http://JiajunYao.github.com/blog/2012/07/21/read-practice-think/"/>
-    <updated>2012-07-21T22:29:00+08:00</updated>
-    <id>http://JiajunYao.github.com/blog/2012/07/21/read-practice-think</id>
+    <link href="http://blog.jjyao.me/blog/2012/07/21/read-practice-think/"/>
+    <updated>2012-07-21T22:29:00-04:00</updated>
+    <id>http://blog.jjyao.me/blog/2012/07/21/read-practice-think</id>
     <content type="html"><![CDATA[<p>阅读，实践和思考这三个独立的词在我眼中有着千丝万缕的关系。这三者对个人的成长和发展起到了重要的作用，我们需要阅读，需要实践也需要思考。在我眼中阅读为我们提供了实践不到或者思考不到的知识，实践则让我们获得最真切最深刻的属于自己的知识，而思考则是获得知识的一个很重要的前提。下面我想谈谈我对这三者的理解和思考，也欢迎大家提出自己的观点。而我之所以选择把它写成文章贴出来是希望通过文字可以使我思考得更深、更清晰。</p>
 
 <!-- more -->
@@ -630,9 +688,9 @@
   
   <entry>
     <title type="html"><![CDATA[HDFS Source Code Analysis]]></title>
-    <link href="http://JiajunYao.github.com/blog/2012/06/18/hdfs-source-code-analysis/"/>
-    <updated>2012-06-18T19:28:00+08:00</updated>
-    <id>http://JiajunYao.github.com/blog/2012/06/18/hdfs-source-code-analysis</id>
+    <link href="http://blog.jjyao.me/blog/2012/06/18/hdfs-source-code-analysis/"/>
+    <updated>2012-06-18T19:28:00-04:00</updated>
+    <id>http://blog.jjyao.me/blog/2012/06/18/hdfs-source-code-analysis</id>
     <content type="html"><![CDATA[<ol>
 <li><a href="#instantiate_FileSystem">创建FileSystem</a></li>
 <li><a href="#hdfs_client_send_request">HDFS客户端向服务器发送rpc请求</a></li>
@@ -718,7 +776,7 @@
 </span><span class='line'><span class="o">}</span>
 </span><span class='line'>
 </span><span class='line'><span class="n">FileSystem</span> <span class="nf">get</span><span class="o">(</span><span class="n">URI</span> <span class="n">uri</span><span class="o">,</span> <span class="n">Configuration</span> <span class="n">conf</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">{</span>
-</span><span class='line'>    <span class="n">Key</span> <span class="n">key</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Key</span><span class="o">(</span><span class="n">uri</span><span class="o">,</span> <span class="n">conf</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">Key</span> <span class="n">key</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Key</span><span class="o">(</span><span class="n">uri</span><span class="o">,</span> <span class="n">conf</span><span class="o">);</span>
 </span><span class='line'>    <span class="n">FileSystem</span> <span class="n">fs</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
 </span><span class='line'>    <span class="kd">synchronized</span> <span class="o">(</span><span class="k">this</span><span class="o">)</span> <span class="o">{</span>
 </span><span class='line'>        <span class="n">fs</span> <span class="o">=</span> <span class="n">map</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
@@ -887,7 +945,7 @@
 </span><span class='line'>    <span class="o">}</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="n">InetSocketAddress</span> <span class="n">namenode</span> <span class="o">=</span> <span class="n">NameNode</span><span class="o">.</span><span class="na">getAddress</span><span class="o">(</span><span class="n">uri</span><span class="o">.</span><span class="na">getAuthority</span><span class="o">());</span>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">dfs</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DFSClient</span><span class="o">(</span><span class="n">namenode</span><span class="o">,</span> <span class="n">conf</span><span class="o">,</span> <span class="n">statistics</span><span class="o">);</span> <span class="c1">// 创建了DFSClient的实例</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">dfs</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DFSClient</span><span class="o">(</span><span class="n">namenode</span><span class="o">,</span> <span class="n">conf</span><span class="o">,</span> <span class="n">statistics</span><span class="o">);</span> <span class="c1">// 创建了DFSClient的实例</span>
 </span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">uri</span> <span class="o">=</span> <span class="n">URI</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">uri</span><span class="o">.</span><span class="na">getScheme</span><span class="o">()+</span><span class="s">&quot;://&quot;</span><span class="o">+</span><span class="n">uri</span><span class="o">.</span><span class="na">getAuthority</span><span class="o">());</span>
 </span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">workingDir</span> <span class="o">=</span> <span class="n">getHomeDirectory</span><span class="o">();</span>
 </span><span class='line'><span class="o">}</span>
@@ -1076,7 +1134,7 @@
 
 <p>可以看到对于namenode的方法调用都归结到RetryInvocationHandler的<code>invoke()</code>上了，而这个方法就通过反射再调用rpcNamenode的对应方法，只不过它会retry，也就是说如果调用失败的话，它还会重新尝试调用，这么一来可靠性就增强了，毕竟网络传输很容易出问题的。如果让DFSClient直接调用rpcNamenode的话，一旦失败就会立刻告诉用户，而其实如果多尝试几次还是可能会成功的，这就是为什么要引入namenode的原因了。至此我们就知道client是如何将用户对DistributedFileSystem的方法调用传递到server端的，最后用一张图来总结。</p>
 
-<p><img src="http://JiajunYao.github.com/images/post/hdfs-source-code-analysis/hdfs_client_send_request.png"></p>
+<p><img src="http://blog.jjyao.me/images/post/hdfs-source-code-analysis/hdfs_client_send_request.png"></p>
 
 <p>参考链接：
 <a href="http://blog.csdn.net/historyasamirror/article/details/6159248">1</a>
@@ -1215,7 +1273,7 @@
 </span><span class='line'>      <span class="n">handlers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">[</span><span class="n">handlerCount</span><span class="o">];</span>
 </span><span class='line'>
 </span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">handlerCount</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">handlers</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">handlers</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Handler</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
 </span><span class='line'>          <span class="n">handlers</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">start</span><span class="o">();</span>
 </span><span class='line'>      <span class="o">}</span>
 </span><span class='line'>  <span class="o">}</span>
@@ -1322,7 +1380,7 @@
 </span><span class='line'>    <span class="c1">// omitted</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="kd">public</span> <span class="nf">Listener</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">address</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InetSocketAddress</span><span class="o">(</span><span class="n">bindAddress</span><span class="o">,</span> <span class="n">port</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">address</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">InetSocketAddress</span><span class="o">(</span><span class="n">bindAddress</span><span class="o">,</span> <span class="n">port</span><span class="o">);</span>
 </span><span class='line'>        <span class="c1">// Create a new server socket and set to non blocking mode</span>
 </span><span class='line'>        <span class="n">acceptChannel</span> <span class="o">=</span> <span class="n">ServerSocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
 </span><span class='line'>        <span class="n">acceptChannel</span><span class="o">.</span><span class="na">configureBlocking</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
@@ -1336,7 +1394,7 @@
 </span><span class='line'>        <span class="n">readPool</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="na">newFixedThreadPool</span><span class="o">(</span><span class="n">readThreads</span><span class="o">);</span>
 </span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">readThreads</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
 </span><span class='line'>            <span class="n">Selector</span> <span class="n">readSelector</span> <span class="o">=</span> <span class="n">Selector</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
-</span><span class='line'>            <span class="n">Reader</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Reader</span><span class="o">(</span><span class="n">readSelector</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">Reader</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Reader</span><span class="o">(</span><span class="n">readSelector</span><span class="o">);</span>
 </span><span class='line'>            <span class="n">readers</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">reader</span><span class="o">;</span>
 </span><span class='line'>            <span class="n">readPool</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">reader</span><span class="o">);</span>
 </span><span class='line'>        <span class="o">}</span>
@@ -1385,7 +1443,7 @@
 </span><span class='line'>            <span class="k">try</span> <span class="o">{</span>
 </span><span class='line'>                <span class="n">reader</span><span class="o">.</span><span class="na">startAdd</span><span class="o">();</span>
 </span><span class='line'>                <span class="n">SelectionKey</span> <span class="n">readKey</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="na">registerChannel</span><span class="o">(</span><span class="n">channel</span><span class="o">);</span> <span class="c1">// 将这个channel交由reader来处理</span>
-</span><span class='line'>                <span class="n">c</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Connection</span><span class="o">(</span><span class="n">readKey</span><span class="o">,</span> <span class="n">channel</span><span class="o">,</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">());</span>
+</span><span class='line'>                <span class="n">c</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Connection</span><span class="o">(</span><span class="n">readKey</span><span class="o">,</span> <span class="n">channel</span><span class="o">,</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">());</span>
 </span><span class='line'>                <span class="n">readKey</span><span class="o">.</span><span class="na">attach</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
 </span><span class='line'>                <span class="kd">synchronized</span> <span class="o">(</span><span class="n">connectionList</span><span class="o">)</span> <span class="o">{</span>
 </span><span class='line'>                    <span class="n">connectionList</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">numConnections</span><span class="o">,</span> <span class="n">c</span><span class="o">);</span>
@@ -1584,13 +1642,13 @@
 </span><span class='line'>
 </span><span class='line'>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">processData</span><span class="o">(</span><span class="kt">byte</span><span class="o">[]</span> <span class="n">buf</span><span class="o">)</span> <span class="kd">throws</span>  <span class="n">IOException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
 </span><span class='line'>      <span class="n">DataInputStream</span> <span class="n">dis</span> <span class="o">=</span>
-</span><span class='line'>        <span class="k">new</span> <span class="nf">DataInputStream</span><span class="o">(</span><span class="k">new</span> <span class="n">ByteArrayInputStream</span><span class="o">(</span><span class="n">buf</span><span class="o">));</span>
+</span><span class='line'>        <span class="k">new</span> <span class="nf">DataInputStream</span><span class="o">(</span><span class="k">new</span> <span class="nf">ByteArrayInputStream</span><span class="o">(</span><span class="n">buf</span><span class="o">));</span>
 </span><span class='line'>      <span class="kt">int</span> <span class="n">id</span> <span class="o">=</span> <span class="n">dis</span><span class="o">.</span><span class="na">readInt</span><span class="o">();</span>                    <span class="c1">// try to read an id</span>
 </span><span class='line'>
 </span><span class='line'>      <span class="n">Writable</span> <span class="n">param</span> <span class="o">=</span> <span class="n">ReflectionUtils</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="n">paramClass</span><span class="o">,</span> <span class="n">conf</span><span class="o">);</span><span class="c1">//read param</span>
 </span><span class='line'>      <span class="n">param</span><span class="o">.</span><span class="na">readFields</span><span class="o">(</span><span class="n">dis</span><span class="o">);</span>
 </span><span class='line'>
-</span><span class='line'>      <span class="n">Call</span> <span class="n">call</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Call</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">param</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">Call</span> <span class="n">call</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Call</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">param</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
 </span><span class='line'>      <span class="n">callQueue</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">call</span><span class="o">);</span>              <span class="c1">// queue the call; maybe blocked here</span>
 </span><span class='line'>      <span class="n">incRpcCount</span><span class="o">();</span>  <span class="c1">// Increment the rpc count</span>
 </span><span class='line'>    <span class="o">}</span>
@@ -1705,7 +1763,7 @@
 </span><span class='line'>                    <span class="c1">// Discard the large buf and reset it back to </span>
 </span><span class='line'>                    <span class="c1">// smaller size to freeup heap</span>
 </span><span class='line'>                    <span class="k">if</span> <span class="o">(</span><span class="n">buf</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;</span> <span class="n">maxRespSize</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>                      <span class="n">buf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">(</span><span class="n">INITIAL_RESP_BUF_SIZE</span><span class="o">);</span>
+</span><span class='line'>                      <span class="n">buf</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ByteArrayOutputStream</span><span class="o">(</span><span class="n">INITIAL_RESP_BUF_SIZE</span><span class="o">);</span>
 </span><span class='line'>                    <span class="o">}</span>
 </span><span class='line'>                    <span class="n">responder</span><span class="o">.</span><span class="na">doRespond</span><span class="o">(</span><span class="n">call</span><span class="o">);</span> <span class="c1">// 处理返回结果</span>
 </span><span class='line'>                <span class="o">}</span>
@@ -2003,7 +2061,7 @@
 
 <p>至此整个流程就讲完了，经过三大组件轮番处理后，总算功德圆满。老规矩，最后附图一张。</p>
 
-<p><img src="http://JiajunYao.github.com/images/post/hdfs-source-code-analysis/hdfs_server_handle_client_request.png"></p>
+<p><img src="http://blog.jjyao.me/images/post/hdfs-source-code-analysis/hdfs_server_handle_client_request.png"></p>
 
 <p>参考链接：
 <a href="http://blog.csdn.net/xhh198781/article/details/7280084">1</a>
@@ -2017,7 +2075,7 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
 
 <p>在介绍这些类之前写给出一张直观上的图。在这里假设dfs.data.dir规定了/datanode/data1和/datanode/data2两个地方来存放DataNode中的数据，那么就有如下的一张图</p>
 
-<p><img src="http://JiajunYao.github.com/images/post/hdfs-source-code-analysis/hdfs_datanode_storage_abstract.png"></p>
+<p><img src="http://blog.jjyao.me/images/post/hdfs-source-code-analysis/hdfs_datanode_storage_abstract.png"></p>
 
 <p>可以看到DataNode通过DataStorage和FSDataset这两个类来管理着存放的数据。从这幅图中可以清晰看出来DataStorage和StorageDirectory属于一个阵营而FSDataset，FSVolumnSet，FSVolume和FSDir属于另一个阵营。它们虽然都用来管理DataNode中存放的数据，但是两块的功能不同。对于DataStorage和StorageDirectory来说主要完成的是HDFS的升级/回滚/提交操作。而对于另外一个阵营里面的类则是真正管理Block文件的，比如添加Block文件。其实只要看DataStorage和FSDataset的接口就可以知道这两个阵营所能做的事。</p>
 
@@ -2207,8 +2265,8 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
 </span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">dir</span> <span class="o">:</span> <span class="n">dataDirs</span><span class="o">)</span> <span class="o">{</span>
 </span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
 </span><span class='line'>            <span class="c1">// 检查配置项dfs.data.dir中给出的路径是否valid，比如确实是个目录而不是文件</span>
-</span><span class='line'>            <span class="n">DiskChecker</span><span class="o">.</span><span class="na">checkDir</span><span class="o">(</span><span class="n">localFS</span><span class="o">,</span> <span class="k">new</span> <span class="n">Path</span><span class="o">(</span><span class="n">dir</span><span class="o">),</span> <span class="n">dataDirPermission</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">dirs</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="n">dir</span><span class="o">));</span>
+</span><span class='line'>            <span class="n">DiskChecker</span><span class="o">.</span><span class="na">checkDir</span><span class="o">(</span><span class="n">localFS</span><span class="o">,</span> <span class="k">new</span> <span class="nf">Path</span><span class="o">(</span><span class="n">dir</span><span class="o">),</span> <span class="n">dataDirPermission</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">dirs</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nf">File</span><span class="o">(</span><span class="n">dir</span><span class="o">));</span>
 </span><span class='line'>        <span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
 </span><span class='line'>            <span class="c1">// omitted</span>
 </span><span class='line'>        <span class="o">}</span>
@@ -2242,9 +2300,9 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
 </span><span class='line'>
 </span><span class='line'>    <span class="n">InetSocketAddress</span> <span class="n">socAddr</span> <span class="o">=</span> <span class="n">DataNode</span><span class="o">.</span><span class="na">getStreamingAddr</span><span class="o">(</span><span class="n">conf</span><span class="o">);</span>
 </span><span class='line'>    <span class="kt">int</span> <span class="n">tmpPort</span> <span class="o">=</span> <span class="n">socAddr</span><span class="o">.</span><span class="na">getPort</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">storage</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataStorage</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">storage</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DataStorage</span><span class="o">();</span>
 </span><span class='line'>    <span class="c1">// construct registration</span>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">dnRegistration</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DatanodeRegistration</span><span class="o">(</span><span class="n">machineName</span> <span class="o">+</span> <span class="s">&quot;:&quot;</span> <span class="o">+</span> <span class="n">tmpPort</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">dnRegistration</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DatanodeRegistration</span><span class="o">(</span><span class="n">machineName</span> <span class="o">+</span> <span class="s">&quot;:&quot;</span> <span class="o">+</span> <span class="n">tmpPort</span><span class="o">);</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="c1">// connect to name node</span>
 </span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">namenode</span> <span class="o">=</span> <span class="o">(</span><span class="n">DatanodeProtocol</span><span class="o">)</span> <span class="c1">// 有没有很熟悉，和之前客户端向NameNode发送rpc请求的原理差不多</span>
@@ -2261,40 +2319,40 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
 </span><span class='line'>    <span class="c1">// adjust</span>
 </span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">dnRegistration</span><span class="o">.</span><span class="na">setStorageInfo</span><span class="o">(</span><span class="n">storage</span><span class="o">);</span>
 </span><span class='line'>    <span class="c1">// 创建一个FSDataset实例，创建完成后FSDataset内部就会有像上一节那样的图了</span>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">data</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FSDataset</span><span class="o">(</span><span class="n">storage</span><span class="o">,</span> <span class="n">conf</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">data</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">FSDataset</span><span class="o">(</span><span class="n">storage</span><span class="o">,</span> <span class="n">conf</span><span class="o">);</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="c1">// find free port or use privileged port provide</span>
 </span><span class='line'>    <span class="n">ServerSocket</span> <span class="n">ss</span><span class="o">;</span>
 </span><span class='line'>    <span class="k">if</span><span class="o">(</span><span class="n">secureResources</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
 </span><span class='line'>        <span class="n">ss</span> <span class="o">=</span> <span class="o">(</span><span class="n">socketWriteTimeout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">?</span>
-</span><span class='line'>            <span class="n">ServerSocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">().</span><span class="na">socket</span><span class="o">()</span> <span class="o">:</span> <span class="k">new</span> <span class="n">ServerSocket</span><span class="o">();</span>
+</span><span class='line'>            <span class="n">ServerSocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">().</span><span class="na">socket</span><span class="o">()</span> <span class="o">:</span> <span class="k">new</span> <span class="nf">ServerSocket</span><span class="o">();</span>
 </span><span class='line'>        <span class="n">Server</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">ss</span><span class="o">,</span> <span class="n">socAddr</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
 </span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
 </span><span class='line'>        <span class="n">ss</span> <span class="o">=</span> <span class="n">resources</span><span class="o">.</span><span class="na">getStreamingSocket</span><span class="o">();</span>
 </span><span class='line'>    <span class="o">}</span>
 </span><span class='line'>    <span class="c1">// adjust machine name with the actual port</span>
 </span><span class='line'>    <span class="n">tmpPort</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="na">getLocalPort</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">selfAddr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InetSocketAddress</span><span class="o">(</span><span class="n">ss</span><span class="o">.</span><span class="na">getInetAddress</span><span class="o">().</span><span class="na">getHostAddress</span><span class="o">(),</span>
+</span><span class='line'>    <span class="n">selfAddr</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">InetSocketAddress</span><span class="o">(</span><span class="n">ss</span><span class="o">.</span><span class="na">getInetAddress</span><span class="o">().</span><span class="na">getHostAddress</span><span class="o">(),</span>
 </span><span class='line'>            <span class="n">tmpPort</span><span class="o">);</span>
 </span><span class='line'>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">threadGroup</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ThreadGroup</span><span class="o">(</span><span class="s">&quot;dataXceiverServer&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">threadGroup</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ThreadGroup</span><span class="o">(</span><span class="s">&quot;dataXceiverServer&quot;</span><span class="o">);</span>
 </span><span class='line'>    <span class="c1">// 这个服务器是用来处理Client或者其他DataNode对于Block文件的处理请求，比如要求发送某个Block文件的内容</span>
 </span><span class='line'>    <span class="c1">// 这个服务器上使用的不是RPC机制而是一种流式机制，因为要传输Block文件的内容嘛</span>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">dataXceiverServer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Daemon</span><span class="o">(</span><span class="n">threadGroup</span><span class="o">,</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">dataXceiverServer</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Daemon</span><span class="o">(</span><span class="n">threadGroup</span><span class="o">,</span>
 </span><span class='line'>            <span class="k">new</span> <span class="nf">DataXceiverServer</span><span class="o">(</span><span class="n">ss</span><span class="o">,</span> <span class="n">conf</span><span class="o">,</span> <span class="k">this</span><span class="o">));</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="n">DataNode</span><span class="o">.</span><span class="na">nameNodeAddr</span> <span class="o">=</span> <span class="n">nameNodeAddr</span><span class="o">;</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="c1">//initialize periodic block scanner</span>
 </span><span class='line'>    <span class="c1">// 单独的一个线程，定期对所有的Block文件进行扫描校验</span>
-</span><span class='line'>    <span class="n">blockScanner</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataBlockScanner</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="o">(</span><span class="n">FSDataset</span><span class="o">)</span><span class="n">data</span><span class="o">,</span> <span class="n">conf</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">blockScanner</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DataBlockScanner</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="o">(</span><span class="n">FSDataset</span><span class="o">)</span><span class="n">data</span><span class="o">,</span> <span class="n">conf</span><span class="o">);</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="c1">//create a servlet to serve full-file content</span>
 </span><span class='line'>    <span class="c1">// 开启一个web服务器，运行通过浏览器来获得DataNode的状态</span>
 </span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">infoServer</span> <span class="o">=</span> <span class="o">(</span><span class="n">secureResources</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
-</span><span class='line'>        <span class="o">?</span> <span class="k">new</span> <span class="n">HttpServer</span><span class="o">(</span><span class="s">&quot;datanode&quot;</span><span class="o">,</span> <span class="n">infoHost</span><span class="o">,</span> <span class="n">tmpInfoPort</span><span class="o">,</span> <span class="n">tmpInfoPort</span> <span class="o">==</span> <span class="mi">0</span><span class="o">,</span>
+</span><span class='line'>        <span class="o">?</span> <span class="k">new</span> <span class="nf">HttpServer</span><span class="o">(</span><span class="s">&quot;datanode&quot;</span><span class="o">,</span> <span class="n">infoHost</span><span class="o">,</span> <span class="n">tmpInfoPort</span><span class="o">,</span> <span class="n">tmpInfoPort</span> <span class="o">==</span> <span class="mi">0</span><span class="o">,</span>
 </span><span class='line'>                <span class="n">conf</span><span class="o">,</span> <span class="n">SecurityUtil</span><span class="o">.</span><span class="na">getAdminAcls</span><span class="o">(</span><span class="n">conf</span><span class="o">,</span> <span class="n">DFSConfigKeys</span><span class="o">.</span><span class="na">DFS_ADMIN</span><span class="o">))</span>
-</span><span class='line'>        <span class="o">:</span> <span class="k">new</span> <span class="n">HttpServer</span><span class="o">(</span><span class="s">&quot;datanode&quot;</span><span class="o">,</span> <span class="n">infoHost</span><span class="o">,</span> <span class="n">tmpInfoPort</span><span class="o">,</span> <span class="n">tmpInfoPort</span> <span class="o">==</span> <span class="mi">0</span><span class="o">,</span>
+</span><span class='line'>        <span class="o">:</span> <span class="k">new</span> <span class="nf">HttpServer</span><span class="o">(</span><span class="s">&quot;datanode&quot;</span><span class="o">,</span> <span class="n">infoHost</span><span class="o">,</span> <span class="n">tmpInfoPort</span><span class="o">,</span> <span class="n">tmpInfoPort</span> <span class="o">==</span> <span class="mi">0</span><span class="o">,</span>
 </span><span class='line'>                <span class="n">conf</span><span class="o">,</span> <span class="n">SecurityUtil</span><span class="o">.</span><span class="na">getAdminAcls</span><span class="o">(</span><span class="n">conf</span><span class="o">,</span> <span class="n">DFSConfigKeys</span><span class="o">.</span><span class="na">DFS_ADMIN</span><span class="o">),</span>
 </span><span class='line'>                <span class="n">secureResources</span><span class="o">.</span><span class="na">getListener</span><span class="o">());</span>
 </span><span class='line'>
@@ -2305,7 +2363,7 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
 </span><span class='line'>
 </span><span class='line'>    <span class="c1">// BlockTokenSecretManager is created here, but it shouldn&#39;t be</span>
 </span><span class='line'>    <span class="c1">// used until it is initialized in register().</span>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">blockTokenSecretManager</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BlockTokenSecretManager</span><span class="o">(</span><span class="kc">false</span><span class="o">,</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">blockTokenSecretManager</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">BlockTokenSecretManager</span><span class="o">(</span><span class="kc">false</span><span class="o">,</span>
 </span><span class='line'>            <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
 </span><span class='line'>    <span class="c1">//init ipc server</span>
 </span><span class='line'>    <span class="n">InetSocketAddress</span> <span class="n">ipcAddr</span> <span class="o">=</span> <span class="n">NetUtils</span><span class="o">.</span><span class="na">createSocketAddr</span><span class="o">(</span>
@@ -2561,7 +2619,7 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
 </span><span class='line'>            <span class="c1">// 只会执行一次</span>
 </span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">blockScanner</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">blockScannerThread</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span>
 </span><span class='line'>                    <span class="n">upgradeManager</span><span class="o">.</span><span class="na">isUpgradeCompleted</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>                <span class="n">blockScannerThread</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Daemon</span><span class="o">(</span><span class="n">blockScanner</span><span class="o">);</span>
+</span><span class='line'>                <span class="n">blockScannerThread</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Daemon</span><span class="o">(</span><span class="n">blockScanner</span><span class="o">);</span>
 </span><span class='line'>                <span class="n">blockScannerThread</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
 </span><span class='line'>            <span class="o">}</span>
 </span><span class='line'>
@@ -2608,9 +2666,9 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
   
   <entry>
     <title type="html"><![CDATA[Insert One Million Rows Into Database]]></title>
-    <link href="http://JiajunYao.github.com/blog/2012/06/02/insert-one-million-rows-into-database/"/>
-    <updated>2012-06-02T15:30:00+08:00</updated>
-    <id>http://JiajunYao.github.com/blog/2012/06/02/insert-one-million-rows-into-database</id>
+    <link href="http://blog.jjyao.me/blog/2012/06/02/insert-one-million-rows-into-database/"/>
+    <updated>2012-06-02T15:30:00-04:00</updated>
+    <id>http://blog.jjyao.me/blog/2012/06/02/insert-one-million-rows-into-database</id>
     <content type="html"><![CDATA[<p>数据库课的一次作业，要求是尽可能快的插入一百万条数据到数据库。这也是第一次和数据库性能接触，在做作业的过程中也有所感受所以决定写下来。这次作业我选择的是用C和MySQL来完成，并使用MySQL的C API。程序的逻辑很简单就是随机生成一百万条数据然后插入数据库，关键是如何能快速的插入。我进行了多次尝试，每次尝试都在插入数据上有所提升。</p>
 
 <!-- more -->
@@ -2618,42 +2676,33 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
 
 <p>最开始的尝试就是使用InnoDB引擎，插入就是一个for循环做一百万次，每次循环里都调用mysql_query()执行一条插入语句。实验表明如果这样做的话非常慢我花了200分钟才插入了37万多条数据。显然这种插入方法是不行的。而这样插入非常慢的原因是InnoDB是事务型数据库，而默认情况下每一次调用mysql_query()执行的insert操作都会被看成是一个transaction，InnoDB对于transaction的处理花费了太多的时间，它需要进行写日志等操作。</p>
 
-<p>知道transaction对数据库插入速度有这样大的影响后，接下来就是要降低事务数，最好将一百万条插入操作都放在一个transaction中完成。于是我在程序里加了两行代码，第一行是调用mysql_autocommit()将auto commit关闭，这样MySQL就不会将每一次的插入操作都当成一个transaction了。第二行是在程序最后加上mysql_commit()手动提交transaction，就这两行代码导致插入时间大幅减少。我用time命令记录了程序的运行时间，结果如下：</p>
+<p>知道transaction对数据库插入速度有这样大的影响后，接下来就是要降低事务数，最好将一百万条插入操作都放在一个transaction中完成。于是我在程序里加了两行代码，第一行是调用mysql_autocommit()将auto commit关闭，这样MySQL就不会将每一次的插入操作都当成一个transaction了。第二行是在程序最后加上mysql_commit()手动提交transaction，就这两行代码导致插入时间大幅减少。我用time命令记录了程序的运行时间，结果如下：
+    real 1m8.693s
+    user 0m5.615s
+    sys  0m10.081s</p>
 
-<pre><code>real 1m8.693s
-user 0m5.615s
-sys  0m10.081s
-</code></pre>
+<p>接下来的尝试就是使用MySQL的multiple insert也就是一条insert语句插入多条数据，语法像这样：INSERT INTO x (a, b) VALUES (1, 2), (2, 3), (3, 5); 。这个方法也是MySQL官网建议的提高插入速度的方法之一。我想做的事就是用一条insert语句插入一百万条数据。为了达到这个目的我就要先构造这样的一个insert语句，方法很简单就是先malloc一个很大的字符数组，然后不停的使用strcat()来向这个字符数组中填值，也就是说要调用一百万次strcat()来构造这样的一个insert语句。当我跑这个重新改后的程序时发现构造这样的一个insert语句非常慢，无法在有限的时间内完成。后来发现问题出在strcat()上，实现这个方法的算法很低效，这个算法是设计来让人们调用一次的而不是一百万次的，根据时间复杂度调用一百万次strcat()就会非常耗时，具体关于strcat()问题可以参见<a href="http://www.joelonsoftware.com/articles/fog0000000319.html">Joel的文章</a>。问题的解决办法就是自己写一个高效的strcat()方法，这个在Joel的文章里也给出来了。把这个问题解决后构造一个insert语句就是瞬间的事了，在这里算法课上反复强调的时间复杂度得到了充分的体现。把这个问题解决后又出现了一个新的问题那就是我一跑程序就告诉我&#8221;MySQL server has gone away&#8221;，上网找了一下发现原因是发送的insert语句太大了超出了max_allowed_packet的大小，解决方案就是把MySQL配置文件里的max_allowed_packet大小改到足够大就可以了，顿时我就觉得为什么MySQL不能直接告诉我包过大呢，非要给出一个等于没说的信息，太不友好了。解决了所有问题后这种方案终于能跑了，插入时间也进一步减小了，对于这种方案能降低插入时间的原因我猜是不是因为减少了网络中包传输的次数。我用time命令记录了程序的运行时间，结果如下：
+    real 0m10.971s
+    user 0m0.514s
+    sys  0m0.008s</p>
 
-<p>接下来的尝试就是使用MySQL的multiple insert也就是一条insert语句插入多条数据，语法像这样：INSERT INTO x (a, b) VALUES (1, 2), (2, 3), (3, 5); 。这个方法也是MySQL官网建议的提高插入速度的方法之一。我想做的事就是用一条insert语句插入一百万条数据。为了达到这个目的我就要先构造这样的一个insert语句，方法很简单就是先malloc一个很大的字符数组，然后不停的使用strcat()来向这个字符数组中填值，也就是说要调用一百万次strcat()来构造这样的一个insert语句。当我跑这个重新改后的程序时发现构造这样的一个insert语句非常慢，无法在有限的时间内完成。后来发现问题出在strcat()上，实现这个方法的算法很低效，这个算法是设计来让人们调用一次的而不是一百万次的，根据时间复杂度调用一百万次strcat()就会非常耗时，具体关于strcat()问题可以参见<a href="http://www.joelonsoftware.com/articles/fog0000000319.html">Joel的文章</a>。问题的解决办法就是自己写一个高效的strcat()方法，这个在Joel的文章里也给出来了。把这个问题解决后构造一个insert语句就是瞬间的事了，在这里算法课上反复强调的时间复杂度得到了充分的体现。把这个问题解决后又出现了一个新的问题那就是我一跑程序就告诉我&#8221;MySQL server has gone away&#8221;，上网找了一下发现原因是发送的insert语句太大了超出了max_allowed_packet的大小，解决方案就是把MySQL配置文件里的max_allowed_packet大小改到足够大就可以了，顿时我就觉得为什么MySQL不能直接告诉我包过大呢，非要给出一个等于没说的信息，太不友好了。解决了所有问题后这种方案终于能跑了，插入时间也进一步减小了，对于这种方案能降低插入时间的原因我猜是不是因为减少了网络中包传输的次数。我用time命令记录了程序的运行时间，结果如下：</p>
+<p>接下来做的就是换个数据库引擎把transaction的开销给消除了，我用了MyISAM引擎，这是个非事务型引擎。改完引擎后再一次发现transaction的开销好大啊。我用time命令记录了程序的运行时间，结果如下:
+    real 0m3.863s
+    user 0m0.514s
+    sys  0m0.010s</p>
 
-<pre><code>real 0m10.971s
-user 0m0.514s
-sys  0m0.008s
-</code></pre>
+<p>然后还尝试了一下MySQL的必杀技load data infile，这种方法可以使插入的效率提高数倍，很适合大批量数据的插入。程序运行结果如下：
+    real 0m2.481s
+    user 0m0.400s
+    sys  0m0.015s</p>
 
-<p>接下来做的就是换个数据库引擎把transaction的开销给消除了，我用了MyISAM引擎，这是个非事务型引擎。改完引擎后再一次发现transaction的开销好大啊。我用time命令记录了程序的运行时间，结果如下:</p>
+<p>最后用openmp写了一个多线程的程序来同时插入，由于测试机子是四核的所以开了四个线程。然后分别在两种数据库引擎下都做了实验，结果如下：
+    MyISAM：
+    real 0m2.897s
+    user 0m0.686s
+    sys  0m0.019s</p>
 
-<pre><code>real 0m3.863s
-user 0m0.514s
-sys  0m0.010s
-</code></pre>
-
-<p>然后还尝试了一下MySQL的必杀技load data infile，这种方法可以使插入的效率提高数倍，很适合大批量数据的插入。程序运行结果如下：</p>
-
-<pre><code>real 0m2.481s
-user 0m0.400s
-sys  0m0.015s
-</code></pre>
-
-<p>最后用openmp写了一个多线程的程序来同时插入，由于测试机子是四核的所以开了四个线程。然后分别在两种数据库引擎下都做了实验，结果如下：</p>
-
-<pre><code>MyISAM：
-real 0m2.897s
-user 0m0.686s
-sys  0m0.019s
-
-InnoDB：
+<pre><code>InnoDB：
 real 0m10.780s
 user 0m0.686s
 sys  0m0.019s
@@ -2726,15 +2775,15 @@ void load_data_infile()
         name = names[rand() % 10];
         for(int j = 0; j &lt; 5; j++)
         {
-            letters[j] = 'a' + rand() % 5;
+            letters[j] = &#39;a&#39; + rand() % 5;
         }
-        letters[5] = '\0';
+        letters[5] = &#39;\0&#39;;
         number = rand() % 20 + 1;
         fprintf(file, &quot;%s\t%s\t%d\n&quot;, name, letters, number);
     }
     fclose(file);
 
-    if(mysql_query(db_conn, &quot;LOAD DATA INFILE '/tmp/mysql.txt' INTO TABLE test (col1, col2, col3)&quot;) != 0)
+    if(mysql_query(db_conn, &quot;LOAD DATA INFILE &#39;/tmp/mysql.txt&#39; INTO TABLE test (col1, col2, col3)&quot;) != 0)
     {
         print_mysql_error(db_conn, &quot;load data infile error&quot;);
     }
@@ -2776,14 +2825,14 @@ void parallel_insert_test()
                 name = names[rand_r(&amp;seed) % 10];
                 for(int j = 0; j &lt; 5; j++)
                 {
-                    letters[j] = 'a' + rand_r(&amp;seed) % 5;
+                    letters[j] = &#39;a&#39; + rand_r(&amp;seed) % 5;
                 }
-                letters[5] = '\0';
+                letters[5] = &#39;\0&#39;;
                 number = rand_r(&amp;seed) % 20 + 1;
-                snprintf(insert_value, sizeof(insert_value), &quot;('%s', '%s', %d),&quot;, name, letters, number);
+                snprintf(insert_value, sizeof(insert_value), &quot;(&#39;%s&#39;, &#39;%s&#39;, %d),&quot;, name, letters, number);
                 query_copy = mystrcat(query_copy, insert_value);
             }
-            *(query_copy - 1) = '\0';
+            *(query_copy - 1) = &#39;\0&#39;;
             if(mysql_query(db_conn, query) != 0)
             {
                 print_mysql_error(db_conn, &quot;insert error&quot;);
@@ -2832,14 +2881,14 @@ void insert_test()
             name = names[rand() % 10];
             for(int j = 0; j &lt; 5; j++)
             {
-                letters[j] = 'a' + rand() % 5;
+                letters[j] = &#39;a&#39; + rand() % 5;
             }
-            letters[5] = '\0';
+            letters[5] = &#39;\0&#39;;
             number = rand() % 20 + 1;
-            snprintf(insert_value, sizeof(insert_value), &quot;('%s', '%s', %d),&quot;, name, letters, number);
+            snprintf(insert_value, sizeof(insert_value), &quot;(&#39;%s&#39;, &#39;%s&#39;, %d),&quot;, name, letters, number);
             query_copy = mystrcat(query_copy, insert_value);
         }
-        *(query_copy - 1) = '\0';
+        *(query_copy - 1) = &#39;\0&#39;;
         if(mysql_query(db_conn, query) != 0)
         {
             print_mysql_error(db_conn, &quot;insert error&quot;);
@@ -2883,7 +2932,7 @@ use test;
 drop table if exists test;
 create table test(
     id integer primary key auto_increment,
-    /*col1 enum('Mike', 'Bob', 'Jack', 'Alice', 'Cathy', 'Ann', 'Betty', 'Cindy', 'Mary', 'Jane'),*/
+    /*col1 enum(&#39;Mike&#39;, &#39;Bob&#39;, &#39;Jack&#39;, &#39;Alice&#39;, &#39;Cathy&#39;, &#39;Ann&#39;, &#39;Betty&#39;, &#39;Cindy&#39;, &#39;Mary&#39;, &#39;Jane&#39;),*/
     col1 char(5),
     col2 char(5),
     col3 tinyint
@@ -2896,9 +2945,9 @@ create table test(
   
   <entry>
     <title type="html"><![CDATA[Why We Should Use Library]]></title>
-    <link href="http://JiajunYao.github.com/blog/2012/04/22/why-we-should-use-library/"/>
-    <updated>2012-04-22T12:39:00+08:00</updated>
-    <id>http://JiajunYao.github.com/blog/2012/04/22/why-we-should-use-library</id>
+    <link href="http://blog.jjyao.me/blog/2012/04/22/why-we-should-use-library/"/>
+    <updated>2012-04-22T12:39:00-04:00</updated>
+    <id>http://blog.jjyao.me/blog/2012/04/22/why-we-should-use-library</id>
     <content type="html"><![CDATA[<p>库(Library)在wikipeida的定义如下：</p>
 
 <blockquote><p>In computer science, a library is a collection of resources used to develop software. These may include pre-written code and subroutines, classes, values or type specifications.</p></blockquote>
@@ -2926,7 +2975,7 @@ create table test(
 
 <h3>保证质量</h3>
 
-<p>这里的质量指的是库的质量。一般而言，官方提供的库的质量都是相当高的。这些代码都经过大量的测试和用户使用的考验。一旦有什么bug很容易发现，并且及时改正过来。同时编写这些库的人都是领域中的大牛，他们有着许多年的开发经验，写的代码照理说肯定比我们自己写的要质量高。在Effective C++中有这么一个Item: &#8220;Familiarize yourself with Boost&#8221;，在这个Item里面Meyers介绍了一个库在被Boost接受前经历的步骤，包括公开的同级评审(peer review)，评审经理的审查(review manager)，社区的正式评审(official review)。整个过程被boost概述为“讨论、精炼、多次提交直到感到满意”的循环。有着这样严格的审查过程，Boost库的质量可想而知。</p>
+<p>这里的质量指的是库的质量。一般而言，官方提供的库的质量都是相当高的。这些代码都经过大量的测试和用户使用的考验。一旦有什么bug很容易发现，并且及时改正过来。同时编写这些库的人都是领域中的大牛，他们有着许多年的开发经验，写的代码照理说肯定比我们自己写的要质量高。在Effective C++中有这么一个Item: &ldquo;Familiarize yourself with Boost&#8221;，在这个Item里面Meyers介绍了一个库在被Boost接受前经历的步骤，包括公开的同级评审(peer review)，评审经理的审查(review manager)，社区的正式评审(official review)。整个过程被boost概述为“讨论、精炼、多次提交直到感到满意”的循环。有着这样严格的审查过程，Boost库的质量可想而知。</p>
 
 <h3>提高效率</h3>
 
@@ -2983,9 +3032,9 @@ create table test(
 
 <p>第二个例子是SGI STL的copy算法，其脉络如图(来自侯捷老师的《STL源码剖析》):</p>
 
-<p><img src="http://JiajunYao.github.com/images/post/why-we-should-use-library/sgi-stl-copy.png"></p>
+<p><img src="http://blog.jjyao.me/images/post/why-we-should-use-library/sgi-stl-copy.png"></p>
 
-<p>从上图可以看出，虽然copy算法给我们的是一个统一的接口，但其内部却是有多个实现方式，目的是针对不同的情况给出最佳的copy实现。为了利用memmove()，作者想尽了一切办法，又是泛化又是特化。同时作者对于for(;first!=last;&#8230;)和for(&#8230;; n &lt; last-first; &#8230;)这样两种循环方式的效率差异性都进行了考虑。所有这一切的目的只有一个就是提高效率。用侯捷老师的话说就是<q>强化效率无所不用其极</q>。关于更多SGI STL copy算法的实现，可以参考侯捷老师的《STL源码剖析》。</p>
+<p>从上图可以看出，虽然copy算法给我们的是一个统一的接口，但其内部却是有多个实现方式，目的是针对不同的情况给出最佳的copy实现。为了利用memmove()，作者想尽了一切办法，又是泛化又是特化。同时作者对于for(;first!=last;&hellip;)和for(&hellip;; n &lt; last-first; &hellip;)这样两种循环方式的效率差异性都进行了考虑。所有这一切的目的只有一个就是提高效率。用侯捷老师的话说就是<q>强化效率无所不用其极</q>。关于更多SGI STL copy算法的实现，可以参考侯捷老师的《STL源码剖析》。</p>
 
 <p>第三个例子是Java的数组拷贝算法：
 为了高效的copy Java的数组，Java 类库专门提供了一个System.arraycopy的方法。那这个方法又有什么高级之处呢？通过查看源代码我们就可以发现这个方法是个native 方法。然后我们来看看OpenJDK是如何实现这个native方法的。经过一番查找可以找到以下代码代码片段：</p>
@@ -2993,7 +3042,7 @@ create table test(
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">static</span> <span class="kt">void</span> <span class="n">pd_conjoint_bytes</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">from</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">to</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">count</span><span class="p">){</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">static</span> <span class="kt">void</span> <span class="nf">pd_conjoint_bytes</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">from</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">to</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">count</span><span class="p">){</span>
 </span><span class='line'>    <span class="n">memmove</span><span class="p">(</span><span class="n">to</span><span class="p">,</span> <span class="n">from</span><span class="p">,</span> <span class="n">count</span><span class="p">);</span>
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
@@ -3018,7 +3067,7 @@ create table test(
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
 <span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">static</span> <span class="kt">void</span> <span class="n">atomic_copy64</span><span class="p">(</span><span class="k">volatile</span> <span class="kt">void</span> <span class="o">*</span><span class="n">src</span><span class="p">,</span> <span class="k">volatile</span> <span class="kt">void</span> <span class="o">*</span><span class="n">dst</span><span class="p">){</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">static</span> <span class="kt">void</span> <span class="nf">atomic_copy64</span><span class="p">(</span><span class="k">volatile</span> <span class="kt">void</span> <span class="o">*</span><span class="n">src</span><span class="p">,</span> <span class="k">volatile</span> <span class="kt">void</span> <span class="o">*</span><span class="n">dst</span><span class="p">){</span>
 </span><span class='line'><span class="cp">#if defined(PPC) &amp;&amp; !defined(_LP64)</span>
 </span><span class='line'>    <span class="kt">double</span> <span class="n">tmp</span><span class="p">;</span>
 </span><span class='line'>    <span class="n">asm</span> <span class="k">volatile</span> <span class="p">(</span><span class="s">&quot;lfd %0,  0(%1)</span><span class="se">\n</span><span class="s">&quot;</span>
@@ -3042,7 +3091,7 @@ create table test(
 
 <p>看了这三个例子，我们应该能感受到库提供程序的效率了吧。即使我们能写出和库一样效率的算法，我们要花多少时间，写完的质量怎么样，这些都要打个问号。想想Java的System.arraycopy吧。</p>
 
-<p>总的来说能使用库的时候尽量使用，这会使你的代码质量更高，效率更高。在软件工程中有句名言<q>Don&#8217;t Reinvent the Wheel</q>，这就是我们对待库的态度。当然作为学生来讲，我们不仅要能熟练的使用库，最好还能深入库的源代码，像大师们取经，这会让我们受益匪浅。</p>
+<p>总的来说能使用库的时候尽量使用，这会使你的代码质量更高，效率更高。在软件工程中有句名言<q>Don&rsquo;t Reinvent the Wheel</q>，这就是我们对待库的态度。当然作为学生来讲，我们不仅要能熟练的使用库，最好还能深入库的源代码，像大师们取经，这会让我们受益匪浅。</p>
 ]]></content>
   </entry>
   

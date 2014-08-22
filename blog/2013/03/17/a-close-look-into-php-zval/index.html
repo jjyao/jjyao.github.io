@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>A Close Look Into PHP zval - My Personal Blog</title>
+  <title>A Close Look Into PHP Zval - My Personal Blog</title>
   <meta name="author" content="jjyao">
 
   
@@ -18,13 +18,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://JiajunYao.github.com/blog/2013/03/17/a-close-look-into-php-zval">
+  <link rel="canonical" href="http://blog.jjyao.me/blog/2013/03/17/a-close-look-into-php-zval">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="My Personal Blog" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -60,9 +60,9 @@
   
 </ul>
   
-<form action="http://google.com/search" method="get">
+<form action="https://www.google.com/search" method="get">
   <fieldset role="search">
-    <input type="hidden" name="q" value="site:JiajunYao.github.com" />
+    <input type="hidden" name="q" value="site:blog.jjyao.me" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
@@ -92,14 +92,7 @@
 
 
 
-
-
-
-
-  
-
-
-<time datetime="2013-03-17T13:43:00+08:00" pubdate data-updated="true">Mar 17<span>th</span>, 2013</time>
+<time class='entry-date' datetime='2013-03-17T13:43:00-04:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>1:43 pm</span></time>
         
       </p>
     
@@ -115,7 +108,7 @@
 
 <p>简单的来说zval就是PHP variable的value在低层C的表示。大家都知道PHP主要是用C语言来写的，于是所有东西应该都有一个C的对应，PHP variable的value对应就是zval struct。首先先来看一下zval struct的定义：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -145,7 +138,7 @@
 </span><span class='line'>    <span class="n">zend_uchar</span> <span class="n">type</span><span class="p">;</span>
 </span><span class='line'>    <span class="n">zend_uchar</span> <span class="n">is_ref</span><span class="p">;</span>
 </span><span class='line'><span class="p">}</span> <span class="n">zval</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>接下来我们就从最简单的开始，逐一解释一下各个字段的含义。</p>
@@ -161,51 +154,51 @@
 <table>
 <thead>
 <tr>
-<th align="center">PHP variable type </th>
-<th align="center"> zval value            </th>
-<th align="center"> Notes</th>
+<th style="text-align:center;">PHP variable type </th>
+<th style="text-align:center;"> zval value            </th>
+<th style="text-align:center;"> Notes</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td align="center">Long              </td>
-<td align="center"> long lval             </td>
+<td style="text-align:center;">Long              </td>
+<td style="text-align:center;"> long lval             </td>
 <td></td>
 </tr>
 <tr>
-<td align="center">Double            </td>
-<td align="center"> double dval           </td>
+<td style="text-align:center;">Double            </td>
+<td style="text-align:center;"> double dval           </td>
 <td></td>
 </tr>
 <tr>
-<td align="center">String            </td>
-<td align="center"> struct{…} str         </td>
+<td style="text-align:center;">String            </td>
+<td style="text-align:center;"> struct{…} str         </td>
 <td></td>
 </tr>
 <tr>
-<td align="center">Resource          </td>
-<td align="center"> long lval             </td>
-<td align="center"> 存放的只是resource的identifier,而不是resource本身</td>
+<td style="text-align:center;">Resource          </td>
+<td style="text-align:center;"> long lval             </td>
+<td style="text-align:center;"> 存放的只是resource的identifier,而不是resource本身</td>
 </tr>
 <tr>
-<td align="center">Boolean           </td>
-<td align="center"> long lval             </td>
-<td align="center"> 0表示FALSE，1表示TRUE</td>
+<td style="text-align:center;">Boolean           </td>
+<td style="text-align:center;"> long lval             </td>
+<td style="text-align:center;"> 0表示FALSE，1表示TRUE</td>
 </tr>
 <tr>
-<td align="center">Array             </td>
-<td align="center"> HashTable *ht         </td>
-<td align="center"> PHP的很多东西都是用HashTable来实现的</td>
+<td style="text-align:center;">Array             </td>
+<td style="text-align:center;"> HashTable *ht         </td>
+<td style="text-align:center;"> PHP的很多东西都是用HashTable来实现的</td>
 </tr>
 <tr>
-<td align="center">Ojbect            </td>
-<td align="center"> zend_object_value obj </td>
+<td style="text-align:center;">Ojbect            </td>
+<td style="text-align:center;"> zend_object_value obj </td>
 <td></td>
 </tr>
 <tr>
-<td align="center">NULL              </td>
-<td align="center">                       </td>
-<td align="center"> NULL本身也是一种类型，但它不需要使用<code>value</code>字段</td>
+<td style="text-align:center;">NULL              </td>
+<td style="text-align:center;">                       </td>
+<td style="text-align:center;"> NULL本身也是一种类型，但它不需要使用<code>value</code>字段</td>
 </tr>
 </tbody>
 </table>
@@ -217,7 +210,7 @@
 
 <p>从上面的对应表可以看出Object的value是用<code>zend_object_value</code>这个struct来表示的，我们就看看这个struct的定义：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -225,7 +218,7 @@
 </span><span class='line'>    <span class="n">zend_object_handle</span> <span class="n">handle</span><span class="p">;</span>
 </span><span class='line'>    <span class="n">zend_object_handlers</span> <span class="o">*</span><span class="n">handlers</span><span class="p">;</span>
 </span><span class='line'><span class="p">}</span> <span class="n">zend_object_value</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>在这里要说明的是一个ojbect的data并不是直接存放在zend_object_value里面的，而是放在object store中，也就是说每个object都有一个对应的object store（这应该也是用HashTable来实现的吧），里面放着object的data，也就是object属性的值，这些值本身也是一个个的zval。接下里PHP要做的就是建立object和object store的一一对应关系，而这个就是通过<code>zend_object_handle handle</code>来实现的，这是一个long值，相当于object store的identifier,通过这个<code>handle</code>就可以找到object的data在那里了。而<code>zend_object_handlers *handlers</code>指向了一些处理函数，比如用来访问object属性的函数等等，这个在这里就不再详述了，有兴趣的可以看<a href="https://wiki.php.net/internals/engine/objects">这里</a>。讲到这里，我们应该知道了对于object的zval来说本身并没有存放object的data，而只是存放了一个整数型的handle。认识到这一点很重要，因为这会对接下来讨论的copy by reference和copy by value产生直接的影响。</p>
@@ -242,7 +235,7 @@
 
 <p>看完了<code>type</code>和<code>value</code>字段，接下来就看看<code>refcount</code>和<code>if_ref</code>字段，这两个字段关系到gc,关系到copy by value和copy by reference，所以非常重要，需要仔细讲解。<code>refcount</code>表明当前有多少个variable指向了这个zval，这个信息就可以用来gc，当<code>refcount</code>变为0后，这个zval就可以被回收。<code>if_ref</code>表明当前指向这个zval的variable是不是reference。在PHP中一个variable可以是value type就像这样<code>$b = $a</code>或者是reference type就像这样<code>$b = &amp;$a</code>。在语义上这两者是不同的，因此也就拥有不同的行为，我们首先要区分这两种类型的variable，这个通过代码解释最好不过了。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -253,18 +246,18 @@
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='PHP'><span class='line'><span class="x">$a = &#39;hello&#39;;</span>
-</span><span class='line'><span class="x">$b = $a; // $b is value type</span>
-</span><span class='line'><span class="x">$a = &#39;world&#39;;</span>
-</span><span class='line'><span class="x">var_dump($a); // &#39;world&#39;</span>
-</span><span class='line'><span class="x">var_dump($b); // &#39;hello&#39;</span>
+</pre></td><td class='code'><pre><code class='PHP'><span class='line'><span class="nv">$a</span> <span class="o">=</span> <span class="s1">&#39;hello&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$b</span> <span class="o">=</span> <span class="nv">$a</span><span class="p">;</span> <span class="c1">// $b is value type</span>
+</span><span class='line'><span class="nv">$a</span> <span class="o">=</span> <span class="s1">&#39;world&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nb">var_dump</span><span class="p">(</span><span class="nv">$a</span><span class="p">);</span> <span class="c1">// &#39;world&#39;</span>
+</span><span class='line'><span class="nb">var_dump</span><span class="p">(</span><span class="nv">$b</span><span class="p">);</span> <span class="c1">// &#39;hello&#39;</span>
 </span><span class='line'>
-</span><span class='line'><span class="x">$a = &#39;hello&#39;;</span>
-</span><span class='line'><span class="x">$b = &amp;$a; // $b is reference type</span>
-</span><span class='line'><span class="x">$a = &#39;world&#39;;</span>
-</span><span class='line'><span class="x">var_dump($a); // &#39;world&#39;</span>
-</span><span class='line'><span class="x">var_dump($b); // &#39;world&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="nv">$a</span> <span class="o">=</span> <span class="s1">&#39;hello&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$b</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nv">$a</span><span class="p">;</span> <span class="c1">// $b is reference type</span>
+</span><span class='line'><span class="nv">$a</span> <span class="o">=</span> <span class="s1">&#39;world&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nb">var_dump</span><span class="p">(</span><span class="nv">$a</span><span class="p">);</span> <span class="c1">// &#39;world&#39;</span>
+</span><span class='line'><span class="nb">var_dump</span><span class="p">(</span><span class="nv">$b</span><span class="p">);</span> <span class="c1">// &#39;world&#39;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>从上面一段代码可以看出如果$b是value type的话，它的值并不会随着$a的改变而改变，就好像在执行<code>$b = $a</code>时，<code>$a</code>的值(zval)被复制了一份，也就是说<code>$a</code>和<code>$b</code>拥有自己独立的zval，两者互不影响。而如果是reference type的话，就如同<code>$a</code>和<code>$b</code>共用了一个zval，不管是改变<code>$a</code>，还是<code>$b</code>，其实都是改变一个zval。但事实没有这么简单，如果真像上面所说的那样执行<code>$b = $a</code>时，zval复制了一份，那么效率也太低了，因为有可能<code>$b</code>和<code>$a</code>在接下来的使用过程中都是只读的，它们本可以共用一个zval而不会出问题。那么PHP究竟是如何实现的呢，答案就是通过<code>refcount</code>和<code>if_ref</code>实现了copy on write机制。而这个copy on write机制对于不同<code>type</code>的变量也会有些不同的表现，接下来我们就通过一系列的图例来理解这个机制。</p>
@@ -286,9 +279,9 @@
 
 <ol>
 <li><a href="http://devzone.zend.com/317/extension-writing-part-ii-parameters-arrays-and-zvals/">Extension Writing Part II: Parameters, Arrays, and ZVALs</a></li>
-<li><a href="http://blog.ircmaxell.com/2012/03/phps-source-code-for-php-developers_21.html">PHP&#8217;s Source Code For PHP Developers - Part 3 - Variables</a></li>
+<li><a href="http://blog.ircmaxell.com/2012/03/phps-source-code-for-php-developers_21.html">PHP&rsquo;s Source Code For PHP Developers - Part 3 - Variables</a></li>
 <li><a href="http://andrey.hristov.com/projects/php_stuff/Internals%20Exposed.pdf">Zend Engine 2 - Internals Exposed</a></li>
-<li><a href="http://nikic.github.com/2012/03/28/Understanding-PHPs-internal-array-implementation.html">Understanding PHP&#8217;s internal array implementation (PHP&#8217;s Source Code for PHP Developers - Part 4 )</a></li>
+<li><a href="http://nikic.github.com/2012/03/28/Understanding-PHPs-internal-array-implementation.html">Understanding PHP&rsquo;s internal array implementation (PHP&rsquo;s Source Code for PHP Developers - Part 4 )</a></li>
 </ol>
 
 </div>
@@ -306,14 +299,7 @@
 
 
 
-
-
-
-
-  
-
-
-<time datetime="2013-03-17T13:43:00+08:00" pubdate data-updated="true">Mar 17<span>th</span>, 2013</time>
+<time class='entry-date' datetime='2013-03-17T13:43:00-04:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>1:43 pm</span></time>
       
 
 
@@ -352,6 +338,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/08/17/several-things-i-have-learned-from-working-at-qiduo/">Several Things I Have Learned From Working at Qiduo</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/01/19/android-dot-os-dot-message-dot-what/">android.os.Message.what</a>
       </li>
     
@@ -364,11 +354,7 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2013/03/17/a-close-look-into-php-zval/">A Close Look Into PHP zval</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/01/25/who-are-you/">Who Are You</a>
+        <a href="/blog/2013/03/17/a-close-look-into-php-zval/">A Close Look Into PHP Zval</a>
       </li>
     
   </ul>
@@ -380,7 +366,7 @@
     <li class="loading">Status updating...</li>
   </ul>
   
-  <a href="https://github.com/JiajunYao">@JiajunYao</a> on GitHub
+  <a href="https://github.com/jjyao">@jjyao</a> on GitHub
   
   <script type="text/javascript">
     $(document).ready(function(){
@@ -393,7 +379,7 @@
         }
 
         github.showRepos({
-            user: 'JiajunYao',
+            user: 'jjyao',
             count: 0,
             skip_forks: true,
             target: '#gh_repos'
@@ -452,13 +438,13 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://JiajunYao.github.com/blog/2013/03/17/a-close-look-into-php-zval/';
-        var disqus_url = 'http://JiajunYao.github.com/blog/2013/03/17/a-close-look-into-php-zval/';
+        var disqus_identifier = 'http://blog.jjyao.me/blog/2013/03/17/a-close-look-into-php-zval/';
+        var disqus_url = 'http://blog.jjyao.me/blog/2013/03/17/a-close-look-into-php-zval/';
         var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -474,7 +460,7 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
