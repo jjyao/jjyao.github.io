@@ -4,6 +4,7 @@ title: "Several Things I Have Learned From Working At Qiduo"
 date: 2014-08-17 20:42
 comments: true
 categories: startup
+published: false
 ---
 
 转眼之间，我已经在奇多度过了两年的时光。在这两年里我经历了这家公司的创立和发展，经历了产品的设计、开发和运营，同时我也经历了公司发展过程中遇到的种种困难。现在我已离开公司，写下这篇博客权当总结吧，总结下这两年内我学到的东西。
