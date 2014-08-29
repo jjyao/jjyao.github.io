@@ -48,4 +48,4 @@ private static Message getPostMessage(Runnable r) {
 Never use 0 as the *what* value of custom messages
 
 ## Reference
-The source code for android.os.Handler, android.os.Message and android.os.MessageQueue
+The source code of android.os.Handler, android.os.Message and android.os.MessageQueue
