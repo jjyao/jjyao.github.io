@@ -9,7 +9,13 @@
   <meta name="author" content="jjyao">
 
   
-  <meta name="description" content="数据库课的一次作业，要求是尽可能快的插入一百万条数据到数据库。这也是第一次和数据库性能接触，在做作业的过程中也有所感受所以决定写下来。这次作业我选择的是用C和MySQL来完成，并使用MySQL的C API。程序的逻辑很简单就是随机生成一百万条数据然后插入数据库，关键是如何能快速的插入。 &hellip;">
+  <meta name="description" content="
+创建FileSystem
+HDFS客户端向服务器发送rpc请求
+HDFS服务器对客户端rpc请求的处理
+DataNode中和数据相关的类
+DataNode的启动
+参考资料 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +86,48 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/18/hdfs-source-code-analysis/">HDFS Source Code Analysis</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2012-06-18T19:28:00-04:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2012</span></span> <span class='time'>7:28 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><ol>
+<li><a href="#instantiate_FileSystem">创建FileSystem</a></li>
+<li><a href="#hdfs_client_send_request">HDFS客户端向服务器发送rpc请求</a></li>
+<li><a href="#hdfs_server_handle_client_request">HDFS服务器对客户端rpc请求的处理</a></li>
+<li><a href="#hdfs_datanode_storage_related_class">DataNode中和数据相关的类</a></li>
+<li><a href="#hdfs_datanode_start">DataNode的启动</a></li>
+<li><a href="#reference">参考资料</a></li>
+</ol>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/06/18/hdfs-source-code-analysis/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -180,6 +228,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/08/28/which-intent-will-you-get-after-android-relaunches-the-activity/">Which Intent Will You Get After Android Relaunches the Activity</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/01/19/android-dot-os-dot-message-dot-what/">android.os.Message.what</a>
       </li>
     
@@ -193,10 +245,6 @@
     
       <li class="post">
         <a href="/blog/2013/03/17/a-close-look-into-php-zval/">A Close Look Into PHP Zval</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/01/25/who-are-you/">Who Are You</a>
       </li>
     
   </ul>

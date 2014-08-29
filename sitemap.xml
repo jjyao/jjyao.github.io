@@ -3,6 +3,12 @@
   
   
   <url>
+    <loc>http://blog.jjyao.me/blog/2014/08/28/which-intent-will-you-get-after-android-relaunches-the-activity/</loc>
+    <lastmod>2014-08-28T17:28:06-04:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>http://blog.jjyao.me/blog/2014/01/19/android-dot-os-dot-message-dot-what/</loc>
     <lastmod>2014-01-19T18:36:00-05:00</lastmod>
     <priority>0.8</priority>
@@ -77,35 +83,35 @@
   
   <url>
     <loc>http://blog.jjyao.me/about/index-compat.html</loc>
-    <lastmod>2014-08-27T17:01:35-04:00</lastmod>
+    <lastmod>2014-08-29T12:18:33-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/blog/archives/</loc>
-    <lastmod>2014-08-27T17:01:35-04:00</lastmod>
+    <lastmod>2014-08-29T12:18:33-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/</loc>
-    <lastmod>2014-08-27T17:01:35-04:00</lastmod>
+    <lastmod>2014-08-29T12:18:33-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/quotes/it-quotes.html</loc>
-    <lastmod>2014-08-27T17:01:35-04:00</lastmod>
+    <lastmod>2014-08-29T12:18:33-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/quotes/quotes.html</loc>
-    <lastmod>2014-08-27T17:01:35-04:00</lastmod>
+    <lastmod>2014-08-29T12:18:33-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>

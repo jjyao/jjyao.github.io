@@ -4,7 +4,7 @@
   <title><![CDATA[My Personal Blog]]></title>
   <link href="http://blog.jjyao.me/atom.xml" rel="self"/>
   <link href="http://blog.jjyao.me/"/>
-  <updated>2014-08-27T17:01:35-04:00</updated>
+  <updated>2014-08-29T12:18:33-04:00</updated>
   <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -12,6 +12,136 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Which Intent Will You Get After Android Relaunches the Activity]]></title>
+    <link href="http://blog.jjyao.me/blog/2014/08/28/which-intent-will-you-get-after-android-relaunches-the-activity/"/>
+    <updated>2014-08-28T17:28:06-04:00</updated>
+    <id>http://blog.jjyao.me/blog/2014/08/28/which-intent-will-you-get-after-android-relaunches-the-activity</id>
+    <content type="html"><![CDATA[<p>Imagine that you launch a <code>singleTop</code> activity using intent A and then launch it again using intent B. As a result, activity&rsquo;s <code>onNewIntent</code> method is called and inside this method you call <code>setIntent</code> to store the new intent. After that, Android decides to relaunch the activity. Now we have the question: which intent will you get after Android relaunches the activity? The original one(A) or the latest one(B)?</p>
+
+<!-- more -->
+
+
+<p>The answer is you may get either one, and it depends on why Android relaunches the activity. In some situations, Android will relaunch your activity because Android kills it(indeed the process) to reclaim memory and then you navigate back to it.
+In this case, you will get the original intent instead of the latest one. Android will also relaunch your activity(it&rsquo;s the default behavior) due to the configuration change and you&rsquo;ll get the latest intent. Now let&rsquo;s discuss these two cases separately and see why we get different intents in these two cases.</p>
+
+<h2>Killed Process</h2>
+
+<p>In Android, activities, taskes and processes are managed by <code>ActivityManagerService</code> and each activity has a corresponding <code>ActivityRecord</code>. As we can see, <code>ActivityRecord</code> stores lots of information related to the activity.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/** ActivityRecord.java **/</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * An entry in the history stack, representing an activity.</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">final</span> <span class="kd">class</span> <span class="nc">ActivityRecord</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">.....</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">final</span> <span class="n">ActivityManagerService</span> <span class="n">service</span><span class="o">;</span> <span class="c1">// owner</span>
+</span><span class='line'>    <span class="kd">final</span> <span class="n">ActivityInfo</span> <span class="n">info</span><span class="o">;</span>              <span class="c1">// all about me</span>
+</span><span class='line'>    <span class="kd">final</span> <span class="n">Intent</span> <span class="n">intent</span><span class="o">;</span>                  <span class="c1">// the original intent that generated us</span>
+</span><span class='line'>    <span class="n">TaskRecord</span> <span class="n">task</span><span class="o">;</span>                      <span class="c1">// the task this is in</span>
+</span><span class='line'>    <span class="n">ActivityRecord</span> <span class="n">resultTo</span><span class="o">;</span>              <span class="c1">// who started this entry, so will get our reply</span>
+</span><span class='line'>    <span class="n">Bundle</span>  <span class="n">icicle</span><span class="o">;</span>                       <span class="c1">// last saved activity state</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">.....</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When you launch a <code>singleTop</code> activity using intent A, some process(maybe the Launcher) sends a request to <code>ActivityManagerService</code>(through Binder RPC) and <code>ActivityManagerService</code> creates an <code>ActivityRecord</code>. Now the intent variable of the new <code>ActivityRecord</code> object is A. Then <code>ActivityManagerService</code> may create the application process(if not exists) and asks the application process(through Binder RPC) to launch the specified <code>Activity</code> using intent A. In the application process, <code>ActivityThread</code> receives and handles the request. It creates an <code>Activity</code> object and calls lifecycle methods.</p>
+
+<p>Then you launch the activity again using intent B and <code>ActivityManagerService</code> receives the request. It finds that there&rsquo;s already an <code>ActivityRecord</code> on the top of the stack, so it decides to deliver the new intent B to this existing activity. Here we have to notice that the intent variable of the <code>ActivityRecord</code> object is still A and it&rsquo;s immutable(final). After <code>ActivityManagerService</code> sends the new intent request, <code>ActivityThread</code> receives it and calls activity&rsquo;s <code>onNewIntent</code> method.</p>
+
+<p>At some point, Android decides to kill the application process due to low memory. After that, you navigate back to this activity and <code>ActivityManagerService</code> has to relaunch it using the information stored in <code>ActivityRecord</code>. As you can see, <code>ActivityRecord</code> only stores the original inten(A) and the latest one(B) is lost. Why? Becuase the latest intent is only stored in the <code>Activity</code> and now the activity(process) is killed! So, in this case, you&rsquo;ll get the original intent after Android relaunches the activity.</p>
+
+<h2>Configuration Change</h2>
+
+<p>After you launch the activity again using intent B, you decide to rotate the screen. Now we have the configuration change. When <code>ActivityManagerService</code> detects configuration changes, it relaunches the current activity by sending a request to <code>ActivityThread</code>. <code>ActivityThread</code> handles the request and relaunches the activity.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/** ActivityThread.java **/</span>
+</span><span class='line'><span class="kd">private</span> <span class="kt">void</span> <span class="nf">handleRelaunchActivity</span><span class="o">(</span><span class="n">ActivityClientRecord</span> <span class="n">tmp</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">......</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">ActivityClientRecord</span> <span class="n">r</span> <span class="o">=</span> <span class="n">mActivities</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">tmp</span><span class="o">.</span><span class="na">token</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">Intent</span> <span class="n">currentIntent</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="na">activity</span><span class="o">.</span><span class="na">mIntent</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Need to ensure state is saved.</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(!</span><span class="n">r</span><span class="o">.</span><span class="na">paused</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">performPauseActivity</span><span class="o">(</span><span class="n">r</span><span class="o">.</span><span class="na">token</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="n">r</span><span class="o">.</span><span class="na">isPreHoneycomb</span><span class="o">());</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">r</span><span class="o">.</span><span class="na">state</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">r</span><span class="o">.</span><span class="na">stopped</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">r</span><span class="o">.</span><span class="na">isPreHoneycomb</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">r</span><span class="o">.</span><span class="na">state</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Bundle</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">r</span><span class="o">.</span><span class="na">state</span><span class="o">.</span><span class="na">setAllowFds</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">mInstrumentation</span><span class="o">.</span><span class="na">callActivityOnSaveInstanceState</span><span class="o">(</span><span class="n">r</span><span class="o">.</span><span class="na">activity</span><span class="o">,</span> <span class="n">r</span><span class="o">.</span><span class="na">state</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">handleDestroyActivity</span><span class="o">(</span><span class="n">r</span><span class="o">.</span><span class="na">token</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="n">configChanges</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">r</span><span class="o">.</span><span class="na">activity</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">r</span><span class="o">.</span><span class="na">window</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">......</span>
+</span><span class='line'>    <span class="n">handleLaunchActivity</span><span class="o">(</span><span class="n">r</span><span class="o">,</span> <span class="n">currentIntent</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As we can see, <code>ActivityThread</code> finds the activity and stores its latest intent in a variable. Then it destroys the activity and relaunches the activity using the latest intent. Because the application process is not killed in this case, the latest intent is not lost and we can get it after Android relaunches the activity.</p>
+
+<h2>Conclusion</h2>
+
+<p>Because you don&rsquo;t know which intent you will get after Android relaunches the activity, you should use <code>savedInstanceState</code> to restore activity&rsquo;s state. In fact, <code>ActivityRecord</code> stores activity&rsquo;s <code>savedInstanceState</code> in its icicle variable, so it won&rsquo;t be lost!</p>
+
+<h2>Reference</h2>
+
+<p><a href="https://groups.google.com/forum/#!topic/android-developers/vrLdM5mKeoY">https://groups.google.com/forum/#!topic/android-developers/vrLdM5mKeoY</a><br />
+The source code of ActivityThread, ActivityManagerService, ActivityStackSupervisor, ActivityStack, ActivityRecord, TaskRecord and ProcessRecord.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[android.os.Message.what]]></title>
@@ -86,7 +216,7 @@
 
 <h2>Reference</h2>
 
-<p>The source code for android.os.Handler, android.os.Message and android.os.MessageQueue</p>
+<p>The source code of android.os.Handler, android.os.Message and android.os.MessageQueue</p>
 ]]></content>
   </entry>
   

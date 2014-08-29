@@ -1,0 +1,408 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Which Intent Will You Get After Android Relaunches the Activity - My Personal Blog</title>
+  <meta name="author" content="jjyao">
+
+  
+  <meta name="description" content="Imagine that you launch a singleTop activity using intent A and then launch it again using intent B. As a result, activity&rsquo;s onNewIntent method &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.jjyao.me/blog/2014/08/28/which-intent-will-you-get-after-android-relaunches-the-activity">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Personal Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-32781930-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Personal Blog</a></h1>
+  
+    <h2>Stay hungry, Stay foolish.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.jjyao.me" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/categories/debug">Debug</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About Me</a></li>
+  <li><a href="/quotes/quotes.html">Quotes</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Which Intent Will You Get After Android Relaunches the Activity</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-08-28T17:28:06-04:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>28</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>5:28 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Imagine that you launch a <code>singleTop</code> activity using intent A and then launch it again using intent B. As a result, activity&rsquo;s <code>onNewIntent</code> method is called and inside this method you call <code>setIntent</code> to store the new intent. After that, Android decides to relaunch the activity. Now we have the question: which intent will you get after Android relaunches the activity? The original one(A) or the latest one(B)?</p>
+
+<!-- more -->
+
+
+<p>The answer is you may get either one, and it depends on why Android relaunches the activity. In some situations, Android will relaunch your activity because Android kills it(indeed the process) to reclaim memory and then you navigate back to it.
+In this case, you will get the original intent instead of the latest one. Android will also relaunch your activity(it&rsquo;s the default behavior) due to the configuration change and you&rsquo;ll get the latest intent. Now let&rsquo;s discuss these two cases separately and see why we get different intents in these two cases.</p>
+
+<h2>Killed Process</h2>
+
+<p>In Android, activities, taskes and processes are managed by <code>ActivityManagerService</code> and each activity has a corresponding <code>ActivityRecord</code>. As we can see, <code>ActivityRecord</code> stores lots of information related to the activity.</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/** ActivityRecord.java **/</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * An entry in the history stack, representing an activity.</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">final</span> <span class="kd">class</span> <span class="nc">ActivityRecord</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">.....</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">final</span> <span class="n">ActivityManagerService</span> <span class="n">service</span><span class="o">;</span> <span class="c1">// owner</span>
+</span><span class='line'>    <span class="kd">final</span> <span class="n">ActivityInfo</span> <span class="n">info</span><span class="o">;</span>              <span class="c1">// all about me</span>
+</span><span class='line'>    <span class="kd">final</span> <span class="n">Intent</span> <span class="n">intent</span><span class="o">;</span>                  <span class="c1">// the original intent that generated us</span>
+</span><span class='line'>    <span class="n">TaskRecord</span> <span class="n">task</span><span class="o">;</span>                      <span class="c1">// the task this is in</span>
+</span><span class='line'>    <span class="n">ActivityRecord</span> <span class="n">resultTo</span><span class="o">;</span>              <span class="c1">// who started this entry, so will get our reply</span>
+</span><span class='line'>    <span class="n">Bundle</span>  <span class="n">icicle</span><span class="o">;</span>                       <span class="c1">// last saved activity state</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">.....</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>When you launch a <code>singleTop</code> activity using intent A, some process(maybe the Launcher) sends a request to <code>ActivityManagerService</code>(through Binder RPC) and <code>ActivityManagerService</code> creates an <code>ActivityRecord</code>. Now the intent variable of the new <code>ActivityRecord</code> object is A. Then <code>ActivityManagerService</code> may create the application process(if not exists) and asks the application process(through Binder RPC) to launch the specified <code>Activity</code> using intent A. In the application process, <code>ActivityThread</code> receives and handles the request. It creates an <code>Activity</code> object and calls lifecycle methods.</p>
+
+<p>Then you launch the activity again using intent B and <code>ActivityManagerService</code> receives the request. It finds that there&rsquo;s already an <code>ActivityRecord</code> on the top of the stack, so it decides to deliver the new intent B to this existing activity. Here we have to notice that the intent variable of the <code>ActivityRecord</code> object is still A and it&rsquo;s immutable(final). After <code>ActivityManagerService</code> sends the new intent request, <code>ActivityThread</code> receives it and calls activity&rsquo;s <code>onNewIntent</code> method.</p>
+
+<p>At some point, Android decides to kill the application process due to low memory. After that, you navigate back to this activity and <code>ActivityManagerService</code> has to relaunch it using the information stored in <code>ActivityRecord</code>. As you can see, <code>ActivityRecord</code> only stores the original inten(A) and the latest one(B) is lost. Why? Becuase the latest intent is only stored in the <code>Activity</code> and now the activity(process) is killed! So, in this case, you&rsquo;ll get the original intent after Android relaunches the activity.</p>
+
+<h2>Configuration Change</h2>
+
+<p>After you launch the activity again using intent B, you decide to rotate the screen. Now we have the configuration change. When <code>ActivityManagerService</code> detects configuration changes, it relaunches the current activity by sending a request to <code>ActivityThread</code>. <code>ActivityThread</code> handles the request and relaunches the activity.</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/** ActivityThread.java **/</span>
+</span><span class='line'><span class="kd">private</span> <span class="kt">void</span> <span class="nf">handleRelaunchActivity</span><span class="o">(</span><span class="n">ActivityClientRecord</span> <span class="n">tmp</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">......</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">ActivityClientRecord</span> <span class="n">r</span> <span class="o">=</span> <span class="n">mActivities</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">tmp</span><span class="o">.</span><span class="na">token</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">Intent</span> <span class="n">currentIntent</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="na">activity</span><span class="o">.</span><span class="na">mIntent</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Need to ensure state is saved.</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(!</span><span class="n">r</span><span class="o">.</span><span class="na">paused</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">performPauseActivity</span><span class="o">(</span><span class="n">r</span><span class="o">.</span><span class="na">token</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="n">r</span><span class="o">.</span><span class="na">isPreHoneycomb</span><span class="o">());</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">r</span><span class="o">.</span><span class="na">state</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">r</span><span class="o">.</span><span class="na">stopped</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">r</span><span class="o">.</span><span class="na">isPreHoneycomb</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">r</span><span class="o">.</span><span class="na">state</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Bundle</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">r</span><span class="o">.</span><span class="na">state</span><span class="o">.</span><span class="na">setAllowFds</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">mInstrumentation</span><span class="o">.</span><span class="na">callActivityOnSaveInstanceState</span><span class="o">(</span><span class="n">r</span><span class="o">.</span><span class="na">activity</span><span class="o">,</span> <span class="n">r</span><span class="o">.</span><span class="na">state</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">handleDestroyActivity</span><span class="o">(</span><span class="n">r</span><span class="o">.</span><span class="na">token</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="n">configChanges</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">r</span><span class="o">.</span><span class="na">activity</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">r</span><span class="o">.</span><span class="na">window</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">......</span>
+</span><span class='line'>    <span class="n">handleLaunchActivity</span><span class="o">(</span><span class="n">r</span><span class="o">,</span> <span class="n">currentIntent</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>As we can see, <code>ActivityThread</code> finds the activity and stores its latest intent in a variable. Then it destroys the activity and relaunches the activity using the latest intent. Because the application process is not killed in this case, the latest intent is not lost and we can get it after Android relaunches the activity.</p>
+
+<h2>Conclusion</h2>
+
+<p>Because you don&rsquo;t know which intent you will get after Android relaunches the activity, you should use <code>savedInstanceState</code> to restore activity&rsquo;s state. In fact, <code>ActivityRecord</code> stores activity&rsquo;s <code>savedInstanceState</code> in its icicle variable, so it won&rsquo;t be lost!</p>
+
+<h2>Reference</h2>
+
+<p><a href="https://groups.google.com/forum/#!topic/android-developers/vrLdM5mKeoY">https://groups.google.com/forum/#!topic/android-developers/vrLdM5mKeoY</a><br />
+The source code of ActivityThread, ActivityManagerService, ActivityStackSupervisor, ActivityStack, ActivityRecord, TaskRecord and ProcessRecord.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">jjyao</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-08-28T17:28:06-04:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>28</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>5:28 pm</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/01/19/android-dot-os-dot-message-dot-what/" title="Previous Post: android.os.Message.what">&laquo; android.os.Message.what</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/28/which-intent-will-you-get-after-android-relaunches-the-activity/">Which Intent Will You Get After Android Relaunches the Activity</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/01/19/android-dot-os-dot-message-dot-what/">android.os.Message.what</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/31/does-your-app-have-a-rock-solid-ssl-connection/">Does Your App Have a Rock Solid SSL Connection</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/06/16/review-on-american-dreams-in-china/">Review on American Dreams in China</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/03/17/a-close-look-into-php-zval/">A Close Look Into PHP Zval</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/jjyao">@jjyao</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'jjyao',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+
+<h1>Weibo</h1>
+<ul>
+<li>
+<iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=300&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=0&uid=2369955640&verifier=a2e3df32&dpc=1">
+</iframe>
+</li>
+</ul>
+
+</section>
+
+
+<section>
+
+<h1>Douban</h1>
+<ul>
+<li>
+<div><script type="text/javascript" src="http://www.douban.com/service/badge/51087586/?show=dolist&amp;n=4&amp;columns=2&amp;hidelogo=yes&amp;cat=book" ></script></div>
+</li>
+</ul>
+
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - jjyao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'jjyao';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.jjyao.me/blog/2014/08/28/which-intent-will-you-get-after-android-relaunches-the-activity/';
+        var disqus_url = 'http://blog.jjyao.me/blog/2014/08/28/which-intent-will-you-get-after-android-relaunches-the-activity/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
