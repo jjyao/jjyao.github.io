@@ -1,12 +1,12 @@
 ---
 layout: post
-title: "PHP Single Quoted"
+title: "PHP Single Quoted String"
 date: 2012-08-07 21:38
 comments: true
-categories: Debug 
+categories: Debug
 ---
 
-Use PHP single quoted when I should use double quoted
+Use PHP single quoted string in a case where I should use double quoted string instead
 
 <!-- more -->
 
