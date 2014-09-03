@@ -68,7 +68,7 @@ front_page_categories_op: 'hide' # Whether to show or hide the list of categorie
 # ----------------------- #
 
 # Weibo
-weibo_show: true
+weibo_show: false
 
 # Douban
 douban_show: true
