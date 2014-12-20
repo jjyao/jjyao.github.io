@@ -4,7 +4,7 @@
   <title><![CDATA[My Personal Blog]]></title>
   <link href="http://blog.jjyao.me/atom.xml" rel="self"/>
   <link href="http://blog.jjyao.me/"/>
-  <updated>2014-08-29T12:18:33-04:00</updated>
+  <updated>2014-12-20T15:37:52-05:00</updated>
   <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -672,11 +672,11 @@ The source code of ActivityThread, ActivityManagerService, ActivityStackSupervis
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[PHP Single Quoted]]></title>
-    <link href="http://blog.jjyao.me/blog/2012/08/07/php-single-quoted/"/>
+    <title type="html"><![CDATA[PHP Single Quoted String]]></title>
+    <link href="http://blog.jjyao.me/blog/2012/08/07/php-single-quoted-string/"/>
     <updated>2012-08-07T21:38:00-04:00</updated>
-    <id>http://blog.jjyao.me/blog/2012/08/07/php-single-quoted</id>
-    <content type="html"><![CDATA[<p>Use PHP single quoted when I should use double quoted</p>
+    <id>http://blog.jjyao.me/blog/2012/08/07/php-single-quoted-string</id>
+    <content type="html"><![CDATA[<p>Use PHP single quoted string in a case where I should use double quoted string instead</p>
 
 <!-- more -->
 

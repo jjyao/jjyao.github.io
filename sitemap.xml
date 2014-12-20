@@ -51,7 +51,7 @@
   </url>
   
   <url>
-    <loc>http://blog.jjyao.me/blog/2012/08/07/php-single-quoted/</loc>
+    <loc>http://blog.jjyao.me/blog/2012/08/07/php-single-quoted-string/</loc>
     <lastmod>2012-08-07T21:38:00-04:00</lastmod>
     <priority>0.8</priority>
   </url>
@@ -83,35 +83,35 @@
   
   <url>
     <loc>http://blog.jjyao.me/about/index-compat.html</loc>
-    <lastmod>2014-08-29T12:18:33-04:00</lastmod>
+    <lastmod>2014-12-20T15:37:52-05:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/blog/archives/</loc>
-    <lastmod>2014-08-29T12:18:33-04:00</lastmod>
+    <lastmod>2014-12-20T15:37:52-05:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/</loc>
-    <lastmod>2014-08-29T12:18:33-04:00</lastmod>
+    <lastmod>2014-12-20T15:37:52-05:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/quotes/it-quotes.html</loc>
-    <lastmod>2014-08-29T12:18:33-04:00</lastmod>
+    <lastmod>2014-12-20T15:37:52-05:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/quotes/quotes.html</loc>
-    <lastmod>2014-08-29T12:18:33-04:00</lastmod>
+    <lastmod>2014-12-20T15:37:52-05:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
