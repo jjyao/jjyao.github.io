@@ -82,56 +82,44 @@
   
   
   <url>
-    <loc>http://blog.jjyao.me/about/index-compat.html</loc>
-    <lastmod>2014-12-20T15:37:52-05:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  
-  <url>
     <loc>http://blog.jjyao.me/blog/archives/</loc>
-    <lastmod>2014-12-20T15:37:52-05:00</lastmod>
+    <lastmod>2014-12-20T19:09:47-05:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/</loc>
-    <lastmod>2014-12-20T15:37:52-05:00</lastmod>
+    <lastmod>2014-12-20T19:09:47-05:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <url>
+    <loc>http://blog.jjyao.me/about/</loc>
+    <lastmod>2014-12-20T19:09:47-05:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
     <loc>http://blog.jjyao.me/quotes/it-quotes.html</loc>
-    <lastmod>2014-12-20T15:37:52-05:00</lastmod>
+    <lastmod>2014-12-20T19:09:47-05:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/quotes/quotes.html</loc>
-    <lastmod>2014-12-20T15:37:52-05:00</lastmod>
+    <lastmod>2014-12-20T19:09:47-05:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   
   <url>
-    <loc>http://blog.jjyao.me/about/index.html</loc>
-    <lastmod>2014-08-21T12:17:58Z</lastmod>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://blog.jjyao.me/about/resume-for-incorporation.html</loc>
-    <lastmod>2014-08-21T12:17:58Z</lastmod>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://blog.jjyao.me/about/resume-for-school.html</loc>
-    <lastmod>2014-08-21T12:17:58Z</lastmod>
+    <loc>http://blog.jjyao.me/about/presentation/index.html</loc>
+    <lastmod>2014-12-20T18:52:04Z</lastmod>
     <priority>0.6</priority>
   </url>
   
