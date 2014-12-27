@@ -16,6 +16,6 @@ You can contact me via:
 
 You can know me better via:  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This blog  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[CV](about/cv.pdf)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[CV](cv.pdf)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[LinkedIn](https://www.linkedin.com/in/jjyao/)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Douban](http://www.douban.com/people/51087586/)
