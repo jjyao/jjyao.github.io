@@ -1,0 +1,38 @@
+---
+layout: post
+title: "What I Have Learned From Writing a Kernel From Scratch"
+date: 2015-06-15 21:45:49 -0700
+comments: true
+categories:
+---
+
+Last semester, I took the course [15410](https://www.cs.cmu.edu/~410/) and wrote a kernel from scratch with my partner. I learned a lot from this course and the kernel project. Following is what I have learned:
+
+1. Never Failed Functions
+2. Comment on Why
+3. Synchronization
+4. Error Handling
+5. Why Writing a Kernel From Scratch
+6. Misc.
+
+<!-- more -->
+
+## Never Failed Functions
+There are cases where some functions cannot fail, which means that they cannot return errors and let callers handle these errors. For example, the `free()` function is a never failed function. Why? Because callers have no way to do something reasonable to handle the failure. What can we do when `free()` returns an error code? Retry, ignore or exit? Obviously, none of these solutions are acceptable. Similarly, `exit()` can never fail. To implement these never failed functions, we need to allocate resources needed by these functions in advance. For example, we should **preallocate** resources (e.g. memory that stores exit status) that are necessary for `exit()` to succeed when we `fork()` the process even if `fork()` itself doesn't need those resources. If `fork()` cannot preallocate needed resources, it can just returns an error as callers can do reasonable things to handle errors from it. Similarly, if `free()` needs some resources to succeed, we should acquire them inside `malloc()`. Another implication of never failed functions is that we should consider if a function can fail when we design the interface of the function. To make the decision, we should put ourselves in the shoe of callers. Can callers do something reasonable to handle returned errors? If the answer is not, then we should probably implement the function in a way that it never fails using techniques like preallocation.
+
+## Comment on Why
+When we write comments, we should answer the question why we write this code. **It's easier to figure out what the code does than why it is written.** For the kernel, there are some code that is written to handle special cases that only happen in a special execution path. For example, some concurrency issues can only be triggered when interrupts or context switches happen in a particular time (e.g. before the execution of a particular instruction). To address these issues, we need to write some special code and it's important for us to write comments explaining why we write this code. If we don't write comments, then next time no one understands this piece of code (it's hard, if not impossible, to recall the particular execution path that causes concurrency issues).
+
+## Synchronization
+Writing a kernel is all about synchronization, concurrency, race conditions and deadlock. **Interrupts can happen at any time**, and as a result, CPU is switched to execute interrupt handlers. What happens if CPU is executing a critical section when an interrupt happens? What happens if an interrupt handler tries to acquire a lock that has already been acquired by the interrupted code? As application programmers, we use synchronization primitives such as mutex to protect critical sections. However, these primitives cannot solve all the concurrency problems happening in the kernel. For example, we cannot use mutex to protect data accessed by both of an interrupt handler and some other code because it can cause deadlock. A typical example is the scan code buffer used by the keyboard interrupt handler. When a key is pressed or released, the keyboard handler is invoked to handle the event. What it does is store the scan code to a buffer so that some program can retrieve it later. As keyboard interrupts can happen when some program is accessing the scan code buffer to retrieve data and the keyboard interrupt handler also accesses the buffer to put data, the shared buffer should be protected. A normal mutex doesn't help in this case because it causes deadlock. Imagining that some code acquires the mutex and is accessing the scan code buffer and at that time, keyboard interrupt handler is invoked, the handler wants to acquire the mutex to access the buffer but it has already been acquired so the hanlder has to wait for the mutex to be released. However, the interrupted code cannot resume execution before the interrupt handler returns and as a result, we have the deadlock. To solve this problem, we can disable interrupts instead of using mutex. Disabling interrupts is the easiest way to address concurrency issues but it doesn't mean that we should use it everywhere. The problem of disabling interrupts is that the kernel may miss interrupts (e.g. timer interrupts) and becomes less preemptible, so we should avoid disabling interrupts if there are other methods to solve concurrency issues (e.g. avoid sharing data).
+
+## Error Handling
+To write robust software (e.g. kernel), we have to handle **all** possible errors correctly. For example, we should assume that all `malloc()` invocations may fail and write code to handle these failures. It seems to be tedious to handle every possible error (especially errors that we think are unlikely to happen), but it is crucial for writing robust software (according to Murphy's law, errors will happen eventually). Some errors are expected and current code can recover from them. In this case, current code should resolve these errors. Some errors are expected and current code doesn't have enough knowledge to resolve them. In this case, current code should propagate errors up and let callers handle these errors. Some errors are unexpected and usually indicate program bugs (e.g. unexpected null pointer parameters). In this case, programs should log enough information and exit immediately, which helps programmers find bugs quickly.
+
+## Why Writing a Kernel From Scratch
+Many people ask the question why we should take 15410 and write a kernel from scratch, after all we are highly unlikely to be asked to implement a new operating system during our lifetime. Here is my answer to this question. Writing a kenel from scratch lets us have a deep understanding of current operating systems (e.g. Unix) and know how they work. Compared with Unix, our kernel is a toy but concepts are similar. A toy kernel also implements context switch, virtual memory, paging, copy-on-write, zero-filled on demand, drivers, interrupt handlers, scheduler, processes, threads, synchronization primitives, and system calls. Through implementing these concepts, we know why context swith is costly, why system call is costly, why process is heavyweight, and so on. As all application software runs on top of an operating system, having a good understanding of these things helps us write performant software. For example, knowing that context switch is costly and process is heavyweight, Nginx developers use an [asynchronous, event-driven approach to handling connections](http://nginx.com/blog/thread-pools-boost-performance-9x/), which makes Nginx a high performance web server. What's more, through implementing a kernel, we learn how to write robust, well-documented code. The same techniques can also be applied to writing other code. In a word, **writing a kernel from scratch helps us write better application software**.
+
+## Misc.
+1. After `cond_wait()`, the code needs to check the condition **again**, which means we should warp `cond_wait()` with `while` instead of `if`.
+2. Solving a problem using `sleep()` is bad. N-1 times it's much too short. Nth time it's much too long. The magic number doesn't work well every time.
+3. To have an efficient meeting, we should have our own thoughts and ideas before the meeting.
