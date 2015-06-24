@@ -1,0 +1,316 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>What I Have Learned From Writing a Kernel From Scratch - Jiajun Yao</title>
+  <meta name="author" content="jjyao">
+
+  
+  <meta name="description" content="Last semester, I took the course 15410 and wrote a kernel from scratch with my partner. I learned a lot from this course and the kernel project. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.jjyao.me/blog/2015/06/15/what-i-have-learned-from-writing-a-kernel-from-scratch">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Jiajun Yao" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-32781930-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Jiajun Yao</a></h1>
+  
+    <h2>Stay hungry, Stay foolish.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.jjyao.me" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/quotes/quotes.html">Quotes</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">What I Have Learned From Writing a Kernel From Scratch</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-06-15T21:45:49-07:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:45 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Last semester, I took the course <a href="https://www.cs.cmu.edu/~410/">15410</a> and wrote a kernel from scratch with my partner. I learned a lot from this course and the kernel project. Following is what I have learned:</p>
+
+<ol>
+<li>Never Failed Functions</li>
+<li>Comment on Why</li>
+<li>Synchronization</li>
+<li>Error Handling</li>
+<li>Why Writing a Kernel From Scratch</li>
+<li>Misc.</li>
+</ol>
+
+
+<!-- more -->
+
+
+<h2>Never Failed Functions</h2>
+
+<p>There are cases where some functions cannot fail, which means that they cannot return errors and let callers handle these errors. For example, the <code>free()</code> function is a never failed function. Why? Because callers have no way to do something reasonable to handle the failure. What can we do when <code>free()</code> returns an error code? Retry, ignore or exit? Obviously, none of these solutions are acceptable. Similarly, <code>exit()</code> can never fail. To implement these never failed functions, we need to allocate resources needed by these functions in advance. For example, we should <strong>preallocate</strong> resources (e.g. memory that stores exit status) that are necessary for <code>exit()</code> to succeed when we <code>fork()</code> the process even if <code>fork()</code> itself doesn&rsquo;t need those resources. If <code>fork()</code> cannot preallocate needed resources, it can just returns an error as callers can do reasonable things to handle errors from it. Similarly, if <code>free()</code> needs some resources to succeed, we should acquire them inside <code>malloc()</code>. Another implication of never failed functions is that we should consider if a function can fail when we design the interface of the function. To make the decision, we should put ourselves in the shoe of callers. Can callers do something reasonable to handle returned errors? If the answer is not, then we should probably implement the function in a way that it never fails using techniques like preallocation.</p>
+
+<h2>Comment on Why</h2>
+
+<p>When we write comments, we should answer the question why we write this code. <strong>It&rsquo;s easier to figure out what the code does than why it is written.</strong> For the kernel, there are some code that is written to handle special cases that only happen in a special execution path. For example, some concurrency issues can only be triggered when interrupts or context switches happen in a particular time (e.g. before the execution of a particular instruction). To address these issues, we need to write some special code and it&rsquo;s important for us to write comments explaining why we write this code. If we don&rsquo;t write comments, then next time no one understands this piece of code (it&rsquo;s hard, if not impossible, to recall the particular execution path that causes concurrency issues).</p>
+
+<h2>Synchronization</h2>
+
+<p>Writing a kernel is all about synchronization, concurrency, race conditions and deadlock. <strong>Interrupts can happen at any time</strong>, and as a result, CPU is switched to execute interrupt handlers. What happens if CPU is executing a critical section when an interrupt happens? What happens if an interrupt handler tries to acquire a lock that has already been acquired by the interrupted code? As application programmers, we use synchronization primitives such as mutex to protect critical sections. However, these primitives cannot solve all the concurrency problems happening in the kernel. For example, we cannot use mutex to protect data accessed by both of an interrupt handler and some other code because it can cause deadlock. A typical example is the scan code buffer used by the keyboard interrupt handler. When a key is pressed or released, the keyboard handler is invoked to handle the event. What it does is store the scan code to a buffer so that some program can retrieve it later. As keyboard interrupts can happen when some program is accessing the scan code buffer to retrieve data and the keyboard interrupt handler also accesses the buffer to put data, the shared buffer should be protected. A normal mutex doesn&rsquo;t help in this case because it causes deadlock. Imagining that some code acquires the mutex and is accessing the scan code buffer and at that time, keyboard interrupt handler is invoked, the handler wants to acquire the mutex to access the buffer but it has already been acquired so the hanlder has to wait for the mutex to be released. However, the interrupted code cannot resume execution before the interrupt handler returns and as a result, we have the deadlock. To solve this problem, we can disable interrupts instead of using mutex. Disabling interrupts is the easiest way to address concurrency issues but it doesn&rsquo;t mean that we should use it everywhere. The problem of disabling interrupts is that the kernel may miss interrupts (e.g. timer interrupts) and becomes less preemptible, so we should avoid disabling interrupts if there are other methods to solve concurrency issues (e.g. avoid sharing data).</p>
+
+<h2>Error Handling</h2>
+
+<p>To write robust software (e.g. kernel), we have to handle <strong>all</strong> possible errors correctly. For example, we should assume that all <code>malloc()</code> invocations may fail and write code to handle these failures. It seems to be tedious to handle every possible error (especially errors that we think are unlikely to happen), but it is crucial for writing robust software (according to Murphy&rsquo;s law, errors will happen eventually). Some errors are expected and current code can recover from them. In this case, current code should resolve these errors. Some errors are expected and current code doesn&rsquo;t have enough knowledge to resolve them. In this case, current code should propagate errors up and let callers handle these errors. Some errors are unexpected and usually indicate program bugs (e.g. unexpected null pointer parameters). In this case, programs should log enough information and exit immediately, which helps programmers find bugs quickly.</p>
+
+<h2>Why Writing a Kernel From Scratch</h2>
+
+<p>Many people ask the question why we should take 15410 and write a kernel from scratch, after all we are highly unlikely to be asked to implement a new operating system during our lifetime. Here is my answer to this question. Writing a kenel from scratch lets us have a deep understanding of current operating systems (e.g. Unix) and know how they work. Compared with Unix, our kernel is a toy but concepts are similar. A toy kernel also implements context switch, virtual memory, paging, copy-on-write, zero-filled on demand, drivers, interrupt handlers, scheduler, processes, threads, synchronization primitives, and system calls. Through implementing these concepts, we know why context swith is costly, why system call is costly, why process is heavyweight, and so on. As all application software runs on top of an operating system, having a good understanding of these things helps us write performant software. For example, knowing that context switch is costly and process is heavyweight, Nginx developers use an <a href="http://nginx.com/blog/thread-pools-boost-performance-9x/">asynchronous, event-driven approach to handling connections</a>, which makes Nginx a high performance web server. What&rsquo;s more, through implementing a kernel, we learn how to write robust, well-documented code. The same techniques can also be applied to writing other code. In a word, <strong>writing a kernel from scratch helps us write better application software</strong>.</p>
+
+<h2>Misc.</h2>
+
+<ol>
+<li>After <code>cond_wait()</code>, the code needs to check the condition <strong>again</strong>, which means we should warp <code>cond_wait()</code> with <code>while</code> instead of <code>if</code>.</li>
+<li>Solving a problem using <code>sleep()</code> is bad. N-1 times it&rsquo;s much too short. Nth time it&rsquo;s much too long. The magic number doesn&rsquo;t work well every time.</li>
+<li>To have an efficient meeting, we should have our own thoughts and ideas before the meeting.</li>
+</ol>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">jjyao</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-06-15T21:45:49-07:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:45 pm</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/08/28/which-intent-will-you-get-after-android-relaunches-the-activity/" title="Previous Post: Which Intent Will You Get After Android Relaunches the Activity">&laquo; Which Intent Will You Get After Android Relaunches the Activity</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/06/15/what-i-have-learned-from-writing-a-kernel-from-scratch/">What I Have Learned From Writing a Kernel From Scratch</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/28/which-intent-will-you-get-after-android-relaunches-the-activity/">Which Intent Will You Get After Android Relaunches the Activity</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/01/19/android-dot-os-dot-message-dot-what/">android.os.Message.what</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/31/does-your-app-have-a-rock-solid-ssl-connection/">Does Your App Have a Rock Solid SSL Connection</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/06/16/review-on-american-dreams-in-china/">Review on American Dreams in China</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/jjyao">@jjyao</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'jjyao',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+<section>
+
+<h1>Douban</h1>
+<ul>
+<li>
+<div><script type="text/javascript" src="http://www.douban.com/service/badge/51087586/?selection=latest&amp;picsize=small&amp;show=collection&amp;n=6&amp;hidelogo=on&amp;cat=book&amp;columns=3"></script></div>
+</li>
+</ul>
+
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - jjyao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'jjyao';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.jjyao.me/blog/2015/06/15/what-i-have-learned-from-writing-a-kernel-from-scratch/';
+        var disqus_url = 'http://blog.jjyao.me/blog/2015/06/15/what-i-have-learned-from-writing-a-kernel-from-scratch/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

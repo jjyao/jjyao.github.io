@@ -3,115 +3,121 @@
   
   
   <url>
+    <loc>http://blog.jjyao.me/blog/2015/06/15/what-i-have-learned-from-writing-a-kernel-from-scratch/</loc>
+    <lastmod>2015-06-15T21:45:49-07:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>http://blog.jjyao.me/blog/2014/08/28/which-intent-will-you-get-after-android-relaunches-the-activity/</loc>
-    <lastmod>2014-08-28T17:28:06-04:00</lastmod>
+    <lastmod>2014-08-28T14:28:06-07:00</lastmod>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/blog/2014/01/19/android-dot-os-dot-message-dot-what/</loc>
-    <lastmod>2014-01-19T18:36:00-05:00</lastmod>
+    <lastmod>2014-01-19T18:36:00-08:00</lastmod>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/blog/2013/07/31/does-your-app-have-a-rock-solid-ssl-connection/</loc>
-    <lastmod>2013-07-31T20:32:00-04:00</lastmod>
+    <lastmod>2013-07-31T20:32:00-07:00</lastmod>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/blog/2013/06/16/review-on-american-dreams-in-china/</loc>
-    <lastmod>2013-06-16T11:35:00-04:00</lastmod>
+    <lastmod>2013-06-16T11:35:00-07:00</lastmod>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/blog/2013/03/17/a-close-look-into-php-zval/</loc>
-    <lastmod>2013-03-17T13:43:00-04:00</lastmod>
+    <lastmod>2013-03-17T13:43:00-07:00</lastmod>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/blog/2013/01/25/who-are-you/</loc>
-    <lastmod>2013-01-25T22:20:00-05:00</lastmod>
+    <lastmod>2013-01-25T22:20:00-08:00</lastmod>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/blog/2012/12/09/refactor-with-vim/</loc>
-    <lastmod>2012-12-09T23:28:00-05:00</lastmod>
+    <lastmod>2012-12-09T23:28:00-08:00</lastmod>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/blog/2012/08/28/openssl-read-ahead-and-epoll/</loc>
-    <lastmod>2012-08-28T12:06:00-04:00</lastmod>
+    <lastmod>2012-08-28T12:06:00-07:00</lastmod>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/blog/2012/08/07/php-single-quoted-string/</loc>
-    <lastmod>2012-08-07T21:38:00-04:00</lastmod>
+    <lastmod>2012-08-07T21:38:00-07:00</lastmod>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/blog/2012/07/21/read-practice-think/</loc>
-    <lastmod>2012-07-21T22:29:00-04:00</lastmod>
+    <lastmod>2012-07-21T22:29:00-07:00</lastmod>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/blog/2012/06/18/hdfs-source-code-analysis/</loc>
-    <lastmod>2012-06-18T19:28:00-04:00</lastmod>
+    <lastmod>2012-06-18T19:28:00-07:00</lastmod>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/blog/2012/06/02/insert-one-million-rows-into-database/</loc>
-    <lastmod>2012-06-02T15:30:00-04:00</lastmod>
+    <lastmod>2012-06-02T15:30:00-07:00</lastmod>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/blog/2012/04/22/why-we-should-use-library/</loc>
-    <lastmod>2012-04-22T12:39:00-04:00</lastmod>
+    <lastmod>2012-04-22T12:39:00-07:00</lastmod>
     <priority>0.8</priority>
   </url>
   
   
   <url>
     <loc>http://blog.jjyao.me/blog/archives/</loc>
-    <lastmod>2015-01-14T16:56:31-05:00</lastmod>
+    <lastmod>2015-06-23T21:31:59-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/</loc>
-    <lastmod>2015-01-14T16:56:31-05:00</lastmod>
+    <lastmod>2015-06-23T21:31:59-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/about/</loc>
-    <lastmod>2015-01-14T16:56:31-05:00</lastmod>
+    <lastmod>2015-06-23T21:31:59-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/quotes/it-quotes.html</loc>
-    <lastmod>2015-01-14T16:56:31-05:00</lastmod>
+    <lastmod>2015-06-23T21:31:59-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/quotes/quotes.html</loc>
-    <lastmod>2015-01-14T16:56:31-05:00</lastmod>
+    <lastmod>2015-06-23T21:31:59-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -119,19 +125,19 @@
   
   <url>
     <loc>http://blog.jjyao.me/about/presentation/index.html</loc>
-    <lastmod>2014-12-20T18:52:04Z</lastmod>
+    <lastmod>2014-12-20T15:52:04Z</lastmod>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/javascripts/reveal.js/index.html</loc>
-    <lastmod>2014-08-21T12:17:58Z</lastmod>
+    <lastmod>2014-08-21T09:17:58Z</lastmod>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/javascripts/reveal.js/plugin/speakernotes/notes.html</loc>
-    <lastmod>2014-08-21T12:17:58Z</lastmod>
+    <lastmod>2014-08-21T09:17:58Z</lastmod>
     <priority>0.6</priority>
   </url>
   

@@ -4,7 +4,7 @@
   <title><![CDATA[Jiajun Yao]]></title>
   <link href="http://blog.jjyao.me/atom.xml" rel="self"/>
   <link href="http://blog.jjyao.me/"/>
-  <updated>2015-01-14T16:56:31-05:00</updated>
+  <updated>2015-06-23T21:31:59-07:00</updated>
   <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -14,9 +14,60 @@
 
   
   <entry>
+    <title type="html"><![CDATA[What I Have Learned From Writing a Kernel From Scratch]]></title>
+    <link href="http://blog.jjyao.me/blog/2015/06/15/what-i-have-learned-from-writing-a-kernel-from-scratch/"/>
+    <updated>2015-06-15T21:45:49-07:00</updated>
+    <id>http://blog.jjyao.me/blog/2015/06/15/what-i-have-learned-from-writing-a-kernel-from-scratch</id>
+    <content type="html"><![CDATA[<p>Last semester, I took the course <a href="https://www.cs.cmu.edu/~410/">15410</a> and wrote a kernel from scratch with my partner. I learned a lot from this course and the kernel project. Following is what I have learned:</p>
+
+<ol>
+<li>Never Failed Functions</li>
+<li>Comment on Why</li>
+<li>Synchronization</li>
+<li>Error Handling</li>
+<li>Why Writing a Kernel From Scratch</li>
+<li>Misc.</li>
+</ol>
+
+
+<!-- more -->
+
+
+<h2>Never Failed Functions</h2>
+
+<p>There are cases where some functions cannot fail, which means that they cannot return errors and let callers handle these errors. For example, the <code>free()</code> function is a never failed function. Why? Because callers have no way to do something reasonable to handle the failure. What can we do when <code>free()</code> returns an error code? Retry, ignore or exit? Obviously, none of these solutions are acceptable. Similarly, <code>exit()</code> can never fail. To implement these never failed functions, we need to allocate resources needed by these functions in advance. For example, we should <strong>preallocate</strong> resources (e.g. memory that stores exit status) that are necessary for <code>exit()</code> to succeed when we <code>fork()</code> the process even if <code>fork()</code> itself doesn&rsquo;t need those resources. If <code>fork()</code> cannot preallocate needed resources, it can just returns an error as callers can do reasonable things to handle errors from it. Similarly, if <code>free()</code> needs some resources to succeed, we should acquire them inside <code>malloc()</code>. Another implication of never failed functions is that we should consider if a function can fail when we design the interface of the function. To make the decision, we should put ourselves in the shoe of callers. Can callers do something reasonable to handle returned errors? If the answer is not, then we should probably implement the function in a way that it never fails using techniques like preallocation.</p>
+
+<h2>Comment on Why</h2>
+
+<p>When we write comments, we should answer the question why we write this code. <strong>It&rsquo;s easier to figure out what the code does than why it is written.</strong> For the kernel, there are some code that is written to handle special cases that only happen in a special execution path. For example, some concurrency issues can only be triggered when interrupts or context switches happen in a particular time (e.g. before the execution of a particular instruction). To address these issues, we need to write some special code and it&rsquo;s important for us to write comments explaining why we write this code. If we don&rsquo;t write comments, then next time no one understands this piece of code (it&rsquo;s hard, if not impossible, to recall the particular execution path that causes concurrency issues).</p>
+
+<h2>Synchronization</h2>
+
+<p>Writing a kernel is all about synchronization, concurrency, race conditions and deadlock. <strong>Interrupts can happen at any time</strong>, and as a result, CPU is switched to execute interrupt handlers. What happens if CPU is executing a critical section when an interrupt happens? What happens if an interrupt handler tries to acquire a lock that has already been acquired by the interrupted code? As application programmers, we use synchronization primitives such as mutex to protect critical sections. However, these primitives cannot solve all the concurrency problems happening in the kernel. For example, we cannot use mutex to protect data accessed by both of an interrupt handler and some other code because it can cause deadlock. A typical example is the scan code buffer used by the keyboard interrupt handler. When a key is pressed or released, the keyboard handler is invoked to handle the event. What it does is store the scan code to a buffer so that some program can retrieve it later. As keyboard interrupts can happen when some program is accessing the scan code buffer to retrieve data and the keyboard interrupt handler also accesses the buffer to put data, the shared buffer should be protected. A normal mutex doesn&rsquo;t help in this case because it causes deadlock. Imagining that some code acquires the mutex and is accessing the scan code buffer and at that time, keyboard interrupt handler is invoked, the handler wants to acquire the mutex to access the buffer but it has already been acquired so the hanlder has to wait for the mutex to be released. However, the interrupted code cannot resume execution before the interrupt handler returns and as a result, we have the deadlock. To solve this problem, we can disable interrupts instead of using mutex. Disabling interrupts is the easiest way to address concurrency issues but it doesn&rsquo;t mean that we should use it everywhere. The problem of disabling interrupts is that the kernel may miss interrupts (e.g. timer interrupts) and becomes less preemptible, so we should avoid disabling interrupts if there are other methods to solve concurrency issues (e.g. avoid sharing data).</p>
+
+<h2>Error Handling</h2>
+
+<p>To write robust software (e.g. kernel), we have to handle <strong>all</strong> possible errors correctly. For example, we should assume that all <code>malloc()</code> invocations may fail and write code to handle these failures. It seems to be tedious to handle every possible error (especially errors that we think are unlikely to happen), but it is crucial for writing robust software (according to Murphy&rsquo;s law, errors will happen eventually). Some errors are expected and current code can recover from them. In this case, current code should resolve these errors. Some errors are expected and current code doesn&rsquo;t have enough knowledge to resolve them. In this case, current code should propagate errors up and let callers handle these errors. Some errors are unexpected and usually indicate program bugs (e.g. unexpected null pointer parameters). In this case, programs should log enough information and exit immediately, which helps programmers find bugs quickly.</p>
+
+<h2>Why Writing a Kernel From Scratch</h2>
+
+<p>Many people ask the question why we should take 15410 and write a kernel from scratch, after all we are highly unlikely to be asked to implement a new operating system during our lifetime. Here is my answer to this question. Writing a kenel from scratch lets us have a deep understanding of current operating systems (e.g. Unix) and know how they work. Compared with Unix, our kernel is a toy but concepts are similar. A toy kernel also implements context switch, virtual memory, paging, copy-on-write, zero-filled on demand, drivers, interrupt handlers, scheduler, processes, threads, synchronization primitives, and system calls. Through implementing these concepts, we know why context swith is costly, why system call is costly, why process is heavyweight, and so on. As all application software runs on top of an operating system, having a good understanding of these things helps us write performant software. For example, knowing that context switch is costly and process is heavyweight, Nginx developers use an <a href="http://nginx.com/blog/thread-pools-boost-performance-9x/">asynchronous, event-driven approach to handling connections</a>, which makes Nginx a high performance web server. What&rsquo;s more, through implementing a kernel, we learn how to write robust, well-documented code. The same techniques can also be applied to writing other code. In a word, <strong>writing a kernel from scratch helps us write better application software</strong>.</p>
+
+<h2>Misc.</h2>
+
+<ol>
+<li>After <code>cond_wait()</code>, the code needs to check the condition <strong>again</strong>, which means we should warp <code>cond_wait()</code> with <code>while</code> instead of <code>if</code>.</li>
+<li>Solving a problem using <code>sleep()</code> is bad. N-1 times it&rsquo;s much too short. Nth time it&rsquo;s much too long. The magic number doesn&rsquo;t work well every time.</li>
+<li>To have an efficient meeting, we should have our own thoughts and ideas before the meeting.</li>
+</ol>
+
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Which Intent Will You Get After Android Relaunches the Activity]]></title>
     <link href="http://blog.jjyao.me/blog/2014/08/28/which-intent-will-you-get-after-android-relaunches-the-activity/"/>
-    <updated>2014-08-28T17:28:06-04:00</updated>
+    <updated>2014-08-28T14:28:06-07:00</updated>
     <id>http://blog.jjyao.me/blog/2014/08/28/which-intent-will-you-get-after-android-relaunches-the-activity</id>
     <content type="html"><![CDATA[<p>Imagine that you launch a <code>singleTop</code> activity using intent A and then launch it again using intent B. As a result, activity&rsquo;s <code>onNewIntent</code> method is called and inside this method you call <code>setIntent</code> to store the new intent. After that, Android decides to relaunch the activity. Now we have the question: which intent will you get after Android relaunches the activity? The original one(A) or the latest one(B)?</p>
 
@@ -146,7 +197,7 @@ The source code of ActivityThread, ActivityManagerService, ActivityStackSupervis
   <entry>
     <title type="html"><![CDATA[android.os.Message.what]]></title>
     <link href="http://blog.jjyao.me/blog/2014/01/19/android-dot-os-dot-message-dot-what/"/>
-    <updated>2014-01-19T18:36:00-05:00</updated>
+    <updated>2014-01-19T18:36:00-08:00</updated>
     <id>http://blog.jjyao.me/blog/2014/01/19/android-dot-os-dot-message-dot-what</id>
     <content type="html"><![CDATA[<p>Send an android.os.Message whose <em>what</em> is 0 and then remove it, which unexpectedly removes all posted Runnables</p>
 
@@ -223,7 +274,7 @@ The source code of ActivityThread, ActivityManagerService, ActivityStackSupervis
   <entry>
     <title type="html"><![CDATA[Does Your App Have a Rock Solid SSL Connection]]></title>
     <link href="http://blog.jjyao.me/blog/2013/07/31/does-your-app-have-a-rock-solid-ssl-connection/"/>
-    <updated>2013-07-31T20:32:00-04:00</updated>
+    <updated>2013-07-31T20:32:00-07:00</updated>
     <id>http://blog.jjyao.me/blog/2013/07/31/does-your-app-have-a-rock-solid-ssl-connection</id>
     <content type="html"><![CDATA[<p>SSL(Secure Sockets Layer)是目前广泛用来加密网络通信的加密协议。它的一个著名应用就是HTTPS，也就是使用SSL协议对HTTP进行加密从而使得整个通信更加安全。对于一个移动应用（其他类型的客户端也同理），为了保证其和服务器的通信安全，开发者就会使用SSL来加密客户端和服务器之间的通信。这样理应是安全的，但由于很多开发者使用方式不对，导致客户端和服务器之间的SSL通信会受到中间人攻击(Man-in-the-middle attack)，从而使得安全性荡然无存。本文将首先介绍下SSL和中间人攻击的原理，然后会提供一个中间人攻击的实例，最后本文介绍该如何防止中间人攻击。</p>
 
@@ -290,7 +341,7 @@ The source code of ActivityThread, ActivityManagerService, ActivityStackSupervis
   <entry>
     <title type="html"><![CDATA[Review on American Dreams in China]]></title>
     <link href="http://blog.jjyao.me/blog/2013/06/16/review-on-american-dreams-in-china/"/>
-    <updated>2013-06-16T11:35:00-04:00</updated>
+    <updated>2013-06-16T11:35:00-07:00</updated>
     <id>http://blog.jjyao.me/blog/2013/06/16/review-on-american-dreams-in-china</id>
     <content type="html"><![CDATA[<p>这两天看了陈可辛导演的《中国合伙人》和柴静对新东方三位联合创始人的采访，感受颇多。创业奋斗路上风风雨雨，有太多的东西值得我们去学习，去感悟。下面就聊聊我所感悟到的东西：</p>
 
@@ -326,7 +377,7 @@ The source code of ActivityThread, ActivityManagerService, ActivityStackSupervis
   <entry>
     <title type="html"><![CDATA[A Close Look Into PHP Zval]]></title>
     <link href="http://blog.jjyao.me/blog/2013/03/17/a-close-look-into-php-zval/"/>
-    <updated>2013-03-17T13:43:00-04:00</updated>
+    <updated>2013-03-17T13:43:00-07:00</updated>
     <id>http://blog.jjyao.me/blog/2013/03/17/a-close-look-into-php-zval</id>
     <content type="html"><![CDATA[<p>最近研究了一下PHP variable的内部实现也就是zval，以及引申出来的Copy on Write, Reference等概念和机制。为了检验一下我是不是真的弄懂了，一个好的方法就是看能不能把它清楚地写下来并让人能够读懂。</p>
 
@@ -519,7 +570,7 @@ The source code of ActivityThread, ActivityManagerService, ActivityStackSupervis
   <entry>
     <title type="html"><![CDATA[Who Are You]]></title>
     <link href="http://blog.jjyao.me/blog/2013/01/25/who-are-you/"/>
-    <updated>2013-01-25T22:20:00-05:00</updated>
+    <updated>2013-01-25T22:20:00-08:00</updated>
     <id>http://blog.jjyao.me/blog/2013/01/25/who-are-you</id>
     <content type="html"><![CDATA[<p>这两天在研究新浪微博的第三方插件实现，无意中发现通过利用新浪微博的某个URL能让我获取当前访问这个URL的用户的微博uid。也就是说只要在某个网站中嵌入一段代码，这段代码在后台偷偷地访问那个URL，然后就可以把访问这个网站的用户的微博uid获取到，于是隐私就被泄露了…… 也就是说一个网站可以知道有哪些微博用户访问了它，然后可以就此采取一系列的措施……<br/>
 下面就具体讲讲这个漏洞是怎么回事。</p>
@@ -605,7 +656,7 @@ The source code of ActivityThread, ActivityManagerService, ActivityStackSupervis
   <entry>
     <title type="html"><![CDATA[Refactor With Vim]]></title>
     <link href="http://blog.jjyao.me/blog/2012/12/09/refactor-with-vim/"/>
-    <updated>2012-12-09T23:28:00-05:00</updated>
+    <updated>2012-12-09T23:28:00-08:00</updated>
     <id>http://blog.jjyao.me/blog/2012/12/09/refactor-with-vim</id>
     <content type="html"><![CDATA[<p>使用IDE的一个大好处就是可以方便的进行重构，想想Eclipse那彪悍的重构功能吧。可是对于我们这种喜欢用Vim的人来说，要如何来进行代码重构呢？接下来我就介绍一些Tips，来让Vim也能干重构的事。</p>
 
@@ -644,7 +695,7 @@ The source code of ActivityThread, ActivityManagerService, ActivityStackSupervis
   <entry>
     <title type="html"><![CDATA[OpenSSL Read Ahead &amp; Epoll]]></title>
     <link href="http://blog.jjyao.me/blog/2012/08/28/openssl-read-ahead-and-epoll/"/>
-    <updated>2012-08-28T12:06:00-04:00</updated>
+    <updated>2012-08-28T12:06:00-07:00</updated>
     <id>http://blog.jjyao.me/blog/2012/08/28/openssl-read-ahead-and-epoll</id>
     <content type="html"><![CDATA[<p>Use epoll with a ssl socket and ignore the OpenSSL read ahead feature</p>
 
@@ -674,7 +725,7 @@ The source code of ActivityThread, ActivityManagerService, ActivityStackSupervis
   <entry>
     <title type="html"><![CDATA[PHP Single Quoted String]]></title>
     <link href="http://blog.jjyao.me/blog/2012/08/07/php-single-quoted-string/"/>
-    <updated>2012-08-07T21:38:00-04:00</updated>
+    <updated>2012-08-07T21:38:00-07:00</updated>
     <id>http://blog.jjyao.me/blog/2012/08/07/php-single-quoted-string</id>
     <content type="html"><![CDATA[<p>Use PHP single quoted string in a case where I should use double quoted string instead</p>
 
@@ -712,7 +763,7 @@ The source code of ActivityThread, ActivityManagerService, ActivityStackSupervis
   <entry>
     <title type="html"><![CDATA[阅读·实践·思考]]></title>
     <link href="http://blog.jjyao.me/blog/2012/07/21/read-practice-think/"/>
-    <updated>2012-07-21T22:29:00-04:00</updated>
+    <updated>2012-07-21T22:29:00-07:00</updated>
     <id>http://blog.jjyao.me/blog/2012/07/21/read-practice-think</id>
     <content type="html"><![CDATA[<p>阅读，实践和思考这三个独立的词在我眼中有着千丝万缕的关系。这三者对个人的成长和发展起到了重要的作用，我们需要阅读，需要实践也需要思考。在我眼中阅读为我们提供了实践不到或者思考不到的知识，实践则让我们获得最真切最深刻的属于自己的知识，而思考则是获得知识的一个很重要的前提。下面我想谈谈我对这三者的理解和思考，也欢迎大家提出自己的观点。而我之所以选择把它写成文章贴出来是希望通过文字可以使我思考得更深、更清晰。</p>
 
@@ -754,7 +805,7 @@ The source code of ActivityThread, ActivityManagerService, ActivityStackSupervis
   <entry>
     <title type="html"><![CDATA[HDFS Source Code Analysis]]></title>
     <link href="http://blog.jjyao.me/blog/2012/06/18/hdfs-source-code-analysis/"/>
-    <updated>2012-06-18T19:28:00-04:00</updated>
+    <updated>2012-06-18T19:28:00-07:00</updated>
     <id>http://blog.jjyao.me/blog/2012/06/18/hdfs-source-code-analysis</id>
     <content type="html"><![CDATA[<ol>
 <li><a href="#instantiate_FileSystem">创建FileSystem</a></li>
@@ -2732,7 +2783,7 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
   <entry>
     <title type="html"><![CDATA[Insert One Million Rows Into Database]]></title>
     <link href="http://blog.jjyao.me/blog/2012/06/02/insert-one-million-rows-into-database/"/>
-    <updated>2012-06-02T15:30:00-04:00</updated>
+    <updated>2012-06-02T15:30:00-07:00</updated>
     <id>http://blog.jjyao.me/blog/2012/06/02/insert-one-million-rows-into-database</id>
     <content type="html"><![CDATA[<p>数据库课的一次作业，要求是尽可能快的插入一百万条数据到数据库。这也是第一次和数据库性能接触，在做作业的过程中也有所感受所以决定写下来。这次作业我选择的是用C和MySQL来完成，并使用MySQL的C API。程序的逻辑很简单就是随机生成一百万条数据然后插入数据库，关键是如何能快速的插入。我进行了多次尝试，每次尝试都在插入数据上有所提升。</p>
 
@@ -3011,7 +3062,7 @@ create table test(
   <entry>
     <title type="html"><![CDATA[Why We Should Use Library]]></title>
     <link href="http://blog.jjyao.me/blog/2012/04/22/why-we-should-use-library/"/>
-    <updated>2012-04-22T12:39:00-04:00</updated>
+    <updated>2012-04-22T12:39:00-07:00</updated>
     <id>http://blog.jjyao.me/blog/2012/04/22/why-we-should-use-library</id>
     <content type="html"><![CDATA[<p>库(Library)在wikipeida的定义如下：</p>
 

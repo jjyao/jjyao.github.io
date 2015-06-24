@@ -4,7 +4,7 @@
   <title><![CDATA[Category: database | Jiajun Yao]]></title>
   <link href="http://blog.jjyao.me/blog/categories/database/atom.xml" rel="self"/>
   <link href="http://blog.jjyao.me/"/>
-  <updated>2015-01-14T16:56:31-05:00</updated>
+  <updated>2015-06-23T21:31:59-07:00</updated>
   <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Insert One Million Rows Into Database]]></title>
     <link href="http://blog.jjyao.me/blog/2012/06/02/insert-one-million-rows-into-database/"/>
-    <updated>2012-06-02T15:30:00-04:00</updated>
+    <updated>2012-06-02T15:30:00-07:00</updated>
     <id>http://blog.jjyao.me/blog/2012/06/02/insert-one-million-rows-into-database</id>
     <content type="html"><![CDATA[<p>数据库课的一次作业，要求是尽可能快的插入一百万条数据到数据库。这也是第一次和数据库性能接触，在做作业的过程中也有所感受所以决定写下来。这次作业我选择的是用C和MySQL来完成，并使用MySQL的C API。程序的逻辑很简单就是随机生成一百万条数据然后插入数据库，关键是如何能快速的插入。我进行了多次尝试，每次尝试都在插入数据上有所提升。</p>
 
