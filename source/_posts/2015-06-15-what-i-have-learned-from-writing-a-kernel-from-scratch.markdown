@@ -36,3 +36,4 @@ Many people ask the question why we should take 15410 and write a kernel from sc
 1. After `cond_wait()`, the code needs to check the condition **again**, which means we should warp `cond_wait()` with `while` instead of `if`.
 2. Solving a problem using `sleep()` is bad. N-1 times it's much too short. Nth time it's much too long. The magic number doesn't work well every time.
 3. To have an efficient meeting, we should have our own thoughts and ideas before the meeting.
+4. Any problem in computer science can be solved with another level of indirection. —— David Wheeler
