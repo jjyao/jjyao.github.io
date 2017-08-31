@@ -1,0 +1,290 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>You Don't Exist, Go Away! - Jiajun Yao</title>
+  <meta name="author" content="jjyao">
+
+  
+  <meta name="description" content="SSH asks me to go way because of ntp clock skew Scenario When I try to ssh to a remote server from my linux desktop, I get: 1
+2
+[jyao@localhost]$ ssh &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.jjyao.me/blog/2017/08/30/you-dont-exist-go-away">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Jiajun Yao" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-32781930-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Jiajun Yao</a></h1>
+  
+    <h2>Stay hungry, Stay foolish.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.jjyao.me" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <!--<li><a href="/about">About</a></li>-->
+  <li><a href="/quotes/quotes.html">Quotes</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">You Don't Exist, Go Away!</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-08-30T21:10:41-07:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>9:10 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>SSH asks me to go way because of ntp clock skew</p>
+
+<!-- more -->
+
+
+<h2>Scenario</h2>
+
+<p>When I try to ssh to a remote server from my linux desktop, I get:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[jyao@localhost]$ ssh eng-portal
+</span><span class='line'>You don't exist, go away!</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Then I realize that my shell prompt changes to <code>[I have no name!@localhost]$</code>. Apparently, <code>whoami</code> stops working:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[I have no name!@localhost]$ whoami
+</span><span class='line'>whoami: cannot find name for user ID 16195</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Another thing I find accidentally is that if I disconnect my desktop from internet, <code>whoami</code> works again. So my guess is that <code>whoami</code> tries to get name from a remote server if there is internet connection. Otherwise, it falls back to use a local database which contains the correct data. My first theory is that the data on the remote server is corrupted. To figure out the remote server that <code>whoami</code> talks to, I run <code>strace</code>:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[I have no name!@localhost]$ strace -f -e trace=network -s 10000 whoami
+</span><span class='line'>...
+</span><span class='line'>connect(3, {sa_family=AF_FILE, path="/var/lib/likewise/.lsassd"}, 110) = 0
+</span><span class='line'>...</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>So <code>whoami</code> talks to <code>lsassd</code> daemon which then talks to <code>Active Directory</code> server. Based on my first theory, it looks like the data on the <code>Active Directory</code> server is corrupted. To confirm this, I run <code>lw-find-user-by-id</code>:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[I have no name!@localhost]$ /opt/likewise/bin/lw-find-user-by-id 16195
+</span><span class='line'>Clock skew detected with active directory server</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Hmm, this means that my first theory is wrong. To confirm the clock skew, I run <code>ntpq</code>:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[I have no name!@localhost]$ ntpq -p
+</span><span class='line'>remote           refid      st t when poll reach   delay   offset  jitter
+</span><span class='line'>==============================================================================
+</span><span class='line'>*lmn1-d1-infra01 10.251.184.29    2 u   44   64  177    1.612  -364830 129.863
+</span><span class='line'>+lmn1-d1-infra02 10.251.184.29    2 u   47   64  177    1.512  -364831 129.060</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>It turns out that the desktop clock is off by 6 minutes. Now the question arises: why <code>ntpd</code> fails to sync up the correct time with the ntp server after the clock skew happens? After googling, I find that <code>ntpd</code> indeed tries to fix the clock skew but just in a slow speed (<a href="https://serverfault.com/a/608157">https://serverfault.com/a/608157</a>). It takes <code>ntpd</code> more than 1 week to fix 6 minutes skew.</p>
+
+<h2>Solution</h2>
+
+<p>Force <code>ntpd</code> to do sync up using <code>-g</code> option:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>// disconnect from internet first as sudo needs whoami to be working
+</span><span class='line'>[I have no name!@localhost]$ sudo service ntpd stop
+</span><span class='line'>// connect to internet
+</span><span class='line'>[I have no name!@localhost]$ sudo ntpd -gq
+</span><span class='line'>[I have no name!@localhost]$ sudo service ntpd start</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">jjyao</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2017-08-30T21:10:41-07:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>9:10 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/debug/'>debug</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/06/15/what-i-have-learned-from-writing-a-kernel-from-scratch/" title="Previous Post: What I Have Learned From Writing a Kernel From Scratch">&laquo; What I Have Learned From Writing a Kernel From Scratch</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+  <p style="margin-bottom:3px">Welcome to here! I'm jjyao and am working on the distributed graph database team at LinkedIn. My current interests are database systems and distributed systems.</p>
+  <p>
+  <a href="https://www.linkedin.com/in/jjyao/">LinkedIn</a>
+  <a href="https://github.com/jjyao/" style="margin-left:20px">GitHub</a>
+  </p>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - jjyao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'jjyao';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.jjyao.me/blog/2017/08/30/you-dont-exist-go-away/';
+        var disqus_url = 'http://blog.jjyao.me/blog/2017/08/30/you-dont-exist-go-away/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

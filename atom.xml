@@ -4,7 +4,7 @@
   <title><![CDATA[Jiajun Yao]]></title>
   <link href="http://blog.jjyao.me/atom.xml" rel="self"/>
   <link href="http://blog.jjyao.me/"/>
-  <updated>2017-03-19T20:59:36-07:00</updated>
+  <updated>2017-08-30T23:03:06-07:00</updated>
   <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -12,6 +12,88 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[You Don't Exist, Go Away!]]></title>
+    <link href="http://blog.jjyao.me/blog/2017/08/30/you-dont-exist-go-away/"/>
+    <updated>2017-08-30T21:10:41-07:00</updated>
+    <id>http://blog.jjyao.me/blog/2017/08/30/you-dont-exist-go-away</id>
+    <content type="html"><![CDATA[<p>SSH asks me to go way because of ntp clock skew</p>
+
+<!-- more -->
+
+
+<h2>Scenario</h2>
+
+<p>When I try to ssh to a remote server from my linux desktop, I get:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[jyao@localhost]$ ssh eng-portal
+</span><span class='line'>You don't exist, go away!</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then I realize that my shell prompt changes to <code>[I have no name!@localhost]$</code>. Apparently, <code>whoami</code> stops working:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[I have no name!@localhost]$ whoami
+</span><span class='line'>whoami: cannot find name for user ID 16195</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Another thing I find accidentally is that if I disconnect my desktop from internet, <code>whoami</code> works again. So my guess is that <code>whoami</code> tries to get name from a remote server if there is internet connection. Otherwise, it falls back to use a local database which contains the correct data. My first theory is that the data on the remote server is corrupted. To figure out the remote server that <code>whoami</code> talks to, I run <code>strace</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[I have no name!@localhost]$ strace -f -e trace=network -s 10000 whoami
+</span><span class='line'>...
+</span><span class='line'>connect(3, {sa_family=AF_FILE, path="/var/lib/likewise/.lsassd"}, 110) = 0
+</span><span class='line'>...</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So <code>whoami</code> talks to <code>lsassd</code> daemon which then talks to <code>Active Directory</code> server. Based on my first theory, it looks like the data on the <code>Active Directory</code> server is corrupted. To confirm this, I run <code>lw-find-user-by-id</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[I have no name!@localhost]$ /opt/likewise/bin/lw-find-user-by-id 16195
+</span><span class='line'>Clock skew detected with active directory server</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Hmm, this means that my first theory is wrong. To confirm the clock skew, I run <code>ntpq</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[I have no name!@localhost]$ ntpq -p
+</span><span class='line'>remote           refid      st t when poll reach   delay   offset  jitter
+</span><span class='line'>==============================================================================
+</span><span class='line'>*lmn1-d1-infra01 10.251.184.29    2 u   44   64  177    1.612  -364830 129.863
+</span><span class='line'>+lmn1-d1-infra02 10.251.184.29    2 u   47   64  177    1.512  -364831 129.060</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It turns out that the desktop clock is off by 6 minutes. Now the question arises: why <code>ntpd</code> fails to sync up the correct time with the ntp server after the clock skew happens? After googling, I find that <code>ntpd</code> indeed tries to fix the clock skew but just in a slow speed (<a href="https://serverfault.com/a/608157">https://serverfault.com/a/608157</a>). It takes <code>ntpd</code> more than 1 week to fix 6 minutes skew.</p>
+
+<h2>Solution</h2>
+
+<p>Force <code>ntpd</code> to do sync up using <code>-g</code> option:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>// disconnect from internet first as sudo needs whoami to be working
+</span><span class='line'>[I have no name!@localhost]$ sudo service ntpd stop
+</span><span class='line'>// connect to internet
+</span><span class='line'>[I have no name!@localhost]$ sudo ntpd -gq
+</span><span class='line'>[I have no name!@localhost]$ sudo service ntpd start</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[What I Have Learned From Writing a Kernel From Scratch]]></title>
