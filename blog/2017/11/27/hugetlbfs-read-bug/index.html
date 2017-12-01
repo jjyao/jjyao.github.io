@@ -1,0 +1,376 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>HugeTLBFS Read Bug - Jiajun Yao</title>
+  <meta name="author" content="jjyao">
+
+  
+  <meta name="description" content="Hit a Linux kernel bug that read() returns wrong data if it crosses a hugepage boundary. Scenario When I read a file in the hugetlbfs using std:: &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.jjyao.me/blog/2017/11/27/hugetlbfs-read-bug">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Jiajun Yao" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-32781930-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Jiajun Yao</a></h1>
+  
+    <h2>Stay hungry, Stay foolish.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.jjyao.me" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <!--<li><a href="/about">About</a></li>-->
+  <li><a href="/quotes/quotes.html">Quotes</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">HugeTLBFS Read Bug</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-11-27T22:29:46-08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>10:29 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Hit a Linux kernel bug that <code>read()</code> returns wrong data if it crosses a hugepage boundary.</p>
+
+<!-- more -->
+
+
+<h2>Scenario</h2>
+
+<p>When I read a file in the <code>hugetlbfs</code> using <code>std::ifstream</code>, I fail to get the exact data of the file.</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">file</span> <span class="o">=</span> <span class="s">&quot;/mnt/huge/foo&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="n">std</span><span class="o">::</span><span class="n">ifstream</span> <span class="n">fin</span><span class="p">;</span>
+</span><span class='line'><span class="n">fin</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">ifstream</span><span class="o">::</span><span class="n">binary</span><span class="p">);</span>
+</span><span class='line'><span class="kt">char</span> <span class="n">c</span><span class="p">;</span>
+</span><span class='line'><span class="k">while</span> <span class="p">(</span><span class="n">fin</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">c</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="n">fin</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>However, if I use <code>fread()</code> I can get the correct data:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">file</span> <span class="o">=</span> <span class="s">&quot;/mnt/huge/foo&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="kt">FILE</span><span class="o">*</span> <span class="n">fin</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="n">file</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="s">&quot;rb&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="kt">char</span> <span class="n">c</span><span class="p">;</span>
+</span><span class='line'><span class="k">while</span> <span class="p">(</span><span class="n">fread</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">fin</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">c</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="n">fclose</span><span class="p">(</span><span class="n">fin</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>To figure out the reason, I <code>strace</code> these two programs:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">open</span><span class="p">(</span><span class="s">&quot;/mnt/huge/foo&quot;</span><span class="p">,</span> <span class="n">O_RDONLY</span><span class="p">)</span>         <span class="o">=</span> <span class="mi">3</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\220</span><span class="s">N</span><span class="se">\210\344\36\227\276\303\305\301\334\346\246\245\371</span><span class="s">7tmg/</span><span class="se">\25\235</span><span class="s">C</span><span class="se">\365</span><span class="s">k</span><span class="se">\7\273</span><span class="s">T2</span><span class="se">\266\220\327</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">8191</span><span class="p">)</span> <span class="o">=</span> <span class="mi">8191</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;%</span><span class="se">\361</span><span class="s">!</span><span class="se">\253</span><span class="s">lek&amp;</span><span class="se">\30\306\370\333</span><span class="s">f</span><span class="se">\304\357</span><span class="s">L6@z</span><span class="se">\224</span><span class="s">W&lt;ef</span><span class="se">\335\206\225\246\342</span><span class="s">!</span><span class="se">\327\6</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">8191</span><span class="p">)</span> <span class="o">=</span> <span class="mi">8191</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;B</span><span class="se">\222\327</span><span class="s">-</span><span class="se">\17</span><span class="s">`&#39;</span><span class="se">\250</span><span class="s">E[]</span><span class="se">\327</span><span class="s">mi</span><span class="se">\37\330</span><span class="s">8u</span><span class="se">\250\231</span><span class="s">F</span><span class="se">\200\250\35</span><span class="s">-</span><span class="se">\v\276\245</span><span class="s">&gt;H</span><span class="se">\321</span><span class="s">R&quot;</span><span class="p">...,</span> <span class="mi">8191</span><span class="p">)</span> <span class="o">=</span> <span class="mi">8191</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;u</span><span class="se">\311</span><span class="s">w</span><span class="se">\336\10</span><span class="s">h</span><span class="se">\374\f\214\301\376</span><span class="s">-</span><span class="se">\025</span><span class="s">8&#39;</span><span class="se">\263</span><span class="s">;Iu1</span><span class="se">\273\267\345\313\246\22</span><span class="s">O</span><span class="se">\320\335\254</span><span class="s">&#39;</span><span class="se">\7</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">8191</span><span class="p">)</span> <span class="o">=</span> <span class="mi">8191</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\342\265\263\314\222\265</span><span class="s">rr</span><span class="se">\265</span><span class="s">*A</span><span class="se">\27\34</span><span class="s">&lt;</span><span class="se">\342\344</span><span class="s">F</span><span class="se">\244</span><span class="s">|</span><span class="se">\371\f\231\345\331\343</span><span class="s">=</span><span class="se">\321</span><span class="s">SZx</span><span class="se">\273\240</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">8191</span><span class="p">)</span> <span class="o">=</span> <span class="mi">8191</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;=?</span><span class="se">\241\337\20\235\367\233\10\234</span><span class="s">;^</span><span class="se">\234\337\274\322\237\242\346\32\32\233</span><span class="s">gb</span><span class="se">\231\236</span><span class="s">DZ</span><span class="se">\336</span><span class="s">t</span><span class="se">\364</span><span class="s">]&quot;</span><span class="p">...,</span> <span class="mi">8191</span><span class="p">)</span> <span class="o">=</span> <span class="mi">8191</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;1</span><span class="se">\233\21</span><span class="s">z</span><span class="se">\345\355</span><span class="s">?</span><span class="se">\243\342\361</span><span class="s">e</span><span class="se">\335\334\246\363\316</span><span class="s">A</span><span class="se">\267\361</span><span class="s">Nv</span><span class="se">\304\250\225\240</span><span class="s">Q</span><span class="se">\267\31\r\265\314</span><span class="s">&#39;&quot;</span><span class="p">...,</span> <span class="mi">8191</span><span class="p">)</span> <span class="o">=</span> <span class="mi">8191</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;$</span><span class="se">\24\277\\\213\320</span><span class="s">jGj</span><span class="se">\n</span><span class="s">b4</span><span class="se">\317\370</span><span class="s">p</span><span class="se">\216</span><span class="s">&gt;5V</span><span class="se">\331\1\256</span><span class="s">1</span><span class="se">\275\24\233\326</span><span class="s">d+</span><span class="se">\1</span><span class="s">UM&quot;</span><span class="p">...,</span> <span class="mi">8191</span><span class="p">)</span> <span class="o">=</span> <span class="mi">8191</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\262\355\327</span><span class="s">!</span><span class="se">\2</span><span class="s">h</span><span class="se">\303\332\373\16\257\3\32</span><span class="s">y!O</span><span class="se">\303</span><span class="s">]5</span><span class="se">\331\256</span><span class="s">?Q</span><span class="se">\277</span><span class="s">t</span><span class="se">\27\262\223\316\357</span><span class="s">j(&quot;</span><span class="p">...,</span> <span class="mi">8191</span><span class="p">)</span> <span class="o">=</span> <span class="mi">8191</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;pd</span><span class="se">\204</span><span class="s">3</span><span class="se">\261\350</span><span class="s">C</span><span class="se">\313\356\200\366</span><span class="s">}</span><span class="se">\17\25\335\240</span><span class="s">?</span><span class="se">\357\225</span><span class="s">Fs</span><span class="se">\226</span><span class="s">qKW</span><span class="se">\241</span><span class="s">r</span><span class="se">\227</span><span class="s">b</span><span class="se">\242</span><span class="s">4</span><span class="se">\347</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">8191</span><span class="p">)</span> <span class="o">=</span> <span class="mi">8191</span>
+</span><span class='line'><span class="p">...</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">open</span><span class="p">(</span><span class="s">&quot;/mnt/huge/foo&quot;</span><span class="p">,</span> <span class="n">O_RDONLY</span><span class="p">)</span>         <span class="o">=</span> <span class="mi">3</span>
+</span><span class='line'><span class="n">fstat</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="p">{</span><span class="n">st_mode</span><span class="o">=</span><span class="n">S_IFREG</span><span class="o">|</span><span class="mo">0644</span><span class="p">,</span> <span class="n">st_size</span><span class="o">=</span><span class="mi">5242880</span><span class="p">,</span> <span class="p">...})</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="n">mmap</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="mi">4096</span><span class="p">,</span> <span class="n">PROT_READ</span><span class="o">|</span><span class="n">PROT_WRITE</span><span class="p">,</span> <span class="n">MAP_PRIVATE</span><span class="o">|</span><span class="n">MAP_ANONYMOUS</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="mh">0x7f9328b03000</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\220</span><span class="s">N</span><span class="se">\210\344\36\227\276\303\305\301\334\346\246\245\371</span><span class="s">7tmg/</span><span class="se">\25\235</span><span class="s">C</span><span class="se">\365</span><span class="s">k</span><span class="se">\7\273</span><span class="s">T2</span><span class="se">\266\220\327</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\v\327\265</span><span class="s">M</span><span class="se">\276\253\357\325</span><span class="s">m</span><span class="se">\244\253\351\237\350\273\21</span><span class="s">E&lt;</span><span class="se">\326\356\030</span><span class="s">03</span><span class="se">\210\5\277\210</span><span class="s">h</span><span class="se">\200</span><span class="s">V5</span><span class="se">\376</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\361</span><span class="s">!</span><span class="se">\253</span><span class="s">lek&amp;</span><span class="se">\30\306\370\333</span><span class="s">f</span><span class="se">\304\357</span><span class="s">L6@z</span><span class="se">\224</span><span class="s">W&lt;ef</span><span class="se">\335\206\225\246\342</span><span class="s">!</span><span class="se">\327\6\t</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\343\300\202</span><span class="s">/</span><span class="se">\343\t\300\340\332\215\214</span><span class="s">8</span><span class="se">\226\342\251\377\f</span><span class="s">q_</span><span class="se">\21</span><span class="s">n</span><span class="se">\370\212\273</span><span class="s">tn</span><span class="se">\305\210</span><span class="s">#</span><span class="se">\320</span><span class="s">@`&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\327</span><span class="s">-</span><span class="se">\17</span><span class="s">`&#39;</span><span class="se">\250</span><span class="s">E[]</span><span class="se">\327</span><span class="s">mi</span><span class="se">\37\330</span><span class="s">8u</span><span class="se">\250\231</span><span class="s">F</span><span class="se">\200\250\35</span><span class="s">-</span><span class="se">\v\276\245</span><span class="s">&gt;H</span><span class="se">\321</span><span class="s">R</span><span class="se">\277\36</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;t</span><span class="se">\346</span><span class="s">p0</span><span class="se">\204</span><span class="s">OeD</span><span class="se">\211\256\233</span><span class="s">g</span><span class="se">\242\351</span><span class="s">3</span><span class="se">\3</span><span class="s">X</span><span class="se">\367\032</span><span class="s">3</span><span class="se">\332\235\330\215\375\261</span><span class="s">G</span><span class="se">\234\217\17\34\375</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\336\10</span><span class="s">h</span><span class="se">\374\f\214\301\376</span><span class="s">-</span><span class="se">\025</span><span class="s">8&#39;</span><span class="se">\263</span><span class="s">;Iu1</span><span class="se">\273\267\345\313\246\22</span><span class="s">O</span><span class="se">\320\335\254</span><span class="s">&#39;</span><span class="se">\7\205\r\325</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;xK</span><span class="se">\373\233\300\n\354\350</span><span class="s">&gt;s</span><span class="se">\243\270\365</span><span class="s">D</span><span class="se">\276\263\226</span><span class="s">/</span><span class="se">\276\27</span><span class="s">S</span><span class="se">\225\&quot;</span><span class="s">yL</span><span class="se">\4</span><span class="s">V</span><span class="se">\352\272\26</span><span class="s">b</span><span class="se">\261</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\222\265</span><span class="s">rr</span><span class="se">\265</span><span class="s">*A</span><span class="se">\27\34</span><span class="s">&lt;</span><span class="se">\342\344</span><span class="s">F</span><span class="se">\244</span><span class="s">|</span><span class="se">\371\f\231\345\331\343</span><span class="s">=</span><span class="se">\321</span><span class="s">SZx</span><span class="se">\273\240</span><span class="s">)</span><span class="se">\245</span><span class="s">h</span><span class="se">\224</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;P</span><span class="se">\332</span><span class="s">o&gt;+</span><span class="se">\355\17\372\251\275</span><span class="s">n</span><span class="se">\266</span><span class="s"> </span><span class="se">\n\310</span><span class="s">aB</span><span class="se">\210\235\30</span><span class="s">u{</span><span class="se">\365\34\255\367\36\375\365\v\27\331</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\235\367\233\10\234</span><span class="s">;^</span><span class="se">\234\337\274\322\237\242\346\32\32\233</span><span class="s">gb</span><span class="se">\231\236</span><span class="s">DZ</span><span class="se">\336</span><span class="s">t</span><span class="se">\364</span><span class="s">]</span><span class="se">\225\216</span><span class="s">.=C&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
+</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;p$</span><span class="se">\350</span><span class="s">r</span><span class="se">\31\215\&quot;\225\331</span><span class="s">&amp;</span><span class="se">\354\200\361\344\333</span><span class="s">L</span><span class="se">\201\37</span><span class="s">e</span><span class="se">\r\&quot;\353\255\244\250</span><span class="s">?</span><span class="se">\253</span><span class="s">O</span><span class="se">\252</span><span class="s">A3</span><span class="se">\371</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
+</span><span class='line'><span class="p">...</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Based on <code>strace</code>, <code>std::ifstream</code> reads 8191 bytes at a time and <code>fread()</code> reads 4096 bytes at a time. To check if the read size matters, I change the <code>std::ifstream</code> program so that it also reads 4096 bytes:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">file</span> <span class="o">=</span> <span class="s">&quot;/mnt/huge/foo&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="n">std</span><span class="o">::</span><span class="n">ifstream</span> <span class="n">fin</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// with a user-provided buffer, libstdc++ reads n-1 bytes at a time</span>
+</span><span class='line'><span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">4096</span> <span class="o">+</span> <span class="mi">1</span><span class="p">];</span>
+</span><span class='line'><span class="n">fin</span><span class="p">.</span><span class="n">rdbuf</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">pubsetbuf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">));</span>
+</span><span class='line'><span class="n">fin</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">ifstream</span><span class="o">::</span><span class="n">binary</span><span class="p">);</span>
+</span><span class='line'><span class="kt">char</span> <span class="n">c</span><span class="p">;</span>
+</span><span class='line'><span class="k">while</span> <span class="p">(</span><span class="n">fin</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">c</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="n">fin</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>After I change <code>std::ifstream</code> to read 4096 bytes at a time, I&rsquo;m able to read the correct data so the read size matters. <code>read()</code> is a system call and it should handle all kinds of read size so the experiment indicates that there might be a bug somewhere in the kernel. After looking at the kernel commit log, something interesting shows up:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="nl">Author</span><span class="p">:</span> <span class="n">Al</span> <span class="n">Viro</span> <span class="o">&lt;</span><span class="n">viro</span><span class="err">@</span><span class="n">zeniv</span><span class="p">.</span><span class="n">linux</span><span class="p">.</span><span class="n">org</span><span class="p">.</span><span class="n">uk</span><span class="o">&gt;</span>
+</span><span class='line'><span class="nl">Date</span><span class="p">:</span>   <span class="n">Fri</span> <span class="n">Apr</span> <span class="mi">3</span> <span class="mi">11</span><span class="o">:</span><span class="mi">31</span><span class="o">:</span><span class="mi">35</span> <span class="mi">2015</span> <span class="o">-</span><span class="mo">0400</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">switch</span> <span class="n">hugetlbfs</span> <span class="n">to</span> <span class="o">-&gt;</span><span class="n">read_iter</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">...</span> <span class="n">and</span> <span class="n">fix</span> <span class="n">the</span> <span class="k">case</span> <span class="n">when</span> <span class="n">the</span> <span class="n">area</span> <span class="n">we</span> <span class="n">are</span> <span class="n">asked</span> <span class="n">to</span> <span class="n">read</span> <span class="n">crosses</span>
+</span><span class='line'>    <span class="n">a</span> <span class="n">hugepage</span> <span class="n">boundary</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">Signed</span><span class="o">-</span><span class="n">off</span><span class="o">-</span><span class="nl">by</span><span class="p">:</span> <span class="n">Al</span> <span class="n">Viro</span> <span class="o">&lt;</span><span class="n">viro</span><span class="err">@</span><span class="n">zeniv</span><span class="p">.</span><span class="n">linux</span><span class="p">.</span><span class="n">org</span><span class="p">.</span><span class="n">uk</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>So I actually hit a kernel bug.</p>
+
+<h2>Solution</h2>
+
+<p>Change the <code>std::ifstream</code> read size by providing a user-provided buffer so that read won&rsquo;t cross the hugepage boundary or upgrade the Linux kernel version to include the fix.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">jjyao</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2017-11-27T22:29:46-08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>10:29 pm</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/08/30/you-dont-exist-go-away/" title="Previous Post: You don't exist, go away!">&laquo; You don't exist, go away!</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+  <p style="margin-bottom:3px">Welcome to here! I'm jjyao and am working on the distributed graph database team at LinkedIn. My current interests are database systems and distributed systems.</p>
+  <p>
+  <a href="https://www.linkedin.com/in/jjyao/">LinkedIn</a>
+  <a href="https://github.com/jjyao/" style="margin-left:20px">GitHub</a>
+  </p>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - jjyao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'jjyao';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.jjyao.me/blog/2017/11/27/hugetlbfs-read-bug/';
+        var disqus_url = 'http://blog.jjyao.me/blog/2017/11/27/hugetlbfs-read-bug/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
