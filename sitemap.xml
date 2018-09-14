@@ -9,6 +9,12 @@
   </url>
   
   <url>
+    <loc>http://blog.jjyao.me/blog/2017/09/10/jonathan-lee/</loc>
+    <lastmod>2017-09-10T22:13:16-07:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>http://blog.jjyao.me/blog/2017/08/30/you-dont-exist-go-away/</loc>
     <lastmod>2017-08-30T21:10:41-07:00</lastmod>
     <priority>0.8</priority>
@@ -101,35 +107,35 @@
   
   <url>
     <loc>http://blog.jjyao.me/blog/archives/</loc>
-    <lastmod>2017-11-30T21:59:14-08:00</lastmod>
+    <lastmod>2018-09-13T22:02:52-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/</loc>
-    <lastmod>2017-11-30T21:59:14-08:00</lastmod>
+    <lastmod>2018-09-13T22:02:52-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/about/</loc>
-    <lastmod>2017-11-30T21:59:14-08:00</lastmod>
+    <lastmod>2018-09-13T22:02:52-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/quotes/it-quotes.html</loc>
-    <lastmod>2017-11-30T21:59:14-08:00</lastmod>
+    <lastmod>2018-09-13T22:02:52-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/quotes/quotes.html</loc>
-    <lastmod>2017-11-30T21:59:14-08:00</lastmod>
+    <lastmod>2018-09-13T22:02:52-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>

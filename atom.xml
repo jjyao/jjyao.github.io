@@ -4,7 +4,7 @@
   <title><![CDATA[Jiajun Yao]]></title>
   <link href="http://blog.jjyao.me/atom.xml" rel="self"/>
   <link href="http://blog.jjyao.me/"/>
-  <updated>2017-11-30T21:59:14-08:00</updated>
+  <updated>2018-09-13T22:02:52-07:00</updated>
   <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -186,6 +186,26 @@
 <h2>Solution</h2>
 
 <p>Change the <code>std::ifstream</code> read size by providing a user-provided buffer so that read won&rsquo;t cross the hugepage boundary or upgrade the Linux kernel version to include the fix.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Jonathan Lee]]></title>
+    <link href="http://blog.jjyao.me/blog/2017/09/10/jonathan-lee/"/>
+    <updated>2017-09-10T22:13:16-07:00</updated>
+    <id>http://blog.jjyao.me/blog/2017/09/10/jonathan-lee</id>
+    <content type="html"><![CDATA[<p>我说我喜欢你的歌，我不知道这算不算是一件好事。
+我说我喜欢你的词，总是道出我心中不欲人知的事。</p>
+
+<!-- more -->
+
+
+<p>念念不忘必有回响，我终于见到了李宗盛，在我人生参加的第一场演唱会上。在等待了多年以后，我终于在现场听到了那些陪伴了我无数个日夜的歌，那些叫做“词曲：李宗盛”的歌。</p>
+
+<p><img src="http://blog.jjyao.me/images/post/jonathan-lee/concert.jpeg">
+<img src="http://blog.jjyao.me/images/post/jonathan-lee/live.jpeg"></p>
+
+<p>下一次，我飘洋过海来看你。</p>
 ]]></content>
   </entry>
   
