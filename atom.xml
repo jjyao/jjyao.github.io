@@ -4,7 +4,7 @@
   <title><![CDATA[Jiajun Yao]]></title>
   <link href="http://blog.jjyao.me/atom.xml" rel="self"/>
   <link href="http://blog.jjyao.me/"/>
-  <updated>2018-09-13T22:02:52-07:00</updated>
+  <updated>2018-10-28T18:17:49-07:00</updated>
   <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -288,6 +288,42 @@
 </span><span class='line'>[I have no name!@localhost]$ sudo ntpd -gq
 </span><span class='line'>[I have no name!@localhost]$ sudo service ntpd start</span></code></pre></td></tr></table></div></figure>
 
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[What I Have Learned From CMU CS Education]]></title>
+    <link href="http://blog.jjyao.me/blog/2015/12/23/what-i-have-learned-from-cmu-cs-education/"/>
+    <updated>2015-12-23T20:51:02-08:00</updated>
+    <id>http://blog.jjyao.me/blog/2015/12/23/what-i-have-learned-from-cmu-cs-education</id>
+    <content type="html"><![CDATA[<p>在南京大学软件学院读完本科后我到CMU读了硕士。虽然在CMU只有短短的一年半时间，但我还是从多个方面体验到了CMU（美国）的计算机教育。这其中有很多东西值得国内的高校学习借鉴。</p>
+
+<!-- more -->
+
+
+<h2>Internship</h2>
+
+<p>美国的本科生有比国内本科生更多的实习机会。每年暑假他们都可以到一个公司（这其中不乏Google，Facebook这样的大公司）实习，这样下来他们在本科阶段就有3次实习机会（加拿大滑铁卢大学因为有co-op，所以学生有6次实习机会）。相反，国内学生暑假的时候一般都回家休息，只有大四的时候有一次实习机会。更多更早的实习机会对学生们来说意味着他们有机会运用学校所学知识去解决实际问题并且还能从工业界获得在学校里学不到的知识和经验。多次实习也让他们有机会对多个公司有更深入的了解，这样等到毕业选公司的时候可以做出更适合自己的选择。同时实习经历也能让他们毕业后更顺利地从学生身份过渡到员工身份。从另一个方面来讲，实习对公司也是有利的。相比面试而言，公司可以通过实习更全面地了解学生并从中挑出优秀适合公司的给出offer。同时实习也给了公司一个展示企业文化等的机会，以此来帮助公司吸引优秀的实习生毕业后回到公司。</p>
+
+<h2>Sabbatical</h2>
+
+<p>Sabbatical制度是指教授每工作几年后都有一次休假的机会。教授往往会借着这个机会到工业界工作一段时间。在我CMU读书期间，就有一个CS的教授利用Sabbatical的机会到Google Brain组工作了一年。这种Sabbatical机会促进了工业界和学术界的交流，让教授有机会了解到工业界的需求同时也让工业界有机会使用学术界的成果。</p>
+
+<h2>Guests</h2>
+
+<p>CMU很注重学术交流，经常会请各种guests来做讲座。有些课程会特地安排几节课来请外面的人到学校做讲座。比如我在CMU上的Storage课就请过GFS（Google File System）的开发者来做过讲座。又比如说CMU DB Group曾举办过&#8221;Seven Databases in Seven Weeks&#8221; Seminar活动，请来了知名的数据库开发人员来介绍他们的数据库。这些guests有来自工业界的也有来自学术界的。通过和他们的交流，我们能够扩展我们的视野，从多方面学习到相关知识。</p>
+
+<h2>TA</h2>
+
+<p>在CMU，上过一门课后就可以申请成为那门课的TA。当TA需要在office hour的时候解答学生的问题也需要批改作业和试卷。对于老师来讲，TA分担了一部分的工作。对于TA来讲，一方面可以增加点收入另一方面也会在答疑的过程中巩固所学知识。</p>
+
+<h2>Industry</h2>
+
+<p>和工业界的紧密联系是我对CMU计算机教育的另一个印象。Intel的Research Center就在校园里，研究员们会和PhD们共同参与研究。每年Parall Data Lab会举办一个为期三天的Retreat，邀请工业界的人来参加Workshop，向他们展示最新的研究成果，并给学生和教授一个和工业界深入交流的机会。同时每年会有大量工业界的guests受邀来学校做讲座。这样的紧密联系促进了知识的共享也能让学生多了些工业界的人脉。</p>
+
+<h2>Professors</h2>
+
+<p>在CMU，教授有Teaching Professor, Research Professor和Professor。擅长教书和擅长做研究的都可以找到适合自己的职位。这样可以避免让不擅长教书的人去教书这样的情况发生，对教授和学生都是一件好事。</p>
 ]]></content>
   </entry>
   

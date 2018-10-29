@@ -21,6 +21,12 @@
   </url>
   
   <url>
+    <loc>http://blog.jjyao.me/blog/2015/12/23/what-i-have-learned-from-cmu-cs-education/</loc>
+    <lastmod>2015-12-23T20:51:02-08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>http://blog.jjyao.me/blog/2015/06/15/what-i-have-learned-from-writing-a-kernel-from-scratch/</loc>
     <lastmod>2015-06-15T21:45:49-07:00</lastmod>
     <priority>0.8</priority>
@@ -107,35 +113,35 @@
   
   <url>
     <loc>http://blog.jjyao.me/blog/archives/</loc>
-    <lastmod>2018-09-13T22:02:52-07:00</lastmod>
+    <lastmod>2018-10-28T18:17:49-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/</loc>
-    <lastmod>2018-09-13T22:02:52-07:00</lastmod>
+    <lastmod>2018-10-28T18:17:49-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/about/</loc>
-    <lastmod>2018-09-13T22:02:52-07:00</lastmod>
+    <lastmod>2018-10-28T18:17:49-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/quotes/it-quotes.html</loc>
-    <lastmod>2018-09-13T22:02:52-07:00</lastmod>
+    <lastmod>2018-10-28T18:17:49-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/quotes/quotes.html</loc>
-    <lastmod>2018-09-13T22:02:52-07:00</lastmod>
+    <lastmod>2018-10-28T18:17:49-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
