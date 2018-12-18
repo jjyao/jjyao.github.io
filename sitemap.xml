@@ -3,6 +3,12 @@
   
   
   <url>
+    <loc>http://blog.jjyao.me/blog/2018/12/16/linux-pid/</loc>
+    <lastmod>2018-12-16T08:15:30-08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>http://blog.jjyao.me/blog/2018/11/07/one-liners/</loc>
     <lastmod>2018-11-07T22:06:28-08:00</lastmod>
     <priority>0.8</priority>
@@ -119,35 +125,35 @@
   
   <url>
     <loc>http://blog.jjyao.me/blog/archives/</loc>
-    <lastmod>2018-11-07T22:39:57-08:00</lastmod>
+    <lastmod>2018-12-17T22:03:24-08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/</loc>
-    <lastmod>2018-11-07T22:39:57-08:00</lastmod>
+    <lastmod>2018-12-17T22:03:24-08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/about/</loc>
-    <lastmod>2018-11-07T22:39:57-08:00</lastmod>
+    <lastmod>2018-12-17T22:03:24-08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/quotes/it-quotes.html</loc>
-    <lastmod>2018-11-07T22:39:57-08:00</lastmod>
+    <lastmod>2018-12-17T22:03:24-08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/quotes/quotes.html</loc>
-    <lastmod>2018-11-07T22:39:57-08:00</lastmod>
+    <lastmod>2018-12-17T22:03:24-08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>

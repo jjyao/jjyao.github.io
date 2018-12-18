@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>One-Liners - Jiajun Yao</title>
+  <title>Linux PID - Jiajun Yao</title>
   <meta name="author" content="jjyao">
 
   
-  <meta name="description" content="Get Java GC Related Application Stopped Time Get Java GC Related Application Stopped Time If Java application is started with -XX:+ &hellip;">
+  <meta name="description" content="In the Linux world, pid means two things. It&rsquo;s the id of a process from POSIX&rsquo;s point of view and the id of a task from kernel&rsquo;s &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.jjyao.me/blog/2018/11/07/one-liners">
+  <link rel="canonical" href="http://blog.jjyao.me/blog/2018/12/16/linux-pid">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Jiajun Yao" type="application/atom+xml">
@@ -82,7 +82,7 @@
   
   <header>
     
-      <h1 class="entry-title">One-Liners</h1>
+      <h1 class="entry-title">Linux PID</h1>
     
     
       <p class="meta">
@@ -91,38 +91,66 @@
 
 
 
-<time class='entry-date' datetime='2018-11-07T22:06:28-08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>10:06 pm</span></time>
+<time class='entry-date' datetime='2018-12-16T08:15:30-08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>8:15 am</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><ol>
-<li><a href="#get_java_gc_stw_time">Get Java GC Related Application Stopped Time</a></li>
-</ol>
-
+<div class="entry-content"><p>In the Linux world, pid means two things. It&rsquo;s the id of a process from POSIX&rsquo;s point of view and the id of a task from kernel&rsquo;s point of view.</p>
 
 <!-- more -->
 
 
-<h2><a id="get_java_gc_stw_time"></a>Get Java GC Related Application Stopped Time</h2>
+<h2>PID</h2>
 
-<p>If Java application is started with <code>-XX:+PrintGCApplicationStoppedTime</code>, gc log will contain the application stopped time (STW) caused by different reasons (e.g. GC is just one common reason). This one-liner parses the gc log and only prints out the stopped time caused by GC. <br/>
-Source: <a href="https://github.com/giltene/jHiccup">https://github.com/giltene/jHiccup</a></p>
+<p>In POSIX, process is an instance of a running program and it contains one or more threads. The id of a process is called pid.</p>
+
+<p>In the Linux kernel, task is the basic execution unit and is thread in the POSIX definition. Task is represented by <code>struct task_struct</code> in the code:</p>
 
 <div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='Bash'><span class='line'>// gc log with +PrintGCTimeStamps
-</span><span class='line'>awk -F<span class="s2">&quot;: &quot;</span> <span class="s1">&#39;/\[GC/ {t = $1; l = 1; while ((l == 1) &amp;&amp; index($0, &quot;Total time&quot;) == 0) { l = getline; } if (l == 1) {print t*1000.0, $3*1000.0;}}&#39;</span> gc.log
-</span><span class='line'>
-</span><span class='line'>// gc log with +PrintGCTimeStamps and +PrintGCDateStamps
-</span><span class='line'>awk -F<span class="s2">&quot;: &quot;</span> <span class="s1">&#39;/\[GC/ {t = $2; l = 1; while ((l == 1) &amp;&amp; index($0, &quot;Total time&quot;) == 0) { l = getline; } if (l == 1) {print t*1000.0, $4*1000.0;}}&#39;</span> gc.log
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">struct</span> <span class="n">task_struct</span> <span class="p">{</span>
+</span><span class='line'>  <span class="p">...</span>
+</span><span class='line'>  <span class="kt">pid_t</span>   <span class="n">pid</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">pid_t</span>   <span class="n">tgid</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">...</span>
+</span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
+
+<p>Here, pid is the id of a task and tgid is the id of the thread group that contains the task. As we can see, <code>task_struct.pid</code> basically is POSIX thread id and <code>task_struct.tgid</code> is POSIX process id.</p>
+
+<h2>EXAMPLES</h2>
+
+<p>Two different meanings of pid can cause lots of confusions and it&rsquo;s important to know whether we are talking about pid in the POSIX context or in the Linux kernel context.</p>
+
+<h3>getpid</h3>
+
+<p><code>getpid()</code> is a function defined by the POSIX standard and pid means the id of a process in this context. Linux implements it by returning <code>task_struct.tgid</code>:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">SYSCALL_DEFINE0</span><span class="p">(</span><span class="n">getpid</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">task_tgid_vnr</span><span class="p">(</span><span class="n">current</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h3>/proc/[pid]</h3>
+
+<p>The proc file system is an interface to kernel data structures and pid means the id of a task/thread in this context. For example, <code>/proc/[pid]/status</code> shows status information about the task/thread and the implementation is in <code>fs/proc/array.c</code>.</p>
+
+<h2>References</h2>
+
+<p>[1] <a href="https://www.kernel.org/doc/ols/2002/ols2002-pages-330-337.pdf">https://www.kernel.org/doc/ols/2002/ols2002-pages-330-337.pdf</a> <br/>
+[2] <a href="https://stackoverflow.com/questions/9305992/if-threads-share-the-same-pid-how-can-they-be-identified">https://stackoverflow.com/questions/9305992/if-threads-share-the-same-pid-how-can-they-be-identified</a></p>
 </div>
 
 
@@ -138,7 +166,7 @@ Source: <a href="https://github.com/giltene/jHiccup">https://github.com/giltene/
 
 
 
-<time class='entry-date' datetime='2018-11-07T22:06:28-08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>10:06 pm</span></time>
+<time class='entry-date' datetime='2018-12-16T08:15:30-08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>8:15 am</span></time>
       
 
 
@@ -153,10 +181,8 @@ Source: <a href="https://github.com/giltene/jHiccup">https://github.com/giltene/
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2017/11/27/hugetlbfs-read-bug/" title="Previous Post: HugeTLBFS Read Bug">&laquo; HugeTLBFS Read Bug</a>
+        <a class="basic-alignment left" href="/blog/2018/11/07/one-liners/" title="Previous Post: One-Liners">&laquo; One-Liners</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2018/12/16/linux-pid/" title="Next Post: Linux PID">Linux PID &raquo;</a>
       
     </p>
   </footer>
@@ -200,8 +226,8 @@ Source: <a href="https://github.com/giltene/jHiccup">https://github.com/giltene/
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.jjyao.me/blog/2018/11/07/one-liners/';
-        var disqus_url = 'http://blog.jjyao.me/blog/2018/11/07/one-liners/';
+        var disqus_identifier = 'http://blog.jjyao.me/blog/2018/12/16/linux-pid/';
+        var disqus_url = 'http://blog.jjyao.me/blog/2018/12/16/linux-pid/';
         var disqus_script = 'embed.js';
       
     (function () {

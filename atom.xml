@@ -4,7 +4,7 @@
   <title><![CDATA[Jiajun Yao]]></title>
   <link href="http://blog.jjyao.me/atom.xml" rel="self"/>
   <link href="http://blog.jjyao.me/"/>
-  <updated>2018-11-07T22:39:57-08:00</updated>
+  <updated>2018-12-17T22:03:24-08:00</updated>
   <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -12,6 +12,67 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux PID]]></title>
+    <link href="http://blog.jjyao.me/blog/2018/12/16/linux-pid/"/>
+    <updated>2018-12-16T08:15:30-08:00</updated>
+    <id>http://blog.jjyao.me/blog/2018/12/16/linux-pid</id>
+    <content type="html"><![CDATA[<p>In the Linux world, pid means two things. It&rsquo;s the id of a process from POSIX&rsquo;s point of view and the id of a task from kernel&rsquo;s point of view.</p>
+
+<!-- more -->
+
+
+<h2>PID</h2>
+
+<p>In POSIX, process is an instance of a running program and it contains one or more threads. The id of a process is called pid.</p>
+
+<p>In the Linux kernel, task is the basic execution unit and is thread in the POSIX definition. Task is represented by <code>struct task_struct</code> in the code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">struct</span> <span class="n">task_struct</span> <span class="p">{</span>
+</span><span class='line'>  <span class="p">...</span>
+</span><span class='line'>  <span class="kt">pid_t</span>   <span class="n">pid</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">pid_t</span>   <span class="n">tgid</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">...</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here, pid is the id of a task and tgid is the id of the thread group that contains the task. As we can see, <code>task_struct.pid</code> basically is POSIX thread id and <code>task_struct.tgid</code> is POSIX process id.</p>
+
+<h2>EXAMPLES</h2>
+
+<p>Two different meanings of pid can cause lots of confusions and it&rsquo;s important to know whether we are talking about pid in the POSIX context or in the Linux kernel context.</p>
+
+<h3>getpid</h3>
+
+<p><code>getpid()</code> is a function defined by the POSIX standard and pid means the id of a process in this context. Linux implements it by returning <code>task_struct.tgid</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">SYSCALL_DEFINE0</span><span class="p">(</span><span class="n">getpid</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">task_tgid_vnr</span><span class="p">(</span><span class="n">current</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>/proc/[pid]</h3>
+
+<p>The proc file system is an interface to kernel data structures and pid means the id of a task/thread in this context. For example, <code>/proc/[pid]/status</code> shows status information about the task/thread and the implementation is in <code>fs/proc/array.c</code>.</p>
+
+<h2>References</h2>
+
+<p>[1] <a href="https://www.kernel.org/doc/ols/2002/ols2002-pages-330-337.pdf">https://www.kernel.org/doc/ols/2002/ols2002-pages-330-337.pdf</a> <br/>
+[2] <a href="https://stackoverflow.com/questions/9305992/if-threads-share-the-same-pid-how-can-they-be-identified">https://stackoverflow.com/questions/9305992/if-threads-share-the-same-pid-how-can-they-be-identified</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[One-Liners]]></title>
