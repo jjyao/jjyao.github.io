@@ -1,0 +1,47 @@
+---
+layout: post
+title: "Linux PID"
+date: 2018-12-16 08:15:30 -0800
+comments: true
+categories:
+---
+
+In the Linux world, pid means two things. It's the id of a process from POSIX's point of view and the id of a task from kernel's point of view.
+
+<!-- more -->
+
+## PID
+
+In POSIX, process is an instance of a running program and it contains one or more threads. The id of a process is called pid.
+
+In the Linux kernel, task is the basic execution unit and is thread in the POSIX definition. Task is represented by `struct task_struct` in the code:
+
+```c
+struct task_struct {
+  ...
+  pid_t	pid;
+	pid_t	tgid;
+  ...
+}
+```
+
+Here, pid is the id of a task and tgid is the id of the thread group that contains the task. As we can see, `task_struct.pid` basically is POSIX thread id and `task_struct.tgid` is POSIX process id.
+
+## EXAMPLES
+Two different meanings of pid can cause lots of confusions and it's important to know whether we are talking about pid in the POSIX context or in the Linux kernel context.
+
+### getpid
+`getpid()` is a function defined by the POSIX standard and pid means the id of a process in this context. Linux implements it by returning `task_struct.tgid`:
+
+```c
+SYSCALL_DEFINE0(getpid) {
+	return task_tgid_vnr(current);
+}
+```
+
+### /proc/[pid]
+The proc file system is an interface to kernel data structures and pid means the id of a task/thread in this context. For example, `/proc/[pid]/status` shows status information about the task/thread and the implementation is in `fs/proc/array.c`.
+
+## References
+[1] https://www.kernel.org/doc/ols/2002/ols2002-pages-330-337.pdf <br/>
+[2] https://stackoverflow.com/questions/9305992/if-threads-share-the-same-pid-how-can-they-be-identified
