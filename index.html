@@ -9,7 +9,7 @@
   <meta name="author" content="jjyao">
 
   
-  <meta name="description" content="In the Linux world, pid means two things. It&rsquo;s the id of a process from POSIX&rsquo;s point of view and the id of a task from kernel&rsquo;s &hellip;">
+  <meta name="description" content="This post shows the interaction between hugetlbfs and huge pages by a example program. All the results are based on linux 3.10.0-514.55.4.el7.x86_64. ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +79,40 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/04/01/interaction-between-hugetlbfs-and-hugepages/">Interaction Between HugeTLBFS and Hugepages</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-04-01T19:57:31-07:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2019</span></span> <span class='time'>7:57 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This post shows the interaction between hugetlbfs and huge pages by a example program. All the results are based on linux 3.10.0-514.55.4.el7.x86_64.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2019/04/01/interaction-between-hugetlbfs-and-hugepages/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -400,40 +434,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/07/31/does-your-app-have-a-rock-solid-ssl-connection/">Does Your App Have a Rock Solid SSL Connection</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2013-07-31T20:32:00-07:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>31</span><span class='date-suffix'>st</span>, <span class='date-year'>2013</span></span> <span class='time'>8:32 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>SSL(Secure Sockets Layer)是目前广泛用来加密网络通信的加密协议。它的一个著名应用就是HTTPS，也就是使用SSL协议对HTTP进行加密从而使得整个通信更加安全。对于一个移动应用（其他类型的客户端也同理），为了保证其和服务器的通信安全，开发者就会使用SSL来加密客户端和服务器之间的通信。这样理应是安全的，但由于很多开发者使用方式不对，导致客户端和服务器之间的SSL通信会受到中间人攻击(Man-in-the-middle attack)，从而使得安全性荡然无存。本文将首先介绍下SSL和中间人攻击的原理，然后会提供一个中间人攻击的实例，最后本文介绍该如何防止中间人攻击。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/07/31/does-your-app-have-a-rock-solid-ssl-connection/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -459,7 +459,7 @@
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2018 - jjyao -
+  Copyright &copy; 2019 - jjyao -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

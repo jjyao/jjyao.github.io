@@ -1,0 +1,475 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Interaction Between HugeTLBFS and Hugepages - Jiajun Yao</title>
+  <meta name="author" content="jjyao">
+
+  
+  <meta name="description" content="This post shows the interaction between hugetlbfs and huge pages by a example program. All the results are based on linux 3.10.0-514.55.4.el7.x86_64 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.jjyao.me/blog/2019/04/01/interaction-between-hugetlbfs-and-hugepages">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Jiajun Yao" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-32781930-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Jiajun Yao</a></h1>
+  
+    <h2>Stay hungry, Stay foolish.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.jjyao.me" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <!--<li><a href="/about">About</a></li>-->
+  <li><a href="/quotes/quotes.html">Quotes</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Interaction Between HugeTLBFS and Hugepages</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-04-01T19:57:31-07:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2019</span></span> <span class='time'>7:57 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>This post shows the interaction between hugetlbfs and huge pages by a example program. All the results are based on linux 3.10.0-514.55.4.el7.x86_64.</p>
+
+<!-- more -->
+
+
+<h2>Setup</h2>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo mount -t hugetlbfs -o mode=0777,pagesize=2M nodev /mnt/huge
+</span><span class='line'>echo '10' | sudo tee /proc/sys/vm/nr_hugepages</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>This creates a hugetlbfs with maximum of 10 huge pages.</p>
+
+<h2>Example Program</h2>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;stdlib.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;sys/types.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;fcntl.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;sys/mman.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#define MB (1024*1024)</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="nf">meminfo</span><span class="p">(</span><span class="kt">char</span><span class="o">*</span> <span class="n">msg</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">printf</span><span class="p">(</span><span class="n">msg</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">system</span><span class="p">(</span><span class="s">&quot;cat /proc/meminfo | grep HugePages_&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;Initial meminfo: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="s">&quot;/mnt/huge/foo.txt&quot;</span><span class="p">,</span> <span class="n">O_RDWR</span> <span class="o">|</span> <span class="n">O_CREAT</span> <span class="o">|</span> <span class="n">O_TRUNC</span><span class="p">,</span> <span class="n">S_IRUSR</span> <span class="o">|</span> <span class="n">S_IWUSR</span> <span class="o">|</span> <span class="n">S_IRGRP</span> <span class="o">|</span> <span class="n">S_IROTH</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;After create and open the file: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">ftruncate</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">MB</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;After set file size to 4MB: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kt">void</span><span class="o">*</span> <span class="n">base</span> <span class="o">=</span> <span class="n">mmap</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">MB</span><span class="p">,</span> <span class="n">PROT_WRITE</span> <span class="o">|</span> <span class="n">PROT_READ</span><span class="p">,</span> <span class="n">MAP_SHARED</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;After mmap 4MB without MAP_POPULATE: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">munmap</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">MB</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;After munmap: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">base</span> <span class="o">=</span> <span class="n">mmap</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">MB</span><span class="p">,</span> <span class="n">PROT_WRITE</span> <span class="o">|</span> <span class="n">PROT_READ</span><span class="p">,</span> <span class="n">MAP_SHARED</span> <span class="o">|</span> <span class="n">MAP_POPULATE</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;After mmap 4MB with MAP_POPULATE: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">munmap</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">MB</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;After munmap: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">ftruncate</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">MB</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;After set file size to 8MB: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">base</span> <span class="o">=</span> <span class="n">mmap</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">MB</span><span class="p">,</span> <span class="n">PROT_WRITE</span> <span class="o">|</span> <span class="n">PROT_READ</span><span class="p">,</span> <span class="n">MAP_SHARED</span> <span class="o">|</span> <span class="n">MAP_POPULATE</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;After mmap 8MB with MAP_POPULATE: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">munmap</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">MB</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;After munmap: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;After close: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>The output of running this program is:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">Initial</span> <span class="nl">meminfo</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>       <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">After</span> <span class="n">creat</span> <span class="n">and</span> <span class="n">open</span> <span class="n">the</span> <span class="nl">file</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>       <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">After</span> <span class="n">set</span> <span class="n">file</span> <span class="n">size</span> <span class="n">to</span> <span class="mi">4</span><span class="nl">MB</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>       <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">After</span> <span class="n">mmap</span> <span class="mi">4</span><span class="n">MB</span> <span class="n">without</span> <span class="nl">MAP_POPULATE</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>       <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">2</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">After</span> <span class="nl">munmap</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>       <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">2</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">After</span> <span class="n">mmap</span> <span class="mi">4</span><span class="n">MB</span> <span class="n">with</span> <span class="nl">MAP_POPULATE</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>        <span class="mi">8</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">After</span> <span class="nl">munmap</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>        <span class="mi">8</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">After</span> <span class="n">set</span> <span class="n">file</span> <span class="n">size</span> <span class="n">to</span> <span class="mi">8</span><span class="nl">MB</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>        <span class="mi">8</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">After</span> <span class="n">mmap</span> <span class="mi">8</span><span class="n">MB</span> <span class="n">with</span> <span class="nl">MAP_POPULATE</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>        <span class="mi">6</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">After</span> <span class="nl">munmap</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>        <span class="mi">6</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">After</span> <span class="nl">close</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>        <span class="mi">6</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2>Observations</h2>
+
+<ol>
+<li>Just setting the file size won&rsquo;t allocate/reserve any huge pages. It only affects the logical file size not the physical one.</li>
+<li><code>mmap</code> only reserves the huge pages.</li>
+<li>Populating the page table or accessing a page actually allocates the huge pages.</li>
+<li><code>HugePages_Free</code> includes <code>HugePages_Rsvd</code> so the number of free-to-use huge pages is actually <code>HugePages_Free</code> minus <code>HugePages_Rsvd</code>.</li>
+</ol>
+
+
+<h2>Reference</h2>
+
+<ol>
+<li><a href="http://www.lenky.info/archives/2012/03/1219">Linux下hugetlbpage使用详解</a></li>
+</ol>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">jjyao</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2019-04-01T19:57:31-07:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2019</span></span> <span class='time'>7:57 pm</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2018/12/16/linux-pid/" title="Previous Post: Linux PID">&laquo; Linux PID</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+  <p style="margin-bottom:3px">Welcome to here! I'm jjyao and am working on the distributed graph database team at LinkedIn. My current interests are database systems and distributed systems.</p>
+  <p>
+  <a href="https://www.linkedin.com/in/jjyao/">LinkedIn</a>
+  <a href="https://github.com/jjyao/" style="margin-left:20px">GitHub</a>
+  </p>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - jjyao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'jjyao';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.jjyao.me/blog/2019/04/01/interaction-between-hugetlbfs-and-hugepages/';
+        var disqus_url = 'http://blog.jjyao.me/blog/2019/04/01/interaction-between-hugetlbfs-and-hugepages/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

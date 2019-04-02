@@ -3,6 +3,12 @@
   
   
   <url>
+    <loc>http://blog.jjyao.me/blog/2019/04/01/interaction-between-hugetlbfs-and-hugepages/</loc>
+    <lastmod>2019-04-01T19:57:31-07:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>http://blog.jjyao.me/blog/2018/12/16/linux-pid/</loc>
     <lastmod>2018-12-16T08:15:30-08:00</lastmod>
     <priority>0.8</priority>
@@ -125,35 +131,35 @@
   
   <url>
     <loc>http://blog.jjyao.me/blog/archives/</loc>
-    <lastmod>2018-12-17T22:03:24-08:00</lastmod>
+    <lastmod>2019-04-01T21:12:52-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/</loc>
-    <lastmod>2018-12-17T22:03:24-08:00</lastmod>
+    <lastmod>2019-04-01T21:12:52-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/about/</loc>
-    <lastmod>2018-12-17T22:03:24-08:00</lastmod>
+    <lastmod>2019-04-01T21:12:52-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/quotes/it-quotes.html</loc>
-    <lastmod>2018-12-17T22:03:24-08:00</lastmod>
+    <lastmod>2019-04-01T21:12:52-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/quotes/quotes.html</loc>
-    <lastmod>2018-12-17T22:03:24-08:00</lastmod>
+    <lastmod>2019-04-01T21:12:52-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>

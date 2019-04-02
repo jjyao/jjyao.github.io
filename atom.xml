@@ -4,7 +4,7 @@
   <title><![CDATA[Jiajun Yao]]></title>
   <link href="http://blog.jjyao.me/atom.xml" rel="self"/>
   <link href="http://blog.jjyao.me/"/>
-  <updated>2018-12-17T22:03:24-08:00</updated>
+  <updated>2019-04-01T21:12:52-07:00</updated>
   <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -12,6 +12,281 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Interaction Between HugeTLBFS and Hugepages]]></title>
+    <link href="http://blog.jjyao.me/blog/2019/04/01/interaction-between-hugetlbfs-and-hugepages/"/>
+    <updated>2019-04-01T19:57:31-07:00</updated>
+    <id>http://blog.jjyao.me/blog/2019/04/01/interaction-between-hugetlbfs-and-hugepages</id>
+    <content type="html"><![CDATA[<p>This post shows the interaction between hugetlbfs and huge pages by a example program. All the results are based on linux 3.10.0-514.55.4.el7.x86_64.</p>
+
+<!-- more -->
+
+
+<h2>Setup</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo mount -t hugetlbfs -o mode=0777,pagesize=2M nodev /mnt/huge
+</span><span class='line'>echo '10' | sudo tee /proc/sys/vm/nr_hugepages</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This creates a hugetlbfs with maximum of 10 huge pages.</p>
+
+<h2>Example Program</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;stdlib.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;sys/types.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;fcntl.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;sys/mman.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#define MB (1024*1024)</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="nf">meminfo</span><span class="p">(</span><span class="kt">char</span><span class="o">*</span> <span class="n">msg</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">printf</span><span class="p">(</span><span class="n">msg</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">system</span><span class="p">(</span><span class="s">&quot;cat /proc/meminfo | grep HugePages_&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;Initial meminfo: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="s">&quot;/mnt/huge/foo.txt&quot;</span><span class="p">,</span> <span class="n">O_RDWR</span> <span class="o">|</span> <span class="n">O_CREAT</span> <span class="o">|</span> <span class="n">O_TRUNC</span><span class="p">,</span> <span class="n">S_IRUSR</span> <span class="o">|</span> <span class="n">S_IWUSR</span> <span class="o">|</span> <span class="n">S_IRGRP</span> <span class="o">|</span> <span class="n">S_IROTH</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;After create and open the file: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">ftruncate</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">MB</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;After set file size to 4MB: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kt">void</span><span class="o">*</span> <span class="n">base</span> <span class="o">=</span> <span class="n">mmap</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">MB</span><span class="p">,</span> <span class="n">PROT_WRITE</span> <span class="o">|</span> <span class="n">PROT_READ</span><span class="p">,</span> <span class="n">MAP_SHARED</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;After mmap 4MB without MAP_POPULATE: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">munmap</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">MB</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;After munmap: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">base</span> <span class="o">=</span> <span class="n">mmap</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">MB</span><span class="p">,</span> <span class="n">PROT_WRITE</span> <span class="o">|</span> <span class="n">PROT_READ</span><span class="p">,</span> <span class="n">MAP_SHARED</span> <span class="o">|</span> <span class="n">MAP_POPULATE</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;After mmap 4MB with MAP_POPULATE: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">munmap</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">MB</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;After munmap: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">ftruncate</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">MB</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;After set file size to 8MB: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">base</span> <span class="o">=</span> <span class="n">mmap</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">MB</span><span class="p">,</span> <span class="n">PROT_WRITE</span> <span class="o">|</span> <span class="n">PROT_READ</span><span class="p">,</span> <span class="n">MAP_SHARED</span> <span class="o">|</span> <span class="n">MAP_POPULATE</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;After mmap 8MB with MAP_POPULATE: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">munmap</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">MB</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;After munmap: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">meminfo</span><span class="p">(</span><span class="s">&quot;After close: </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The output of running this program is:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">Initial</span> <span class="nl">meminfo</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>       <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">After</span> <span class="n">creat</span> <span class="n">and</span> <span class="n">open</span> <span class="n">the</span> <span class="nl">file</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>       <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">After</span> <span class="n">set</span> <span class="n">file</span> <span class="n">size</span> <span class="n">to</span> <span class="mi">4</span><span class="nl">MB</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>       <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">After</span> <span class="n">mmap</span> <span class="mi">4</span><span class="n">MB</span> <span class="n">without</span> <span class="nl">MAP_POPULATE</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>       <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">2</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">After</span> <span class="nl">munmap</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>       <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">2</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">After</span> <span class="n">mmap</span> <span class="mi">4</span><span class="n">MB</span> <span class="n">with</span> <span class="nl">MAP_POPULATE</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>        <span class="mi">8</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">After</span> <span class="nl">munmap</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>        <span class="mi">8</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">After</span> <span class="n">set</span> <span class="n">file</span> <span class="n">size</span> <span class="n">to</span> <span class="mi">8</span><span class="nl">MB</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>        <span class="mi">8</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">After</span> <span class="n">mmap</span> <span class="mi">8</span><span class="n">MB</span> <span class="n">with</span> <span class="nl">MAP_POPULATE</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>        <span class="mi">6</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">After</span> <span class="nl">munmap</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>        <span class="mi">6</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">After</span> <span class="nl">close</span><span class="p">:</span>
+</span><span class='line'><span class="nl">HugePages_Total</span><span class="p">:</span>      <span class="mi">10</span>
+</span><span class='line'><span class="nl">HugePages_Free</span><span class="p">:</span>        <span class="mi">6</span>
+</span><span class='line'><span class="nl">HugePages_Rsvd</span><span class="p">:</span>        <span class="mi">0</span>
+</span><span class='line'><span class="nl">HugePages_Surp</span><span class="p">:</span>        <span class="mi">0</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Observations</h2>
+
+<ol>
+<li>Just setting the file size won&rsquo;t allocate/reserve any huge pages. It only affects the logical file size not the physical one.</li>
+<li><code>mmap</code> only reserves the huge pages.</li>
+<li>Populating the page table or accessing a page actually allocates the huge pages.</li>
+<li><code>HugePages_Free</code> includes <code>HugePages_Rsvd</code> so the number of free-to-use huge pages is actually <code>HugePages_Free</code> minus <code>HugePages_Rsvd</code>.</li>
+</ol>
+
+
+<h2>Reference</h2>
+
+<ol>
+<li><a href="http://www.lenky.info/archives/2012/03/1219">Linux下hugetlbpage使用详解</a></li>
+</ol>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux PID]]></title>
@@ -3465,158 +3740,6 @@ create table test(
 
 
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Why We Should Use Library]]></title>
-    <link href="http://blog.jjyao.me/blog/2012/04/22/why-we-should-use-library/"/>
-    <updated>2012-04-22T12:39:00-07:00</updated>
-    <id>http://blog.jjyao.me/blog/2012/04/22/why-we-should-use-library</id>
-    <content type="html"><![CDATA[<p>库(Library)在wikipeida的定义如下：</p>
-
-<blockquote><p>In computer science, a library is a collection of resources used to develop software. These may include pre-written code and subroutines, classes, values or type specifications.</p></blockquote>
-
-<p>在我们写程序的过程中几乎每时每刻使用着库。我们在编码的过程中享受着库带给我们的便利和好处。现在的编程语言都会提供丰富的库给开发者调用，比如C++的库有STL、Boost, Java的库有Swing。像PHP，Python等更是提供了强大的库来帮助程序员开发网站(当然这些语言不仅能用来开发网站)，这些库针对网站开发中遇到的常见问题提供了解决方案。举个例子来说，假设我们要将一个PHP数组用json的格式传到客户端，在没有库的情况下我们可能要遍历整个数组然后按照json的格式构建一个string，这样至少需要四五行代码，可是现在一个json_enode就可以搞定了。并且无论数组是几维的，json_encode都能正确返回json格式的string。</p>
-
-<div>
-<span>在我看来，使用库函数有如下三个好处:</span>
-<ol style="margin-left: 1.3em">
-<li>代码复用</li>
-<li>保证质量</li>
-<li>提高效率</li>
-</ol>
-</div>
-
-
-
-
-<!-- more -->
-
-
-<h3>代码复用</h3>
-
-<p>从软件工程的角度看，代码复用可以节约成本，提高开发效率，使代码易维护(只需维护一处地方即可)，除此之外代码复用也能提高整体软件的质量。当我们使用库的时候，自己写的代码量减少，这样出错的几率就相应的降低了，同时开发的速度也提高了。以前可能要花几分钟写的一段代码，现在只要一个调用就搞定了。从管理者的角度看软件的最大成本“人/月”得到了降低。</p>
-
-<h3>保证质量</h3>
-
-<p>这里的质量指的是库的质量。一般而言，官方提供的库的质量都是相当高的。这些代码都经过大量的测试和用户使用的考验。一旦有什么bug很容易发现，并且及时改正过来。同时编写这些库的人都是领域中的大牛，他们有着许多年的开发经验，写的代码照理说肯定比我们自己写的要质量高。在Effective C++中有这么一个Item: &ldquo;Familiarize yourself with Boost&#8221;，在这个Item里面Meyers介绍了一个库在被Boost接受前经历的步骤，包括公开的同级评审(peer review)，评审经理的审查(review manager)，社区的正式评审(official review)。整个过程被boost概述为“讨论、精炼、多次提交直到感到满意”的循环。有着这样严格的审查过程，Boost库的质量可想而知。</p>
-
-<h3>提高效率</h3>
-
-<p>这里的效率是指程序执行时的时间和空间效率。一般而言库中提供程序的效率总是高于我们所写的程序(当然在某种特定的应用场景下，我们写的代码效率可能会更好，毕竟库是个通用的东西，它不可能考虑某个特别的应用场景)。下面就举3个典型的例子来说明库的效率：</p>
-
-<p>第一个例子是SGI STL的power算法，其代码如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">T</span><span class="p">,</span> <span class="k">class</span> <span class="nc">Integer</span><span class="p">,</span> <span class="k">class</span> <span class="nc">MonoidOperation</span><span class="o">&gt;</span>
-</span><span class='line'><span class="n">T</span> <span class="n">power</span><span class="p">(</span><span class="n">T</span> <span class="n">x</span><span class="p">,</span> <span class="n">Integer</span> <span class="n">n</span><span class="p">,</span> <span class="n">MonoidOperation</span> <span class="n">op</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">identity_element</span><span class="p">(</span><span class="n">op</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">else</span><span class="p">{</span>
-</span><span class='line'>        <span class="k">while</span><span class="p">((</span><span class="n">n</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">){</span>
-</span><span class='line'>            <span class="n">n</span> <span class="o">&gt;&gt;=</span> <span class="mi">1</span><span class="p">;</span>
-</span><span class='line'>            <span class="n">x</span> <span class="o">=</span> <span class="n">op</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">);</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">T</span> <span class="n">result</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">n</span> <span class="o">&gt;&gt;=</span> <span class="mi">1</span><span class="p">;</span>
-</span><span class='line'>        <span class="k">while</span> <span class="p">(</span><span class="n">n</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">){</span>
-</span><span class='line'>            <span class="n">x</span> <span class="o">=</span> <span class="n">op</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">);</span>
-</span><span class='line'>            <span class="k">if</span><span class="p">((</span><span class="n">n</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
-</span><span class='line'>                <span class="n">result</span> <span class="o">=</span> <span class="n">op</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">x</span><span class="p">);</span>
-</span><span class='line'>            <span class="n">n</span> <span class="o">&gt;&gt;=</span> <span class="mi">1</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>从上面的代码可以看到这是一个power的非递归实现。为了效率作者没有使用递归的实现，尽管递归版本看上去更直观。为了效率作者连除法运算符都不敢用，都是用了移位和OR这些bitwise operator，这些bitwise operator在计算机中是算得最快的。我想我们自己写的power实现应该不会比它快吧。</p>
-
-<p>第二个例子是SGI STL的copy算法，其脉络如图(来自侯捷老师的《STL源码剖析》):</p>
-
-<p><img src="http://blog.jjyao.me/images/post/why-we-should-use-library/sgi-stl-copy.png"></p>
-
-<p>从上图可以看出，虽然copy算法给我们的是一个统一的接口，但其内部却是有多个实现方式，目的是针对不同的情况给出最佳的copy实现。为了利用memmove()，作者想尽了一切办法，又是泛化又是特化。同时作者对于for(;first!=last;&hellip;)和for(&hellip;; n &lt; last-first; &hellip;)这样两种循环方式的效率差异性都进行了考虑。所有这一切的目的只有一个就是提高效率。用侯捷老师的话说就是<q>强化效率无所不用其极</q>。关于更多SGI STL copy算法的实现，可以参考侯捷老师的《STL源码剖析》。</p>
-
-<p>第三个例子是Java的数组拷贝算法：
-为了高效的copy Java的数组，Java 类库专门提供了一个System.arraycopy的方法。那这个方法又有什么高级之处呢？通过查看源代码我们就可以发现这个方法是个native 方法。然后我们来看看OpenJDK是如何实现这个native方法的。经过一番查找可以找到以下代码代码片段：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">static</span> <span class="kt">void</span> <span class="nf">pd_conjoint_bytes</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">from</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span> <span class="n">to</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">count</span><span class="p">){</span>
-</span><span class='line'>    <span class="n">memmove</span><span class="p">(</span><span class="n">to</span><span class="p">,</span> <span class="n">from</span><span class="p">,</span> <span class="n">count</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">static</span> <span class="kt">void</span> <span class="nf">atomic_copy64</span><span class="p">(</span><span class="k">volatile</span> <span class="kt">void</span> <span class="o">*</span><span class="n">src</span><span class="p">,</span> <span class="k">volatile</span> <span class="kt">void</span> <span class="o">*</span><span class="n">dst</span><span class="p">){</span>
-</span><span class='line'><span class="cp">#if defined(PPC) &amp;&amp; !defined(_LP64)</span>
-</span><span class='line'>    <span class="kt">double</span> <span class="n">tmp</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">asm</span> <span class="k">volatile</span> <span class="p">(</span><span class="s">&quot;lfd %0,  0(%1)</span><span class="se">\n</span><span class="s">&quot;</span>
-</span><span class='line'>                  <span class="s">&quot;stfd %0, 0(%2)</span><span class="se">\n</span><span class="s">&quot;</span>
-</span><span class='line'>                  <span class="o">:</span> <span class="s">&quot;=f&quot;</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
-</span><span class='line'>                  <span class="o">:</span> <span class="s">&quot;b&quot;</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="s">&quot;b&quot;</span><span class="p">(</span><span class="n">dst</span><span class="p">));</span>
-</span><span class='line'><span class="cp">#elif defined(S390) &amp;&amp; !defined(_LP64)</span>
-</span><span class='line'>    <span class="kt">double</span> <span class="n">tmp</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">asm</span> <span class="k">volatile</span> <span class="p">(</span><span class="s">&quot;ld %0,  0(%1)</span><span class="se">\n</span><span class="s">&quot;</span>
-</span><span class='line'>                  <span class="s">&quot;std %0, 0(%2)</span><span class="se">\n</span><span class="s">&quot;</span>
-</span><span class='line'>                  <span class="o">:</span> <span class="s">&quot;=r&quot;</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
-</span><span class='line'>                  <span class="o">:</span> <span class="s">&quot;a&quot;</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="s">&quot;a&quot;</span><span class="p">(</span><span class="n">dst</span><span class="p">));</span>
-</span><span class='line'><span class="cp">#else</span>
-</span><span class='line'>    <span class="o">*</span><span class="p">(</span><span class="n">jlong</span> <span class="o">*</span><span class="p">)</span> <span class="n">dst</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">jlong</span> <span class="o">*</span><span class="p">)</span><span class="n">src</span><span class="p">;</span>
-</span><span class='line'><span class="cp">#endif</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我们又看到了memmove()，arraycopy的作者使用了JNI来调用了memmove()，为的就是效率。更恐怖的是这还有汇编指令，这些指令也能使数组拷贝变得十分高效。看到这，你觉得我们自己写的数组拷贝算法的效率能超过官方提供的吗？ 详细的如何剖析arraycopy方法请参见<a href="http://gutspot.com/2011/11/16/system-arraycopy%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">勇点的博客</a>。</p>
-
-<p>看了这三个例子，我们应该能感受到库提供程序的效率了吧。即使我们能写出和库一样效率的算法，我们要花多少时间，写完的质量怎么样，这些都要打个问号。想想Java的System.arraycopy吧。</p>
-
-<p>总的来说能使用库的时候尽量使用，这会使你的代码质量更高，效率更高。在软件工程中有句名言<q>Don&rsquo;t Reinvent the Wheel</q>，这就是我们对待库的态度。当然作为学生来讲，我们不仅要能熟练的使用库，最好还能深入库的源代码，像大师们取经，这会让我们受益匪浅。</p>
 ]]></content>
   </entry>
   
