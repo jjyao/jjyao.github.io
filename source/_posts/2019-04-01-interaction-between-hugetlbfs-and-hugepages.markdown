@@ -6,7 +6,7 @@ comments: true
 categories: 
 ---
 
-This post shows the interaction between hugetlbfs and huge pages by a example program. All the results are based on linux 3.10.0-514.55.4.el7.x86_64.
+This post shows the interaction between hugetlbfs and huge pages by an example program. All the results are based on linux 3.10.0-514.55.4.el7.x86_64.
 
 <!-- more -->
 
