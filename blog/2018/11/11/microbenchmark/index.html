@@ -1,0 +1,430 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Microbenchmark - Jiajun Yao</title>
+  <meta name="author" content="jjyao">
+
+  
+  <meta name="description" content="Microbenchmark is used to measure the performance of a small piece of code for the purpose of performance optimization. Writing a good microbenchmark &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.jjyao.me/blog/2018/11/11/microbenchmark">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Jiajun Yao" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-32781930-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Jiajun Yao</a></h1>
+  
+    <h2>Stay hungry, Stay foolish.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.jjyao.me" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <!--<li><a href="/about">About</a></li>-->
+  <li><a href="/quotes/quotes.html">Quotes</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Microbenchmark</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-11-11T13:58:58-08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>1:58 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Microbenchmark is used to measure the performance of a small piece of code for the purpose of performance optimization. Writing a good microbenchmark is <a href="https://www.ibm.com/developerworks/library/j-benchmark1/index.html">hard</a> and that&rsquo;s why we should use microbenchmark frameworks (e.g. <a href="http://openjdk.java.net/projects/code-tools/jmh/">JMH</a> for Java and <a href="https://github.com/google/benchmark">Google Benchmark</a> for C++) to help us. This post contains microbenchmarks that I think are interesting.</p>
+
+<!-- more -->
+
+
+<p><strong>Don&rsquo;t directly use the performance numbers in this post, do your own measurement!</strong> Those numbers are highly dependent on the environment where those benchmarks are running.</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">BENCHMARK_DEFINE_F</span><span class="p">(</span><span class="n">BenchmarkFixture</span><span class="p">,</span> <span class="n">ForLoopAssignmentBenchmark</span><span class="p">)(</span><span class="n">benchmark</span><span class="o">::</span><span class="n">State</span><span class="o">&amp;</span> <span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">_</span> <span class="p">:</span> <span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">char</span> <span class="n">c</span><span class="p">[</span><span class="mi">2048</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">2048</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;a&#39;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="n">benchmark</span><span class="o">::</span><span class="n">DoNotOptimize</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="n">BENCHMARK_REGISTER_F</span><span class="p">(</span><span class="n">BenchmarkFixture</span><span class="p">,</span> <span class="n">ForLoopAssignmentBenchmark</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">BENCHMARK_DEFINE_F</span><span class="p">(</span><span class="n">BenchmarkFixture</span><span class="p">,</span> <span class="n">MemsetBenchmark</span><span class="p">)(</span><span class="n">benchmark</span><span class="o">::</span><span class="n">State</span><span class="o">&amp;</span> <span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">_</span> <span class="p">:</span> <span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">char</span> <span class="n">c</span><span class="p">[</span><span class="mi">2048</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">memset</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="sc">&#39;a&#39;</span><span class="p">,</span> <span class="mi">2048</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">benchmark</span><span class="o">::</span><span class="n">DoNotOptimize</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="n">BENCHMARK_REGISTER_F</span><span class="p">(</span><span class="n">BenchmarkFixture</span><span class="p">,</span> <span class="n">MemsetBenchmark</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">Run</span> <span class="n">on</span> <span class="p">(</span><span class="mi">12</span> <span class="n">X</span> <span class="mi">2500</span> <span class="n">MHz</span> <span class="n">CPU</span> <span class="n">s</span><span class="p">)</span>
+</span><span class='line'><span class="o">------------------------------------------------------------------------------------</span>
+</span><span class='line'><span class="n">Benchmark</span>                                              <span class="n">Time</span>           <span class="n">CPU</span> <span class="n">Iterations</span>
+</span><span class='line'><span class="o">------------------------------------------------------------------------------------</span>
+</span><span class='line'><span class="n">BenchmarkFixture</span><span class="o">/</span><span class="n">ForLoopAssignmentBenchmark</span>         <span class="mi">1013</span> <span class="n">ns</span>       <span class="mi">1013</span> <span class="n">ns</span>     <span class="mi">750073</span>
+</span><span class='line'><span class="n">BenchmarkFixture</span><span class="o">/</span><span class="n">MemsetBenchmark</span>                      <span class="mi">84</span> <span class="n">ns</span>         <span class="mi">84</span> <span class="n">ns</span>    <span class="mi">6209926</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>As we can see, memset is much faster than the for loop assignment in this case. Looking at the generated assembly code, memset uses <code>rep stos</code> instruction which can be the <a href="https://stackoverflow.com/questions/33480999/how-can-the-rep-stosb-instruction-execute-faster-than-the-equivalent-loop">reason</a> why it&rsquo;s faster.</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">// https://shipilev.net/blog/2014/nanotrusting-nanotime/</span>
+</span><span class='line'><span class="kr">inline</span> <span class="kt">uint64_t</span> <span class="nf">NanosecondsSinceEpoch</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">timespec</span> <span class="n">tp</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">clock_gettime</span><span class="p">(</span><span class="n">CLOCK_REALTIME</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">tp</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">tp</span><span class="p">.</span><span class="n">tv_sec</span> <span class="o">*</span> <span class="n">NS_PER_SEC</span> <span class="o">+</span> <span class="n">tp</span><span class="p">.</span><span class="n">tv_nsec</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">BENCHMARK_DEFINE_F</span><span class="p">(</span><span class="n">BenchmarkFixture</span><span class="p">,</span> <span class="n">NanoTimeLatencyBenchmark</span><span class="p">)(</span><span class="n">benchmark</span><span class="o">::</span><span class="n">State</span><span class="o">&amp;</span> <span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">_</span> <span class="p">:</span> <span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">benchmark</span><span class="o">::</span><span class="n">DoNotOptimize</span><span class="p">(</span><span class="n">NanosecondsSinceEpoch</span><span class="p">());</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="n">BENCHMARK_REGISTER_F</span><span class="p">(</span><span class="n">BenchmarkFixture</span><span class="p">,</span> <span class="n">NanoTimeLatencyBenchmark</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">BENCHMARK_DEFINE_F</span><span class="p">(</span><span class="n">BenchmarkFixture</span><span class="p">,</span> <span class="n">NanoTimeGranularityBenchmark</span><span class="p">)(</span><span class="n">benchmark</span><span class="o">::</span><span class="n">State</span><span class="o">&amp;</span> <span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kt">uint64_t</span> <span class="n">cur_nano</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">uint64_t</span> <span class="n">last_nano</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">_</span> <span class="p">:</span> <span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">do</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">cur_nano</span> <span class="o">=</span> <span class="n">NanosecondsSinceEpoch</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">cur_nano</span> <span class="o">==</span> <span class="n">last_nano</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">last_nano</span> <span class="o">=</span> <span class="n">cur_nano</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="n">BENCHMARK_REGISTER_F</span><span class="p">(</span><span class="n">BenchmarkFixture</span><span class="p">,</span> <span class="n">NanoTimeGranularityBenchmark</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">Run</span> <span class="n">on</span> <span class="p">(</span><span class="mi">12</span> <span class="n">X</span> <span class="mi">2500</span> <span class="n">MHz</span> <span class="n">CPU</span> <span class="n">s</span><span class="p">)</span>
+</span><span class='line'><span class="o">------------------------------------------------------------------------------------</span>
+</span><span class='line'><span class="n">Benchmark</span>                                              <span class="n">Time</span>           <span class="n">CPU</span> <span class="n">Iterations</span>
+</span><span class='line'><span class="o">------------------------------------------------------------------------------------</span>
+</span><span class='line'><span class="n">BenchmarkFixture</span><span class="o">/</span><span class="n">NanoTimeLatencyBenchmark</span>             <span class="mi">39</span> <span class="n">ns</span>         <span class="mi">39</span> <span class="n">ns</span>   <span class="mi">18361529</span>
+</span><span class='line'><span class="n">BenchmarkFixture</span><span class="o">/</span><span class="n">NanoTimeGranularityBenchmark</span>         <span class="mi">39</span> <span class="n">ns</span>         <span class="mi">39</span> <span class="n">ns</span>   <span class="mi">18073581</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">NanoTimeBenchmark</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@State</span><span class="o">(</span><span class="n">Scope</span><span class="o">.</span><span class="na">Benchmark</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">BenchmarkState</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">long</span> <span class="n">_lastNano</span><span class="o">;</span>
+</span><span class='line'>    <span class="nd">@Setup</span><span class="o">(</span><span class="n">Level</span><span class="o">.</span><span class="na">Iteration</span><span class="o">)</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setup</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">_lastNano</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Benchmark</span>
+</span><span class='line'>  <span class="nd">@Fork</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@Threads</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@Warmup</span><span class="o">(</span><span class="n">iterations</span> <span class="o">=</span> <span class="mi">10</span><span class="o">,</span> <span class="n">time</span> <span class="o">=</span> <span class="mi">5</span><span class="o">,</span> <span class="n">timeUnit</span> <span class="o">=</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@Measurement</span><span class="o">(</span><span class="n">iterations</span> <span class="o">=</span> <span class="mi">10</span><span class="o">,</span> <span class="n">time</span> <span class="o">=</span> <span class="mi">5</span><span class="o">,</span> <span class="n">timeUnit</span> <span class="o">=</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@BenchmarkMode</span><span class="o">(</span><span class="n">Mode</span><span class="o">.</span><span class="na">AverageTime</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@OutputTimeUnit</span><span class="o">(</span><span class="n">TimeUnit</span><span class="o">.</span><span class="na">NANOSECONDS</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">long</span> <span class="nf">nanoTimeLatency</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Benchmark</span>
+</span><span class='line'>  <span class="nd">@Fork</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@Threads</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@Warmup</span><span class="o">(</span><span class="n">iterations</span> <span class="o">=</span> <span class="mi">10</span><span class="o">,</span> <span class="n">time</span> <span class="o">=</span> <span class="mi">5</span><span class="o">,</span> <span class="n">timeUnit</span> <span class="o">=</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@Measurement</span><span class="o">(</span><span class="n">iterations</span> <span class="o">=</span> <span class="mi">10</span><span class="o">,</span> <span class="n">time</span> <span class="o">=</span> <span class="mi">5</span><span class="o">,</span> <span class="n">timeUnit</span> <span class="o">=</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@BenchmarkMode</span><span class="o">(</span><span class="n">Mode</span><span class="o">.</span><span class="na">AverageTime</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@OutputTimeUnit</span><span class="o">(</span><span class="n">TimeUnit</span><span class="o">.</span><span class="na">NANOSECONDS</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">long</span> <span class="nf">nanoTimeGranularity</span><span class="o">(</span><span class="n">BenchmarkState</span> <span class="n">benchmarkState</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">long</span> <span class="n">cur</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">do</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">cur</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">while</span> <span class="o">(</span><span class="n">cur</span> <span class="o">==</span> <span class="n">benchmarkState</span><span class="o">.</span><span class="na">_lastNano</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">benchmarkState</span><span class="o">.</span><span class="na">_lastNano</span> <span class="o">=</span> <span class="n">cur</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">cur</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Benchmark</span>                              <span class="n">Mode</span>  <span class="n">Cnt</span>   <span class="n">Score</span>   <span class="n">Error</span>  <span class="n">Units</span>
+</span><span class='line'><span class="n">NanoTimeBenchmark</span><span class="o">.</span><span class="na">nanoTimeLatency</span>      <span class="n">avgt</span>   <span class="mi">10</span>  <span class="mf">42.705</span> <span class="err">±</span> <span class="mf">0.302</span>  <span class="n">ns</span><span class="o">/</span><span class="n">op</span>
+</span><span class='line'><span class="n">NanoTimeBenchmark</span><span class="o">.</span><span class="na">nanoTimeGranularity</span>  <span class="n">avgt</span>   <span class="mi">10</span>  <span class="mf">43.875</span> <span class="err">±</span> <span class="mf">0.674</span>  <span class="n">ns</span><span class="o">/</span><span class="n">op</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>This shows the overhead of getting time in both C++ and Java. They are not free!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">jjyao</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2018-11-11T13:58:58-08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>1:58 pm</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2018/11/07/one-liners/" title="Previous Post: One-Liners">&laquo; One-Liners</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2018/12/16/linux-pid/" title="Next Post: Linux PID">Linux PID &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+  <p style="margin-bottom:3px">Welcome to here! I'm jjyao and am working on the distributed graph database team at LinkedIn. My current interests are database systems and distributed systems.</p>
+  <p>
+  <a href="https://www.linkedin.com/in/jjyao/">LinkedIn</a>
+  <a href="https://github.com/jjyao/" style="margin-left:20px">GitHub</a>
+  </p>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - jjyao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'jjyao';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.jjyao.me/blog/2018/11/11/microbenchmark/';
+        var disqus_url = 'http://blog.jjyao.me/blog/2018/11/11/microbenchmark/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

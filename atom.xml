@@ -4,7 +4,7 @@
   <title><![CDATA[Jiajun Yao]]></title>
   <link href="http://blog.jjyao.me/atom.xml" rel="self"/>
   <link href="http://blog.jjyao.me/"/>
-  <updated>2019-04-01T21:12:52-07:00</updated>
+  <updated>2019-07-03T11:54:07-07:00</updated>
   <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -18,7 +18,7 @@
     <link href="http://blog.jjyao.me/blog/2019/04/01/interaction-between-hugetlbfs-and-hugepages/"/>
     <updated>2019-04-01T19:57:31-07:00</updated>
     <id>http://blog.jjyao.me/blog/2019/04/01/interaction-between-hugetlbfs-and-hugepages</id>
-    <content type="html"><![CDATA[<p>This post shows the interaction between hugetlbfs and huge pages by a example program. All the results are based on linux 3.10.0-514.55.4.el7.x86_64.</p>
+    <content type="html"><![CDATA[<p>This post shows the interaction between hugetlbfs and huge pages by an example program. All the results are based on linux 3.10.0-514.55.4.el7.x86_64.</p>
 
 <!-- more -->
 
@@ -346,6 +346,234 @@
 
 <p>[1] <a href="https://www.kernel.org/doc/ols/2002/ols2002-pages-330-337.pdf">https://www.kernel.org/doc/ols/2002/ols2002-pages-330-337.pdf</a> <br/>
 [2] <a href="https://stackoverflow.com/questions/9305992/if-threads-share-the-same-pid-how-can-they-be-identified">https://stackoverflow.com/questions/9305992/if-threads-share-the-same-pid-how-can-they-be-identified</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Microbenchmark]]></title>
+    <link href="http://blog.jjyao.me/blog/2018/11/11/microbenchmark/"/>
+    <updated>2018-11-11T13:58:58-08:00</updated>
+    <id>http://blog.jjyao.me/blog/2018/11/11/microbenchmark</id>
+    <content type="html"><![CDATA[<p>Microbenchmark is used to measure the performance of a small piece of code for the purpose of performance optimization. Writing a good microbenchmark is <a href="https://www.ibm.com/developerworks/library/j-benchmark1/index.html">hard</a> and that&rsquo;s why we should use microbenchmark frameworks (e.g. <a href="http://openjdk.java.net/projects/code-tools/jmh/">JMH</a> for Java and <a href="https://github.com/google/benchmark">Google Benchmark</a> for C++) to help us. This post contains microbenchmarks that I think are interesting.</p>
+
+<!-- more -->
+
+
+<p><strong>Don&rsquo;t directly use the performance numbers in this post, do your own measurement!</strong> Those numbers are highly dependent on the environment where those benchmarks are running.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">BENCHMARK_DEFINE_F</span><span class="p">(</span><span class="n">BenchmarkFixture</span><span class="p">,</span> <span class="n">ForLoopAssignmentBenchmark</span><span class="p">)(</span><span class="n">benchmark</span><span class="o">::</span><span class="n">State</span><span class="o">&amp;</span> <span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">_</span> <span class="p">:</span> <span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">char</span> <span class="n">c</span><span class="p">[</span><span class="mi">2048</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">2048</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;a&#39;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="n">benchmark</span><span class="o">::</span><span class="n">DoNotOptimize</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="n">BENCHMARK_REGISTER_F</span><span class="p">(</span><span class="n">BenchmarkFixture</span><span class="p">,</span> <span class="n">ForLoopAssignmentBenchmark</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">BENCHMARK_DEFINE_F</span><span class="p">(</span><span class="n">BenchmarkFixture</span><span class="p">,</span> <span class="n">MemsetBenchmark</span><span class="p">)(</span><span class="n">benchmark</span><span class="o">::</span><span class="n">State</span><span class="o">&amp;</span> <span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">_</span> <span class="p">:</span> <span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">char</span> <span class="n">c</span><span class="p">[</span><span class="mi">2048</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">memset</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="sc">&#39;a&#39;</span><span class="p">,</span> <span class="mi">2048</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">benchmark</span><span class="o">::</span><span class="n">DoNotOptimize</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="n">BENCHMARK_REGISTER_F</span><span class="p">(</span><span class="n">BenchmarkFixture</span><span class="p">,</span> <span class="n">MemsetBenchmark</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">Run</span> <span class="n">on</span> <span class="p">(</span><span class="mi">12</span> <span class="n">X</span> <span class="mi">2500</span> <span class="n">MHz</span> <span class="n">CPU</span> <span class="n">s</span><span class="p">)</span>
+</span><span class='line'><span class="o">------------------------------------------------------------------------------------</span>
+</span><span class='line'><span class="n">Benchmark</span>                                              <span class="n">Time</span>           <span class="n">CPU</span> <span class="n">Iterations</span>
+</span><span class='line'><span class="o">------------------------------------------------------------------------------------</span>
+</span><span class='line'><span class="n">BenchmarkFixture</span><span class="o">/</span><span class="n">ForLoopAssignmentBenchmark</span>         <span class="mi">1013</span> <span class="n">ns</span>       <span class="mi">1013</span> <span class="n">ns</span>     <span class="mi">750073</span>
+</span><span class='line'><span class="n">BenchmarkFixture</span><span class="o">/</span><span class="n">MemsetBenchmark</span>                      <span class="mi">84</span> <span class="n">ns</span>         <span class="mi">84</span> <span class="n">ns</span>    <span class="mi">6209926</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As we can see, memset is much faster than the for loop assignment in this case. Looking at the generated assembly code, memset uses <code>rep stos</code> instruction which can be the <a href="https://stackoverflow.com/questions/33480999/how-can-the-rep-stosb-instruction-execute-faster-than-the-equivalent-loop">reason</a> why it&rsquo;s faster.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">// https://shipilev.net/blog/2014/nanotrusting-nanotime/</span>
+</span><span class='line'><span class="kr">inline</span> <span class="kt">uint64_t</span> <span class="nf">NanosecondsSinceEpoch</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">timespec</span> <span class="n">tp</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">clock_gettime</span><span class="p">(</span><span class="n">CLOCK_REALTIME</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">tp</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">tp</span><span class="p">.</span><span class="n">tv_sec</span> <span class="o">*</span> <span class="n">NS_PER_SEC</span> <span class="o">+</span> <span class="n">tp</span><span class="p">.</span><span class="n">tv_nsec</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">BENCHMARK_DEFINE_F</span><span class="p">(</span><span class="n">BenchmarkFixture</span><span class="p">,</span> <span class="n">NanoTimeLatencyBenchmark</span><span class="p">)(</span><span class="n">benchmark</span><span class="o">::</span><span class="n">State</span><span class="o">&amp;</span> <span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">_</span> <span class="p">:</span> <span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">benchmark</span><span class="o">::</span><span class="n">DoNotOptimize</span><span class="p">(</span><span class="n">NanosecondsSinceEpoch</span><span class="p">());</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="n">BENCHMARK_REGISTER_F</span><span class="p">(</span><span class="n">BenchmarkFixture</span><span class="p">,</span> <span class="n">NanoTimeLatencyBenchmark</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">BENCHMARK_DEFINE_F</span><span class="p">(</span><span class="n">BenchmarkFixture</span><span class="p">,</span> <span class="n">NanoTimeGranularityBenchmark</span><span class="p">)(</span><span class="n">benchmark</span><span class="o">::</span><span class="n">State</span><span class="o">&amp;</span> <span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kt">uint64_t</span> <span class="n">cur_nano</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">uint64_t</span> <span class="n">last_nano</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">_</span> <span class="p">:</span> <span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">do</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">cur_nano</span> <span class="o">=</span> <span class="n">NanosecondsSinceEpoch</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">cur_nano</span> <span class="o">==</span> <span class="n">last_nano</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">last_nano</span> <span class="o">=</span> <span class="n">cur_nano</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="n">BENCHMARK_REGISTER_F</span><span class="p">(</span><span class="n">BenchmarkFixture</span><span class="p">,</span> <span class="n">NanoTimeGranularityBenchmark</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">Run</span> <span class="n">on</span> <span class="p">(</span><span class="mi">12</span> <span class="n">X</span> <span class="mi">2500</span> <span class="n">MHz</span> <span class="n">CPU</span> <span class="n">s</span><span class="p">)</span>
+</span><span class='line'><span class="o">------------------------------------------------------------------------------------</span>
+</span><span class='line'><span class="n">Benchmark</span>                                              <span class="n">Time</span>           <span class="n">CPU</span> <span class="n">Iterations</span>
+</span><span class='line'><span class="o">------------------------------------------------------------------------------------</span>
+</span><span class='line'><span class="n">BenchmarkFixture</span><span class="o">/</span><span class="n">NanoTimeLatencyBenchmark</span>             <span class="mi">39</span> <span class="n">ns</span>         <span class="mi">39</span> <span class="n">ns</span>   <span class="mi">18361529</span>
+</span><span class='line'><span class="n">BenchmarkFixture</span><span class="o">/</span><span class="n">NanoTimeGranularityBenchmark</span>         <span class="mi">39</span> <span class="n">ns</span>         <span class="mi">39</span> <span class="n">ns</span>   <span class="mi">18073581</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">NanoTimeBenchmark</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@State</span><span class="o">(</span><span class="n">Scope</span><span class="o">.</span><span class="na">Benchmark</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">BenchmarkState</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">long</span> <span class="n">_lastNano</span><span class="o">;</span>
+</span><span class='line'>    <span class="nd">@Setup</span><span class="o">(</span><span class="n">Level</span><span class="o">.</span><span class="na">Iteration</span><span class="o">)</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setup</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">_lastNano</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Benchmark</span>
+</span><span class='line'>  <span class="nd">@Fork</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@Threads</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@Warmup</span><span class="o">(</span><span class="n">iterations</span> <span class="o">=</span> <span class="mi">10</span><span class="o">,</span> <span class="n">time</span> <span class="o">=</span> <span class="mi">5</span><span class="o">,</span> <span class="n">timeUnit</span> <span class="o">=</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@Measurement</span><span class="o">(</span><span class="n">iterations</span> <span class="o">=</span> <span class="mi">10</span><span class="o">,</span> <span class="n">time</span> <span class="o">=</span> <span class="mi">5</span><span class="o">,</span> <span class="n">timeUnit</span> <span class="o">=</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@BenchmarkMode</span><span class="o">(</span><span class="n">Mode</span><span class="o">.</span><span class="na">AverageTime</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@OutputTimeUnit</span><span class="o">(</span><span class="n">TimeUnit</span><span class="o">.</span><span class="na">NANOSECONDS</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">long</span> <span class="nf">nanoTimeLatency</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Benchmark</span>
+</span><span class='line'>  <span class="nd">@Fork</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@Threads</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@Warmup</span><span class="o">(</span><span class="n">iterations</span> <span class="o">=</span> <span class="mi">10</span><span class="o">,</span> <span class="n">time</span> <span class="o">=</span> <span class="mi">5</span><span class="o">,</span> <span class="n">timeUnit</span> <span class="o">=</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@Measurement</span><span class="o">(</span><span class="n">iterations</span> <span class="o">=</span> <span class="mi">10</span><span class="o">,</span> <span class="n">time</span> <span class="o">=</span> <span class="mi">5</span><span class="o">,</span> <span class="n">timeUnit</span> <span class="o">=</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@BenchmarkMode</span><span class="o">(</span><span class="n">Mode</span><span class="o">.</span><span class="na">AverageTime</span><span class="o">)</span>
+</span><span class='line'>  <span class="nd">@OutputTimeUnit</span><span class="o">(</span><span class="n">TimeUnit</span><span class="o">.</span><span class="na">NANOSECONDS</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">long</span> <span class="nf">nanoTimeGranularity</span><span class="o">(</span><span class="n">BenchmarkState</span> <span class="n">benchmarkState</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">long</span> <span class="n">cur</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">do</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">cur</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">while</span> <span class="o">(</span><span class="n">cur</span> <span class="o">==</span> <span class="n">benchmarkState</span><span class="o">.</span><span class="na">_lastNano</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">benchmarkState</span><span class="o">.</span><span class="na">_lastNano</span> <span class="o">=</span> <span class="n">cur</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">cur</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Benchmark</span>                              <span class="n">Mode</span>  <span class="n">Cnt</span>   <span class="n">Score</span>   <span class="n">Error</span>  <span class="n">Units</span>
+</span><span class='line'><span class="n">NanoTimeBenchmark</span><span class="o">.</span><span class="na">nanoTimeLatency</span>      <span class="n">avgt</span>   <span class="mi">10</span>  <span class="mf">42.705</span> <span class="err">±</span> <span class="mf">0.302</span>  <span class="n">ns</span><span class="o">/</span><span class="n">op</span>
+</span><span class='line'><span class="n">NanoTimeBenchmark</span><span class="o">.</span><span class="na">nanoTimeGranularity</span>  <span class="n">avgt</span>   <span class="mi">10</span>  <span class="mf">43.875</span> <span class="err">±</span> <span class="mf">0.674</span>  <span class="n">ns</span><span class="o">/</span><span class="n">op</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This shows the overhead of getting time in both C++ and Java. They are not free!</p>
 ]]></content>
   </entry>
   
@@ -3460,285 +3688,6 @@ Block文件存放在本地的什么地方由配置项dfs.data.dir指定。比如
 <li><a href="http://caibinbupt.iteye.com">caibinbupt的博客</a></li>
 <li><a href="http://india.paxcel.net:6060/LargeDataMatters/wp-content/uploads/2010/09/HDFS1.pdf">一份pdf文件</a></li>
 </ol>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Insert One Million Rows Into Database]]></title>
-    <link href="http://blog.jjyao.me/blog/2012/06/02/insert-one-million-rows-into-database/"/>
-    <updated>2012-06-02T15:30:00-07:00</updated>
-    <id>http://blog.jjyao.me/blog/2012/06/02/insert-one-million-rows-into-database</id>
-    <content type="html"><![CDATA[<p>数据库课的一次作业，要求是尽可能快的插入一百万条数据到数据库。这也是第一次和数据库性能接触，在做作业的过程中也有所感受所以决定写下来。这次作业我选择的是用C和MySQL来完成，并使用MySQL的C API。程序的逻辑很简单就是随机生成一百万条数据然后插入数据库，关键是如何能快速的插入。我进行了多次尝试，每次尝试都在插入数据上有所提升。</p>
-
-<!-- more -->
-
-
-<p>最开始的尝试就是使用InnoDB引擎，插入就是一个for循环做一百万次，每次循环里都调用mysql_query()执行一条插入语句。实验表明如果这样做的话非常慢我花了200分钟才插入了37万多条数据。显然这种插入方法是不行的。而这样插入非常慢的原因是InnoDB是事务型数据库，而默认情况下每一次调用mysql_query()执行的insert操作都会被看成是一个transaction，InnoDB对于transaction的处理花费了太多的时间，它需要进行写日志等操作。</p>
-
-<p>知道transaction对数据库插入速度有这样大的影响后，接下来就是要降低事务数，最好将一百万条插入操作都放在一个transaction中完成。于是我在程序里加了两行代码，第一行是调用mysql_autocommit()将auto commit关闭，这样MySQL就不会将每一次的插入操作都当成一个transaction了。第二行是在程序最后加上mysql_commit()手动提交transaction，就这两行代码导致插入时间大幅减少。我用time命令记录了程序的运行时间，结果如下：
-    real 1m8.693s
-    user 0m5.615s
-    sys  0m10.081s</p>
-
-<p>接下来的尝试就是使用MySQL的multiple insert也就是一条insert语句插入多条数据，语法像这样：INSERT INTO x (a, b) VALUES (1, 2), (2, 3), (3, 5); 。这个方法也是MySQL官网建议的提高插入速度的方法之一。我想做的事就是用一条insert语句插入一百万条数据。为了达到这个目的我就要先构造这样的一个insert语句，方法很简单就是先malloc一个很大的字符数组，然后不停的使用strcat()来向这个字符数组中填值，也就是说要调用一百万次strcat()来构造这样的一个insert语句。当我跑这个重新改后的程序时发现构造这样的一个insert语句非常慢，无法在有限的时间内完成。后来发现问题出在strcat()上，实现这个方法的算法很低效，这个算法是设计来让人们调用一次的而不是一百万次的，根据时间复杂度调用一百万次strcat()就会非常耗时，具体关于strcat()问题可以参见<a href="http://www.joelonsoftware.com/articles/fog0000000319.html">Joel的文章</a>。问题的解决办法就是自己写一个高效的strcat()方法，这个在Joel的文章里也给出来了。把这个问题解决后构造一个insert语句就是瞬间的事了，在这里算法课上反复强调的时间复杂度得到了充分的体现。把这个问题解决后又出现了一个新的问题那就是我一跑程序就告诉我&#8221;MySQL server has gone away&#8221;，上网找了一下发现原因是发送的insert语句太大了超出了max_allowed_packet的大小，解决方案就是把MySQL配置文件里的max_allowed_packet大小改到足够大就可以了，顿时我就觉得为什么MySQL不能直接告诉我包过大呢，非要给出一个等于没说的信息，太不友好了。解决了所有问题后这种方案终于能跑了，插入时间也进一步减小了，对于这种方案能降低插入时间的原因我猜是不是因为减少了网络中包传输的次数。我用time命令记录了程序的运行时间，结果如下：
-    real 0m10.971s
-    user 0m0.514s
-    sys  0m0.008s</p>
-
-<p>接下来做的就是换个数据库引擎把transaction的开销给消除了，我用了MyISAM引擎，这是个非事务型引擎。改完引擎后再一次发现transaction的开销好大啊。我用time命令记录了程序的运行时间，结果如下:
-    real 0m3.863s
-    user 0m0.514s
-    sys  0m0.010s</p>
-
-<p>然后还尝试了一下MySQL的必杀技load data infile，这种方法可以使插入的效率提高数倍，很适合大批量数据的插入。程序运行结果如下：
-    real 0m2.481s
-    user 0m0.400s
-    sys  0m0.015s</p>
-
-<p>最后用openmp写了一个多线程的程序来同时插入，由于测试机子是四核的所以开了四个线程。然后分别在两种数据库引擎下都做了实验，结果如下：
-    MyISAM：
-    real 0m2.897s
-    user 0m0.686s
-    sys  0m0.019s</p>
-
-<pre><code>InnoDB：
-real 0m10.780s
-user 0m0.686s
-sys  0m0.019s
-</code></pre>
-
-<p>在做这次数据库作业的过程中有如下感受：</p>
-
-<ol>
-<li>transaction非常耗时</li>
-<li>找准性能瓶颈很重要，strcat()就是一个例子</li>
-<li>性能优化是个很有趣的事，尤其是当你发现性能又提升了一个层级</li>
-</ol>
-
-
-<p>最后附上整个程序的代码：</p>
-
-<div><script src='https://gist.github.com/2860838.js?file=insert_test.c'></script>
-<noscript><pre><code>#include &lt;my_global.h&gt;
-#include &lt;mysql.h&gt;
-#include &lt;my_sys.h&gt;
-#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;stddef.h&gt;
-#include &lt;time.h&gt;
-#include &lt;string.h&gt;
-#include &lt;omp.h&gt;
-
-#define DBHOST &quot;localhost&quot;
-#define USER &quot;root&quot;
-#define PASSWORD &quot;password&quot;
-#define DATABASE &quot;test&quot;
-#define BUFFER_SIZE 1024
-#define ROW_NUM 1000000
-
-char* mystrcat(char* dest, char* src);
-void insert_test();
-void parallel_insert_test();
-void load_data_infile();
-void print_mysql_error(MYSQL* conn, char* message);
-
-int main(){
-    parallel_insert_test();
-}
-
-void load_data_infile()
-{
-    MYSQL* db_conn = mysql_init(NULL);
-    if(db_conn == NULL)
-    {
-        fprintf(stderr, &quot;mysql_init() failed\n&quot;);
-        return;
-    }
-    if(mysql_real_connect(db_conn, DBHOST, USER, PASSWORD, DATABASE, 0, NULL, 0) == NULL)
-    {
-        fprintf(stderr, &quot;mysql_real_connect() failed\n&quot;);
-        mysql_close(db_conn);
-        return;
-    }
-
-    char query[BUFFER_SIZE];
-    char* names[10] = {&quot;Mike&quot;, &quot;Bob&quot;, &quot;Jack&quot;, &quot;Alice&quot;, &quot;Cathy&quot;, &quot;Ann&quot;, &quot;Betty&quot;, &quot;Cindy&quot;, &quot;Mary&quot;, &quot;Jane&quot;};
-    char* name;
-    char letters[6];
-    int number;
-    srand(time(NULL));
-
-    FILE* file = fopen(&quot;/tmp/mysql.txt&quot;, &quot;w+&quot;);
-    for(int i = 0; i &lt; ROW_NUM; i++)
-    {
-        name = names[rand() % 10];
-        for(int j = 0; j &lt; 5; j++)
-        {
-            letters[j] = &#39;a&#39; + rand() % 5;
-        }
-        letters[5] = &#39;\0&#39;;
-        number = rand() % 20 + 1;
-        fprintf(file, &quot;%s\t%s\t%d\n&quot;, name, letters, number);
-    }
-    fclose(file);
-
-    if(mysql_query(db_conn, &quot;LOAD DATA INFILE &#39;/tmp/mysql.txt&#39; INTO TABLE test (col1, col2, col3)&quot;) != 0)
-    {
-        print_mysql_error(db_conn, &quot;load data infile error&quot;);
-    }
-
-    mysql_close(db_conn);
-}
-
-void parallel_insert_test()
-{
-    mysql_library_init(0, NULL, NULL);
-    #pragma omp parallel
-    {
-        MYSQL* db_conn = mysql_init(NULL);
-        if(db_conn == NULL)
-        {
-            fprintf(stderr, &quot;mysql_init() failed\n&quot;);
-        }
-        if(mysql_real_connect(db_conn, DBHOST, USER, PASSWORD, DATABASE, 0, NULL, 0) == NULL)
-        {
-            fprintf(stderr, &quot;mysql_real_connect() failed\n&quot;);
-            mysql_close(db_conn);
-        }
-
-        char*  query = (char*)malloc(30000 *  BUFFER_SIZE);
-        char  insert_value[30];
-        char* names[10] = {&quot;Mike&quot;, &quot;Bob&quot;, &quot;Jack&quot;, &quot;Alice&quot;, &quot;Cathy&quot;, &quot;Ann&quot;, &quot;Betty&quot;, &quot;Cindy&quot;, &quot;Mary&quot;, &quot;Jane&quot;};
-        char* name;
-        char letters[6];
-        int number;
-        unsigned int seed = omp_get_thread_num();
-
-        mysql_autocommit(db_conn, 0);
-        for(int i = 0; i &lt; 1; i++)
-        {
-            snprintf(query, 30000 * BUFFER_SIZE, &quot;INSERT INTO test(col1, col2, col3) VALUES&quot;);
-            char* query_copy = query;
-            for(int k = 0; k &lt; ROW_NUM / omp_get_num_threads(); k++)
-            {
-                name = names[rand_r(&amp;seed) % 10];
-                for(int j = 0; j &lt; 5; j++)
-                {
-                    letters[j] = &#39;a&#39; + rand_r(&amp;seed) % 5;
-                }
-                letters[5] = &#39;\0&#39;;
-                number = rand_r(&amp;seed) % 20 + 1;
-                snprintf(insert_value, sizeof(insert_value), &quot;(&#39;%s&#39;, &#39;%s&#39;, %d),&quot;, name, letters, number);
-                query_copy = mystrcat(query_copy, insert_value);
-            }
-            *(query_copy - 1) = &#39;\0&#39;;
-            if(mysql_query(db_conn, query) != 0)
-            {
-                print_mysql_error(db_conn, &quot;insert error&quot;);
-            }
-        }
-
-        mysql_commit(db_conn);
-        free(query);
-        mysql_close(db_conn);
-        mysql_thread_end();
-    }
-    
-    mysql_library_end();
-}
-
-void insert_test()
-{
-    MYSQL* db_conn = mysql_init(NULL);
-    if(db_conn == NULL)
-    {
-        fprintf(stderr, &quot;mysql_init() failed\n&quot;);
-        return;
-    }
-    if(mysql_real_connect(db_conn, DBHOST, USER, PASSWORD, DATABASE, 0, NULL, 0) == NULL)
-    {
-        fprintf(stderr, &quot;mysql_real_connect() failed\n&quot;);
-        mysql_close(db_conn);
-        return;
-    }
-
-    char*  query = (char*)malloc(30000 *  BUFFER_SIZE);
-    char  insert_value[30];
-    char* names[10] = {&quot;Mike&quot;, &quot;Bob&quot;, &quot;Jack&quot;, &quot;Alice&quot;, &quot;Cathy&quot;, &quot;Ann&quot;, &quot;Betty&quot;, &quot;Cindy&quot;, &quot;Mary&quot;, &quot;Jane&quot;};
-    char* name;
-    char letters[6];
-    int number;
-    srand(time(NULL));
-    mysql_autocommit(db_conn, 0);
-
-    for(int i = 0; i &lt; 1; i++)
-    {
-        snprintf(query, 30000 * BUFFER_SIZE, &quot;INSERT INTO test(col1, col2, col3) VALUES&quot;);
-        char* query_copy = query;
-        for(int k = 0; k &lt; ROW_NUM; k++)
-        {
-            name = names[rand() % 10];
-            for(int j = 0; j &lt; 5; j++)
-            {
-                letters[j] = &#39;a&#39; + rand() % 5;
-            }
-            letters[5] = &#39;\0&#39;;
-            number = rand() % 20 + 1;
-            snprintf(insert_value, sizeof(insert_value), &quot;(&#39;%s&#39;, &#39;%s&#39;, %d),&quot;, name, letters, number);
-            query_copy = mystrcat(query_copy, insert_value);
-        }
-        *(query_copy - 1) = &#39;\0&#39;;
-        if(mysql_query(db_conn, query) != 0)
-        {
-            print_mysql_error(db_conn, &quot;insert error&quot;);
-            return;
-        }
-    }
-
-    mysql_commit(db_conn);
-    free(query);
-    mysql_close(db_conn);
-}
-
-char* mystrcat(char* dest, char* src)
-{
-    while(*dest) dest++;
-    while(*dest++ = *src++);
-    return --dest;
-}
-
-void print_mysql_error(MYSQL* conn, char* message)
-{
-    fprintf(stderr, &quot;%s\n&quot;, message);
-    if(conn != NULL)
-    {
-    #if MYSQL_VERSION_ID &gt;= 40101
-        fprintf(stderr, &quot;Error %u (%s): %s\n&quot;, mysql_errno(conn), mysql_sqlstate(conn), mysql_error(conn));
-    #else
-        fprintf(stderr, &quot;Error %u: %s\n&quot;, mysql_errno(conn), mysql_error(conn));
-    #endif
-    }
-}</code></pre></noscript></div>
-
-
-
-
-<div><script src='https://gist.github.com/2860838.js?file=table.sql'></script>
-<noscript><pre><code>drop database if exists test;
-create database test;
-use test;
-
-drop table if exists test;
-create table test(
-    id integer primary key auto_increment,
-    /*col1 enum(&#39;Mike&#39;, &#39;Bob&#39;, &#39;Jack&#39;, &#39;Alice&#39;, &#39;Cathy&#39;, &#39;Ann&#39;, &#39;Betty&#39;, &#39;Cindy&#39;, &#39;Mary&#39;, &#39;Jane&#39;),*/
-    col1 char(5),
-    col2 char(5),
-    col3 tinyint
-);</code></pre></noscript></div>
-
-
 
 ]]></content>
   </entry>

@@ -15,6 +15,12 @@
   </url>
   
   <url>
+    <loc>http://blog.jjyao.me/blog/2018/11/11/microbenchmark/</loc>
+    <lastmod>2018-11-11T13:58:58-08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>http://blog.jjyao.me/blog/2018/11/07/one-liners/</loc>
     <lastmod>2018-11-07T22:06:28-08:00</lastmod>
     <priority>0.8</priority>
@@ -131,35 +137,35 @@
   
   <url>
     <loc>http://blog.jjyao.me/blog/archives/</loc>
-    <lastmod>2019-04-01T21:12:52-07:00</lastmod>
+    <lastmod>2019-07-03T11:54:07-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/</loc>
-    <lastmod>2019-04-01T21:12:52-07:00</lastmod>
+    <lastmod>2019-07-03T11:54:07-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/about/</loc>
-    <lastmod>2019-04-01T21:12:52-07:00</lastmod>
+    <lastmod>2019-07-03T11:54:07-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/quotes/it-quotes.html</loc>
-    <lastmod>2019-04-01T21:12:52-07:00</lastmod>
+    <lastmod>2019-07-03T11:54:07-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/quotes/quotes.html</loc>
-    <lastmod>2019-04-01T21:12:52-07:00</lastmod>
+    <lastmod>2019-07-03T11:54:07-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
