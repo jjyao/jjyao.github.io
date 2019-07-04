@@ -9,7 +9,7 @@
   <meta name="author" content="jjyao">
 
   
-  <meta name="description" content="Send an android.os.Message whose what is 0 and then remove it, which unexpectedly removes all posted Runnables ">
+  <meta name="description" content="Imagine that you launch a singleTop activity using intent A and then launch it again using intent B. As a result, activity&rsquo;s onNewIntent method &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +79,40 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/28/which-intent-will-you-get-after-android-relaunches-the-activity/">Which Intent Will You Get After Android Relaunches the Activity</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-08-28T14:28:06-07:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>28</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>2:28 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Imagine that you launch a <code>singleTop</code> activity using intent A and then launch it again using intent B. As a result, activity&rsquo;s <code>onNewIntent</code> method is called and inside this method you call <code>setIntent</code> to store the new intent. After that, Android decides to relaunch the activity. Now we have the question: which intent will you get after Android relaunches the activity? The original one(A) or the latest one(B)?</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/28/which-intent-will-you-get-after-android-relaunches-the-activity/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -389,48 +423,6 @@
   
     <footer>
       <a rel="full-article" href="/blog/2012/07/21/read-practice-think/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/06/18/hdfs-source-code-analysis/">HDFS Source Code Analysis</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2012-06-18T19:28:00-07:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2012</span></span> <span class='time'>7:28 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ol>
-<li><a href="#instantiate_FileSystem">创建FileSystem</a></li>
-<li><a href="#hdfs_client_send_request">HDFS客户端向服务器发送rpc请求</a></li>
-<li><a href="#hdfs_server_handle_client_request">HDFS服务器对客户端rpc请求的处理</a></li>
-<li><a href="#hdfs_datanode_storage_related_class">DataNode中和数据相关的类</a></li>
-<li><a href="#hdfs_datanode_start">DataNode的启动</a></li>
-<li><a href="#reference">参考资料</a></li>
-</ol>
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/06/18/hdfs-source-code-analysis/">Read on &rarr;</a>
     </footer>
   
 
