@@ -11,6 +11,8 @@ categories:
 1. [移民](#immigration)
 2. [全球化](#globalization)
 3. [偏见](#prejudice)
+4. [经济增长](#growth)
+5. [贫富差距](#inequality)
 <!-- more -->
 
 ## <a id="immigration"></a>移民
@@ -26,3 +28,9 @@ categories:
 同时作者分析了全球化和自由贸易对于发达国家和发展中国家的影响。发达国家的优势是资本而发展中国家的优势是廉价劳动力，因此全球化会使发达国家的资本家受益而发展中国家的工人受益。另一方面，发达国家资本家受益的同时，它们的工人会在和发展中国家廉价劳动力竞争中受损（Workers were likely to suffer from trade in rich countries and benefit from it in poor countries.）。为了帮助受影响的发达国家工人，国家需要进行收入再分配和各类政策扶持。而贸易战却不是解决这个问题的方法之一，它帮助了某些人的同时也会伤害到另外一些人（While trade war may save some jobs in steal, it would likely cause significant new damage to others. The US economy will be fine. Hundreds of thousands of people will not.）。
 
 ## <a id="prejudice"></a>偏见
+本书提到了现在社会充满了对立，分裂和偏见的现象（比如民主党vs共和党，白人vs黑人）。作者认为现在的社交网络非但没有缓解这些现象，反而作为一个回声室（echo chamber），恶化了它们。作者还认为人们的对立和偏见背后有着深层次的原因（比如对世界的不满，感到没有被世界尊重）。打击偏见的方法不应该是直接和他们就此争论或者表现出对他们的鄙视，这样做只会加深偏见（Preferences like prejudice are as much part of the symptoms of the malaise as its cause, perhaps more. Prejudice is often a defensive reaction to the many things we feel are going wrong in the world, our economic travails, and a sense that we are no longer respected or valued.）。为了缓解这些现象，作者认为一个有效的方式是多接触，多互相了解。而学校在这一方面扮演了非常重要的角色。不同背景的年轻人生活学习在一起，可以消除偏见达到互信（Familiarity performed its magic.）。而这也是像哈佛这样培养未来领导人的学校需要招收各个族群学生的一个原因，过多的偏向某一个族群会产生不好的影响（As a flagship producer of the next generation of leaders, Harvard clearly needs to find a place for students from all social groups, and a massive overrepresentation of any particular social group relative to its weight in the population is both perhaps undesirable in a democracy and likely to lead to political problems.）。
+
+## <a id="growth"></a>经济增长
+本书的一个重要观点是***人们目前还不知道持久经济增长的内在机制是什么***，包括如何恢复增长和保持增长（Despite the best efforts of generations of economists, the deep mechanisms of persistent economic growth remain elusive.）。与此相关的是给富人减税并不会促进经济的增长（Tax cuts for the wealthy do not produce economic growth.）。另一方面，尽管无法带来持续的经济增长，但提高资源利用率，减少资源的错误分配还是能让贫穷国家获得一定的增长。而这需要克服之前提到的资源粘性问题。最后虽然没人知道如何持续不断的增长经济，但所有国家都能致力于改善国民的福祉，即时它们不能被反映在GDP上（GDP values only those things priced and marketed.）。
+
+## <a id="inequality"></a>贫富差距
