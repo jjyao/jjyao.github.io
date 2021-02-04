@@ -112,7 +112,7 @@ g++ -std=c++11 -o brainfuck brainfuck.cc
 For a complicated Brainfuck program like [mandelbrot.bf](https://www.google.com/search?q=mandelbrot.bf), running in an interpreter will be slow.
 
 ## <a id="transpilation"></a>Transpilation
-One way to generate and run native code for a Brainfuck program is transpilaiton. The first step is generating the equivalent C/C++ code for the Brainfuck program and then using a conventional compiler to generate a shared object. The second step is using dlopen() to load the shared object and run it.
+One way to generate and run native code for a Brainfuck program is transpilaiton. The first step is generating the equivalent C/C++ code for the Brainfuck program and then using a conventional compiler to generate a shared object. The second step is using `dlopen()` to load the shared object and run it.
 
 ``` cpp
 #include <dlfcn.h>
