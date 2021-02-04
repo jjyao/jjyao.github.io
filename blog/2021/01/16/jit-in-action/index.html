@@ -1,0 +1,896 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>JIT in Action - Jiajun Yao</title>
+  <meta name="author" content="jjyao">
+
+  
+  <meta name="description" content="JIT is a way of executing computer code that involves compilation during execution of a program at runtime. This post shows how to execute Brainfuck &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.jjyao.me/blog/2021/01/16/jit-in-action">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Jiajun Yao" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-32781930-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Jiajun Yao</a></h1>
+  
+    <h2>Stay hungry, Stay foolish.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.jjyao.me" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <!--<li><a href="/about">About</a></li>-->
+  <li><a href="/quotes/quotes.html">Quotes</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">JIT in Action</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2021-01-16T22:23:27-08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2021</span></span> <span class='time'>10:23 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="https://en.wikipedia.org/wiki/Just-in-time_compilation">JIT</a> is a way of executing computer code that involves compilation during execution of a program at <strong>runtime</strong>. This post shows how to execute <a href="https://en.wikipedia.org/wiki/Brainfuck">Brainfuck</a> programs using JIT in various ways.</p>
+
+<ol>
+<li><a href="#interpreter">Interpreter</a></li>
+<li><a href="#transpilation">Transpilation</a></li>
+<li><a href="#llvm">LLVM</a></li>
+<li><a href="#dynasm">DynASM</a></li>
+</ol>
+
+
+<!-- more -->
+
+
+<h2><a id="interpreter"></a>Interpreter</h2>
+
+<p>Before showing how to use JIT to run a Brainfuck program, lets see how it can be run by an interpreter.</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;cstdio&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;cstdlib&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;string&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;vector&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;fstream&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;streambuf&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">BrainfuckInterpreter</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="n">BrainfuckInterpreter</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">program</span><span class="p">)</span>
+</span><span class='line'>      <span class="o">:</span> <span class="n">program</span><span class="p">(</span><span class="n">program</span><span class="p">)</span> <span class="p">{}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">run</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">private</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">program</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">BrainfuckInterpreter</span><span class="o">::</span><span class="n">run</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="n">data</span><span class="p">[</span><span class="mi">30000</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+</span><span class='line'>  <span class="kt">char</span><span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span> <span class="n">stack</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">size_t</span> <span class="n">skips</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">program</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">switch</span><span class="p">(</span><span class="n">program</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;&gt;&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">skips</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="o">++</span><span class="n">ptr</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;&lt;&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">skips</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="o">--</span><span class="n">ptr</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;+&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">skips</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="o">++*</span><span class="n">ptr</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;-&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">skips</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="o">--*</span><span class="n">ptr</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;.&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">skips</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="n">putchar</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="o">*</span><span class="n">ptr</span><span class="p">));</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;,&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">skips</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="o">*</span><span class="n">ptr</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="p">(</span><span class="n">getchar</span><span class="p">());</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;[&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="n">stack</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">!*</span><span class="n">ptr</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="o">++</span><span class="n">skips</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;]&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">ptr</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="n">i</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">stack</span><span class="p">.</span><span class="n">end</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>          <span class="n">stack</span><span class="p">.</span><span class="n">pop_back</span><span class="p">();</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">skips</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="o">--</span><span class="n">skips</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">ifstream</span> <span class="n">ifs</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">program</span><span class="p">((</span><span class="n">std</span><span class="o">::</span><span class="n">istreambuf_iterator</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="p">(</span><span class="n">ifs</span><span class="p">)),</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">istreambuf_iterator</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="p">()));</span>
+</span><span class='line'>  <span class="n">BrainfuckInterpreter</span> <span class="nf">interpreter</span><span class="p">(</span><span class="n">program</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">interpreter</span><span class="p">.</span><span class="n">run</span><span class="p">();</span>
+</span><span class='line'>  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">g</span><span class="o">++</span> <span class="o">-</span><span class="n">std</span><span class="o">=</span><span class="n">c</span><span class="o">++</span><span class="mi">11</span> <span class="o">-</span><span class="n">o</span> <span class="n">brainfuck</span> <span class="n">brainfuck</span><span class="p">.</span><span class="n">cc</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">.</span><span class="o">/</span><span class="n">brainfuck</span> <span class="n">program</span><span class="p">.</span><span class="n">bf</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>For a complicated Brainfuck program like <a href="https://www.google.com/search?q=mandelbrot.bf">mandelbrot.bf</a>, running in an interpreter will be slow.</p>
+
+<h2><a id="transpilation"></a>Transpilation</h2>
+
+<p>One way to generate and run native code for a Brainfuck program is transpilaiton. The first step is generating the equivalent C/C++ code for the Brainfuck program and then using a conventional compiler to generate a shared object. The second step is using <code>dlopen()</code> to load the shared object and run it.</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;dlfcn.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;cstdio&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;cstdlib&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;string&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;vector&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;fstream&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;streambuf&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">BrainfuckTranspiler</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="n">BrainfuckTranspiler</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">program</span><span class="p">)</span>
+</span><span class='line'>      <span class="o">:</span> <span class="n">program</span><span class="p">(</span><span class="n">program</span><span class="p">)</span> <span class="p">{}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">run</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">private</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">program</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">BrainfuckTranspiler</span><span class="o">::</span><span class="n">run</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">ccname</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">tmpnam</span><span class="p">(</span><span class="k">nullptr</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">ccname</span> <span class="o">+=</span> <span class="s">&quot;.cc&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">ofstream</span> <span class="n">ofs</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">ofs</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">ccname</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">ofs</span> <span class="o">&lt;&lt;</span> <span class="n">R</span><span class="s">&quot;(</span>
+</span><span class='line'><span class="cp">#include &lt;cstdio&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;vector&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="kt">void</span> <span class="n">_run</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="n">data</span><span class="p">[</span><span class="mi">30000</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+</span><span class='line'>  <span class="kt">char</span><span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">)</span><span class="s">&quot;;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">program</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">switch</span><span class="p">(</span><span class="n">program</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;&gt;&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="n">ofs</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;++ptr;&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;&lt;&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="n">ofs</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;--ptr;&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;+&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="n">ofs</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;++*ptr;&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;-&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="n">ofs</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;--*ptr;&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;.&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="n">ofs</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;putchar(static_cast&lt;int&gt;(*ptr));&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;,&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="n">ofs</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;*ptr = static_cast&lt;char&gt;(getchar());&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;[&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="n">ofs</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;while (*ptr) {&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;]&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="n">ofs</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;}&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="n">ofs</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;}&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">ofs</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">soname</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">tmpnam</span><span class="p">(</span><span class="k">nullptr</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">soname</span> <span class="o">+=</span> <span class="s">&quot;.so&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">compile</span> <span class="o">=</span> <span class="s">&quot;g++ &quot;</span> <span class="o">+</span> <span class="n">ccname</span> <span class="o">+</span> <span class="s">&quot; -o &quot;</span> <span class="o">+</span> <span class="n">soname</span> <span class="o">+</span> <span class="s">&quot; -shared -fPIC&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">system</span><span class="p">(</span><span class="n">compile</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kt">void</span><span class="o">*</span> <span class="n">handle</span> <span class="o">=</span> <span class="n">dlopen</span><span class="p">(</span><span class="n">soname</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">RTLD_NOW</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">handle</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="n">dlerror</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="n">dlerror</span><span class="p">();</span>
+</span><span class='line'>  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">_run</span><span class="p">)();</span>
+</span><span class='line'>  <span class="n">_run</span> <span class="o">=</span> <span class="p">(</span><span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="p">)())</span> <span class="n">dlsym</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="s">&quot;_run&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="kt">char</span><span class="o">*</span> <span class="n">error</span> <span class="o">=</span> <span class="n">dlerror</span><span class="p">();</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="n">error</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="p">(</span><span class="o">*</span><span class="n">_run</span><span class="p">)();</span>
+</span><span class='line'>  <span class="n">dlclose</span><span class="p">(</span><span class="n">handle</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">remove</span><span class="p">(</span><span class="n">ccname</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
+</span><span class='line'>  <span class="n">remove</span><span class="p">(</span><span class="n">soname</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">ifstream</span> <span class="n">ifs</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">program</span><span class="p">((</span><span class="n">std</span><span class="o">::</span><span class="n">istreambuf_iterator</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="p">(</span><span class="n">ifs</span><span class="p">)),</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">istreambuf_iterator</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="p">()));</span>
+</span><span class='line'>  <span class="n">BrainfuckTranspiler</span> <span class="nf">transpiler</span><span class="p">(</span><span class="n">program</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">transpiler</span><span class="p">.</span><span class="n">run</span><span class="p">();</span>
+</span><span class='line'>  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">g</span><span class="o">++</span> <span class="o">-</span><span class="n">std</span><span class="o">=</span><span class="n">c</span><span class="o">++</span><span class="mi">11</span> <span class="o">-</span><span class="n">ldl</span> <span class="o">-</span><span class="n">o</span> <span class="n">brainfuck</span> <span class="n">brainfuck</span><span class="p">.</span><span class="n">cc</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">.</span><span class="o">/</span><span class="n">brainfuck</span> <span class="n">program</span><span class="p">.</span><span class="n">bf</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2><a id="llvm"></a>LLVM</h2>
+
+<p>Besides using an external compiler process to generate the native code, we can also use LLVM mcjit by first generating the equivalent LLVM IR for the Brainfuck program. We can generate the IR manually or using clang frontend. Here I&rsquo;m using clang to generate the IR but LLVM has an <a href="https://github.com/llvm/llvm-project/tree/main/llvm/examples/BrainF">example</a> of manually generating it. The LLVM version I&rsquo;m using is 7.0.1.</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;cstdlib&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;string&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;vector&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;sstream&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;fstream&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;streambuf&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;clang/Driver/Compilation.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;clang/Driver/Driver.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;clang/CodeGen/CodeGenAction.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;clang/Frontend/FrontendOptions.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;clang/Frontend/CompilerInstance.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;clang/Frontend/CompilerInvocation.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;clang/Frontend/TextDiagnosticPrinter.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;llvm/IR/Module.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;llvm/ADT/StringRef.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;llvm/IR/LLVMContext.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;llvm/Support/Host.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;llvm/Support/TargetSelect.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;llvm/ExecutionEngine/ExecutionEngine.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;llvm/ExecutionEngine/GenericValue.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">BrainfuckLLVM</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="n">BrainfuckLLVM</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">program</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">clangexe</span><span class="p">)</span>
+</span><span class='line'>      <span class="o">:</span> <span class="n">program</span><span class="p">(</span><span class="n">program</span><span class="p">),</span> <span class="n">clangexe</span><span class="p">(</span><span class="n">clangexe</span><span class="p">)</span> <span class="p">{}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">run</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">private</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">program</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">clangexe</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">BrainfuckLLVM</span><span class="o">::</span><span class="n">run</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">ccname</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">tmpnam</span><span class="p">(</span><span class="k">nullptr</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">ccname</span> <span class="o">+=</span> <span class="s">&quot;.cc&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">ofstream</span> <span class="n">ofs</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">ofs</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">ccname</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">ofs</span> <span class="o">&lt;&lt;</span> <span class="n">R</span><span class="s">&quot;(</span>
+</span><span class='line'><span class="cp">#include &lt;cstdio&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;vector&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="kt">void</span> <span class="n">_run</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="n">data</span><span class="p">[</span><span class="mi">30000</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+</span><span class='line'>  <span class="kt">char</span><span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">)</span><span class="s">&quot;;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">program</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">switch</span><span class="p">(</span><span class="n">program</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;&gt;&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="n">ofs</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;++ptr;&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;&lt;&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="n">ofs</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;--ptr;&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;+&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="n">ofs</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;++*ptr;&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;-&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="n">ofs</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;--*ptr;&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;.&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="n">ofs</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;putchar(static_cast&lt;int&gt;(*ptr));&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;,&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="n">ofs</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;*ptr = static_cast&lt;char&gt;(getchar());&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;[&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="n">ofs</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;while (*ptr) {&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="sc">&#39;]&#39;</span><span class="o">:</span>
+</span><span class='line'>        <span class="n">ofs</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;}&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="n">ofs</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;}&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">ofs</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// Generate LLVM IR using clang frontend</span>
+</span><span class='line'>  <span class="n">clang</span><span class="o">::</span><span class="n">IntrusiveRefCntPtr</span><span class="o">&lt;</span><span class="n">clang</span><span class="o">::</span><span class="n">DiagnosticOptions</span><span class="o">&gt;</span> <span class="n">dopts</span> <span class="o">=</span> <span class="k">new</span> <span class="n">clang</span><span class="o">::</span><span class="n">DiagnosticOptions</span><span class="p">();</span>
+</span><span class='line'>  <span class="n">clang</span><span class="o">::</span><span class="n">TextDiagnosticPrinter</span><span class="o">*</span> <span class="n">tdp</span> <span class="o">=</span> <span class="k">new</span> <span class="n">clang</span><span class="o">::</span><span class="n">TextDiagnosticPrinter</span><span class="p">(</span><span class="n">llvm</span><span class="o">::</span><span class="n">errs</span><span class="p">(),</span> <span class="o">&amp;*</span><span class="n">dopts</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">clang</span><span class="o">::</span><span class="n">IntrusiveRefCntPtr</span><span class="o">&lt;</span><span class="n">clang</span><span class="o">::</span><span class="n">DiagnosticIDs</span><span class="o">&gt;</span> <span class="n">dids</span><span class="p">(</span><span class="k">new</span> <span class="n">clang</span><span class="o">::</span><span class="n">DiagnosticIDs</span><span class="p">());</span>
+</span><span class='line'>  <span class="n">clang</span><span class="o">::</span><span class="n">DiagnosticsEngine</span> <span class="n">dengine</span><span class="p">(</span><span class="n">dids</span><span class="p">,</span> <span class="o">&amp;*</span><span class="n">dopts</span><span class="p">,</span> <span class="n">tdp</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">llvm</span><span class="o">::</span><span class="n">Triple</span> <span class="n">triple</span><span class="p">(</span><span class="n">llvm</span><span class="o">::</span><span class="n">sys</span><span class="o">::</span><span class="n">getProcessTriple</span><span class="p">());</span>
+</span><span class='line'>  <span class="n">clang</span><span class="o">::</span><span class="n">driver</span><span class="o">::</span><span class="n">Driver</span> <span class="n">driver</span><span class="p">(</span><span class="n">clangexe</span><span class="p">,</span> <span class="n">triple</span><span class="p">.</span><span class="n">str</span><span class="p">(),</span> <span class="n">dengine</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">driver</span><span class="p">.</span><span class="n">setTitle</span><span class="p">(</span><span class="s">&quot;clang&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">driver</span><span class="p">.</span><span class="n">setCheckInputsExist</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">llvm</span><span class="o">::</span><span class="n">SmallVector</span><span class="o">&lt;</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">,</span> <span class="mi">16</span><span class="o">&gt;</span> <span class="n">args</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">args</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="s">&quot;clang&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">args</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">ccname</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
+</span><span class='line'>  <span class="n">args</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="s">&quot;-fsyntax-only&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">clang</span><span class="o">::</span><span class="n">driver</span><span class="o">::</span><span class="n">Compilation</span><span class="o">&gt;</span> <span class="n">compilation</span><span class="p">(</span><span class="n">driver</span><span class="p">.</span><span class="n">BuildCompilation</span><span class="p">(</span><span class="n">args</span><span class="p">));</span>
+</span><span class='line'>  <span class="k">const</span> <span class="n">clang</span><span class="o">::</span><span class="n">driver</span><span class="o">::</span><span class="n">JobList</span><span class="o">&amp;</span> <span class="n">jobs</span> <span class="o">=</span> <span class="n">compilation</span><span class="o">-&gt;</span><span class="n">getJobs</span><span class="p">();</span>
+</span><span class='line'>  <span class="k">const</span> <span class="n">clang</span><span class="o">::</span><span class="n">driver</span><span class="o">::</span><span class="n">Command</span><span class="o">&amp;</span> <span class="n">command</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">clang</span><span class="o">::</span><span class="n">driver</span><span class="o">::</span><span class="n">Command</span><span class="o">&gt;</span><span class="p">(</span><span class="o">*</span><span class="n">jobs</span><span class="p">.</span><span class="n">begin</span><span class="p">());</span>
+</span><span class='line'>  <span class="k">const</span> <span class="n">clang</span><span class="o">::</span><span class="n">driver</span><span class="o">::</span><span class="n">ArgStringList</span><span class="o">&amp;</span> <span class="n">ccargs</span> <span class="o">=</span> <span class="n">command</span><span class="p">.</span><span class="n">getArguments</span><span class="p">();</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">clang</span><span class="o">::</span><span class="n">CompilerInvocation</span><span class="o">&gt;</span> <span class="n">cinvocation</span><span class="p">(</span><span class="k">new</span> <span class="n">clang</span><span class="o">::</span><span class="n">CompilerInvocation</span><span class="p">());</span>
+</span><span class='line'>  <span class="n">clang</span><span class="o">::</span><span class="n">CompilerInvocation</span><span class="o">::</span><span class="n">CreateFromArgs</span><span class="p">(</span><span class="o">*</span><span class="n">cinvocation</span><span class="p">,</span> <span class="k">const_cast</span><span class="o">&lt;</span><span class="k">const</span> <span class="kt">char</span><span class="o">**&gt;</span><span class="p">(</span><span class="n">ccargs</span><span class="p">.</span><span class="n">data</span><span class="p">()),</span>
+</span><span class='line'>      <span class="k">const_cast</span><span class="o">&lt;</span><span class="k">const</span> <span class="kt">char</span><span class="o">**&gt;</span><span class="p">(</span><span class="n">ccargs</span><span class="p">.</span><span class="n">data</span><span class="p">())</span> <span class="o">+</span> <span class="n">ccargs</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="n">dengine</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">clang</span><span class="o">::</span><span class="n">CompilerInstance</span> <span class="n">cinstance</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">cinstance</span><span class="p">.</span><span class="n">setInvocation</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">cinvocation</span><span class="p">));</span>
+</span><span class='line'>  <span class="n">cinstance</span><span class="p">.</span><span class="n">createDiagnostics</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">llvm</span><span class="o">::</span><span class="n">LLVMContext</span> <span class="n">context</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">clang</span><span class="o">::</span><span class="n">EmitLLVMOnlyAction</span> <span class="n">action</span><span class="p">(</span><span class="o">&amp;</span><span class="n">context</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">cinstance</span><span class="p">.</span><span class="n">ExecuteAction</span><span class="p">(</span><span class="n">action</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">llvm</span><span class="o">::</span><span class="n">Module</span><span class="o">&gt;</span> <span class="n">module</span> <span class="o">=</span> <span class="n">action</span><span class="p">.</span><span class="n">takeModule</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// Use mcjit to generate the native code from IR and run it</span>
+</span><span class='line'>  <span class="n">llvm</span><span class="o">::</span><span class="n">InitializeNativeTarget</span><span class="p">();</span>
+</span><span class='line'>  <span class="n">llvm</span><span class="o">::</span><span class="n">InitializeNativeTargetAsmPrinter</span><span class="p">();</span>
+</span><span class='line'>  <span class="n">llvm</span><span class="o">::</span><span class="n">Function</span><span class="o">*</span> <span class="n">_run</span> <span class="o">=</span> <span class="n">module</span><span class="o">-&gt;</span><span class="n">getFunction</span><span class="p">(</span><span class="s">&quot;_run&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">llvm</span><span class="o">::</span><span class="n">ExecutionEngine</span><span class="o">*</span> <span class="n">ee</span> <span class="o">=</span> <span class="n">llvm</span><span class="o">::</span><span class="n">EngineBuilder</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">module</span><span class="p">)).</span><span class="n">create</span><span class="p">();</span>
+</span><span class='line'>  <span class="n">llvm</span><span class="o">::</span><span class="n">GenericValue</span> <span class="n">gv</span> <span class="o">=</span> <span class="n">ee</span><span class="o">-&gt;</span><span class="n">runFunction</span><span class="p">(</span><span class="n">_run</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">llvm</span><span class="o">::</span><span class="n">GenericValue</span><span class="o">&gt;</span><span class="p">());</span>
+</span><span class='line'>  <span class="n">fflush</span><span class="p">(</span><span class="n">stdout</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">remove</span><span class="p">(</span><span class="n">ccname</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">ifstream</span> <span class="n">ifs</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">program</span><span class="p">((</span><span class="n">std</span><span class="o">::</span><span class="n">istreambuf_iterator</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="p">(</span><span class="n">ifs</span><span class="p">)),</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">istreambuf_iterator</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="p">()));</span>
+</span><span class='line'>  <span class="n">BrainfuckLLVM</span> <span class="nf">llvm</span><span class="p">(</span><span class="n">program</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+</span><span class='line'>  <span class="n">llvm</span><span class="p">.</span><span class="n">run</span><span class="p">();</span>
+</span><span class='line'>  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">g</span><span class="o">++</span> <span class="o">-</span><span class="n">std</span><span class="o">=</span><span class="n">c</span><span class="o">++</span><span class="mi">11</span> <span class="err">`</span><span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">llvm</span><span class="o">-</span><span class="n">config</span> <span class="o">--</span><span class="n">cxxflags</span> <span class="o">--</span><span class="n">ldflags</span><span class="err">`</span> <span class="o">-</span><span class="n">lclangASTMatchers</span> <span class="o">-</span><span class="n">lclangFrontendTool</span> <span class="o">-</span><span class="n">lclangFrontend</span> <span class="o">-</span><span class="n">lclangDriver</span> <span class="o">-</span><span class="n">lclangSerialization</span> <span class="o">-</span><span class="n">lclangCodeGen</span> <span class="o">-</span><span class="n">lclangParse</span> <span class="o">-</span><span class="n">lclangSema</span> <span class="o">-</span><span class="n">lclangToolingInclusions</span> <span class="o">-</span><span class="n">lclangToolingCore</span>  <span class="o">-</span><span class="n">lclangFormat</span> <span class="o">-</span><span class="n">lclangIndex</span> <span class="o">-</span><span class="n">lclangCrossTU</span> <span class="o">-</span><span class="n">lclangStaticAnalyzerFrontend</span> <span class="o">-</span><span class="n">lclangStaticAnalyzerCheckers</span> <span class="o">-</span><span class="n">lclangStaticAnalyzerCore</span> <span class="o">-</span><span class="n">lclangAnalysis</span> <span class="o">-</span><span class="n">lclangARCMigrate</span> <span class="o">-</span><span class="n">lclangRewriteFrontend</span> <span class="o">-</span><span class="n">lclangRewrite</span> <span class="o">-</span><span class="n">lclangEdit</span> <span class="o">-</span><span class="n">lclangAST</span> <span class="o">-</span><span class="n">lclangLex</span> <span class="o">-</span><span class="n">lclangBasic</span> <span class="err">`</span><span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">llvm</span><span class="o">-</span><span class="n">config</span> <span class="o">--</span><span class="n">libs</span><span class="err">`</span> <span class="o">-</span><span class="n">o</span> <span class="n">brainfuck</span> <span class="n">brainfuck</span><span class="p">.</span><span class="n">cc</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">.</span><span class="o">/</span><span class="n">brainfuck</span> <span class="n">program</span><span class="p">.</span><span class="n">bf</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">clang</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2><a id="dynasm"></a>DynASM</h2>
+
+<p>Another way of generating the native code is using <a href="https://luajit.org/dynasm.html">DynASM</a> from LuaJIT and there is an <a href="https://corsix.github.io/dynasm-doc/tutorial.html">example</a> online.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">jjyao</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2021-01-16T22:23:27-08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2021</span></span> <span class='time'>10:23 pm</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2020/12/20/good-economics-for-hard-times/" title="Previous Post: Good Economics for Hard Times">&laquo; Good Economics for Hard Times</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+  <p style="margin-bottom:3px">Welcome to here! I'm jjyao and am working on the distributed graph database team at LinkedIn. My current interests are database systems and distributed systems.</p>
+  <p>
+  <a href="https://www.linkedin.com/in/jjyao/">LinkedIn</a>
+  <a href="https://github.com/jjyao/" style="margin-left:20px">GitHub</a>
+  </p>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2021 - jjyao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'jjyao';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.jjyao.me/blog/2021/01/16/jit-in-action/';
+        var disqus_url = 'http://blog.jjyao.me/blog/2021/01/16/jit-in-action/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
