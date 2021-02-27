@@ -4,7 +4,7 @@
   <title><![CDATA[Jiajun Yao]]></title>
   <link href="http://blog.jjyao.me/atom.xml" rel="self"/>
   <link href="http://blog.jjyao.me/"/>
-  <updated>2021-02-03T21:35:49-08:00</updated>
+  <updated>2021-02-27T15:31:17-08:00</updated>
   <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -12,6 +12,111 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Nondeterministic Code]]></title>
+    <link href="http://blog.jjyao.me/blog/2021/02/26/nondeterministic-code/"/>
+    <updated>2021-02-26T16:11:07-08:00</updated>
+    <id>http://blog.jjyao.me/blog/2021/02/26/nondeterministic-code</id>
+    <content type="html"><![CDATA[<p>Nondeterministic code is hard to debug since bugs are not consistently reproducible. It&rsquo;s easy to notice that the code is perhaps nondeterministic if multi-threading or random functions are involved. However we can still write nondeterministic single-threaded code without using random functions.</p>
+
+<!-- more -->
+
+
+<h2>Random Address</h2>
+
+<p><a href="https://en.wikipedia.org/wiki/Address_space_layout_randomization">Address space layout randomization</a> randomly arranges the address space positions of stack and heap of a process, which means the address of a variable changes for each run. This is the source of nondeterminism if we try to iterate through an unordered container of pointers.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;unordered_set&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">a</span> <span class="o">=</span> <span class="s">&quot;aaaaa&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">b</span> <span class="o">=</span> <span class="s">&quot;bb&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">c</span> <span class="o">=</span> <span class="s">&quot;cccccccccccc&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">unordered_set</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">*&gt;</span> <span class="n">set</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">set</span><span class="p">.</span><span class="n">emplace</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">set</span><span class="p">.</span><span class="n">emplace</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">set</span><span class="p">.</span><span class="n">emplace</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">*</span> <span class="nl">p</span> <span class="p">:</span> <span class="n">set</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="o">*</span><span class="n">p</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;(&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">p</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;, &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">hash</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">*&gt;</span><span class="p">{}(</span><span class="n">p</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;)&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="o">&gt;</span> <span class="n">clang</span><span class="o">++</span> <span class="n">demo</span><span class="p">.</span><span class="n">cc</span> <span class="o">-</span><span class="n">o</span> <span class="n">demo</span> <span class="o">-</span><span class="n">std</span><span class="o">=</span><span class="n">c</span><span class="o">++</span><span class="mi">11</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="p">.</span><span class="o">/</span><span class="n">demo</span>
+</span><span class='line'><span class="n">cccccccccccc</span><span class="p">(</span><span class="mh">0x7ffeeedbf650</span><span class="p">,</span> <span class="mi">16564608384425460261</span><span class="p">)</span>
+</span><span class='line'><span class="n">bb</span><span class="p">(</span><span class="mh">0x7ffeeedbf678</span><span class="p">,</span> <span class="mi">5964435063914947271</span><span class="p">)</span>
+</span><span class='line'><span class="n">aaaaa</span><span class="p">(</span><span class="mh">0x7ffeeedbf690</span><span class="p">,</span> <span class="mi">696214236533423747</span><span class="p">)</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="p">.</span><span class="o">/</span><span class="n">demo</span>
+</span><span class='line'><span class="n">bb</span><span class="p">(</span><span class="mh">0x7ffee3cd6678</span><span class="p">,</span> <span class="mi">2875564916106665130</span><span class="p">)</span>
+</span><span class='line'><span class="n">cccccccccccc</span><span class="p">(</span><span class="mh">0x7ffee3cd6650</span><span class="p">,</span> <span class="mi">14656991250807877473</span><span class="p">)</span>
+</span><span class='line'><span class="n">aaaaa</span><span class="p">(</span><span class="mh">0x7ffee3cd6690</span><span class="p">,</span> <span class="mi">10500981134548248633</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As we can see, the address of variable a, b and c keeps changing for each run, which affects their positions in the hash set and, as a result, we will iterate them in different orders.</p>
+
+<p>Lets try to <a href="https://stackoverflow.com/questions/23897963/documented-way-to-disable-aslr-on-os-x">disable</a> ASLR and verify that the nondeterminism is gone:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="o">&gt;</span> <span class="n">clang</span><span class="o">++</span> <span class="n">demo</span><span class="p">.</span><span class="n">cc</span> <span class="o">-</span><span class="n">o</span> <span class="n">demo</span> <span class="o">-</span><span class="n">std</span><span class="o">=</span><span class="n">c</span><span class="o">++</span><span class="mi">11</span> <span class="o">-</span><span class="n">Wl</span><span class="p">,</span><span class="o">-</span><span class="n">no_pie</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="p">.</span><span class="o">/</span><span class="n">demo</span>
+</span><span class='line'><span class="n">bb</span><span class="p">(</span><span class="mh">0x7ffeefbff678</span><span class="p">,</span> <span class="mi">6189850235780456993</span><span class="p">)</span>
+</span><span class='line'><span class="n">cccccccccccc</span><span class="p">(</span><span class="mh">0x7ffeefbff650</span><span class="p">,</span> <span class="mi">14250952053958696967</span><span class="p">)</span>
+</span><span class='line'><span class="n">aaaaa</span><span class="p">(</span><span class="mh">0x7ffeefbff690</span><span class="p">,</span> <span class="mi">4593858558987980877</span><span class="p">)</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="p">.</span><span class="o">/</span><span class="n">demo</span>
+</span><span class='line'><span class="n">bb</span><span class="p">(</span><span class="mh">0x7ffeefbff678</span><span class="p">,</span> <span class="mi">6189850235780456993</span><span class="p">)</span>
+</span><span class='line'><span class="n">cccccccccccc</span><span class="p">(</span><span class="mh">0x7ffeefbff650</span><span class="p">,</span> <span class="mi">14250952053958696967</span><span class="p">)</span>
+</span><span class='line'><span class="n">aaaaa</span><span class="p">(</span><span class="mh">0x7ffeefbff690</span><span class="p">,</span> <span class="mi">4593858558987980877</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Since the nondeterminism is generally undesired, clang has a <a href="https://clang.llvm.org/docs/analyzer/checkers.html#alpha-nondeterminism-pointeriteration-c">checker</a> to detect such usages.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[JIT in Action]]></title>
@@ -2387,45 +2492,6 @@ The source code of ActivityThread, ActivityManagerService, ActivityStackSupervis
 <h3>服务器端解决</h3>
 
 <p>服务器端解决最简单的方法就是不返回uid信息，或者是采取措施限制CSRF。对于后一种做法就引申出一个大的Topic了，有兴趣的可以看看<a href="http://book.douban.com/subject/10546925/">《白帽子讲Web安全》</a>中有关于如何防止CSRF的章节。另外，这确实是本好书:)</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Refactor With Vim]]></title>
-    <link href="http://blog.jjyao.me/blog/2012/12/09/refactor-with-vim/"/>
-    <updated>2012-12-09T23:28:00-08:00</updated>
-    <id>http://blog.jjyao.me/blog/2012/12/09/refactor-with-vim</id>
-    <content type="html"><![CDATA[<p>使用IDE的一个大好处就是可以方便的进行重构，想想Eclipse那彪悍的重构功能吧。可是对于我们这种喜欢用Vim的人来说，要如何来进行代码重构呢？接下来我就介绍一些Tips，来让Vim也能干重构的事。</p>
-
-<!-- more -->
-
-
-<h2>变量名、函数名、类名变更</h2>
-
-<p>如果这个变更只在一个文件中进行那就很方便了，可以使用Vim的替换命令：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>:%s/old/new/g</span></code></pre></td></tr></table></div></figure>
-
-
-<p>可万一现在有很多文件呢，我们需要将每个出现的地方都进行变更，这时我们可以这样做：
-首先先写一个shell的函数，然后放到bashrc或者zshrc中去</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>function vr() {
-</span><span class='line'>    vim -c "bufdo %s/$1/$2/gc | update" $(ack-grep -i -l "$1") # 这里也可以使用grep命令，只是我觉得ack-grep要更好用一些
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样当想要替换的时候，只要在shell中执行以下命令就可以了：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>vr old new</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样当前目录及子目录下所有文件中的<em>old</em>都会替换成<em>new</em>，同时每次替换都会要求确认，这样就防止了可能出现的错误</p>
 ]]></content>
   </entry>
   
