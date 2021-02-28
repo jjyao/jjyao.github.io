@@ -4,7 +4,7 @@
   <title><![CDATA[Jiajun Yao]]></title>
   <link href="http://blog.jjyao.me/atom.xml" rel="self"/>
   <link href="http://blog.jjyao.me/"/>
-  <updated>2021-02-27T15:31:17-08:00</updated>
+  <updated>2021-02-27T22:13:07-08:00</updated>
   <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -881,6 +881,7 @@
 <li><a href="#murphy_law">Murphy&rsquo;s law</a></li>
 <li><a href="#amdahl_law">Amdahl&rsquo;s law</a></li>
 <li><a href="#brooks_law">Brooks&rsquo;s law</a></li>
+<li><a href="#hofstadter_law">Hofstadter&rsquo;s law</a></li>
 </ol>
 
 
@@ -898,6 +899,10 @@
 <h2><a id="brooks_law"></a>Brooks&rsquo;s law</h2>
 
 <p>Adding manpower to a late software project makes it later.</p>
+
+<h2><a id="hofstadter_law"></a>Hofstadter&rsquo;s law</h2>
+
+<p>It always takes longer than you expect, even when you take into account Hofstadter&rsquo;s Law.</p>
 ]]></content>
   </entry>
   
