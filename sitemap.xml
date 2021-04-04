@@ -3,6 +3,12 @@
   
   
   <url>
+    <loc>http://blog.jjyao.me/blog/2021/04/04/response-time-and-throughput/</loc>
+    <lastmod>2021-04-04T13:43:32-07:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>http://blog.jjyao.me/blog/2021/02/26/nondeterministic-code/</loc>
     <lastmod>2021-02-26T16:11:07-08:00</lastmod>
     <priority>0.8</priority>
@@ -167,35 +173,35 @@
   
   <url>
     <loc>http://blog.jjyao.me/blog/archives/</loc>
-    <lastmod>2021-02-27T22:13:07-08:00</lastmod>
+    <lastmod>2021-04-04T16:58:16-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/</loc>
-    <lastmod>2021-02-27T22:13:07-08:00</lastmod>
+    <lastmod>2021-04-04T16:58:16-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/about/</loc>
-    <lastmod>2021-02-27T22:13:07-08:00</lastmod>
+    <lastmod>2021-04-04T16:58:16-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/quotes/it-quotes.html</loc>
-    <lastmod>2021-02-27T22:13:07-08:00</lastmod>
+    <lastmod>2021-04-04T16:58:16-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/quotes/quotes.html</loc>
-    <lastmod>2021-02-27T22:13:07-08:00</lastmod>
+    <lastmod>2021-04-04T16:58:16-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
