@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Response Time and Throughput - Jiajun Yao</title>
+  <title>A Good Manager/Leader From a Developer's Perspective - Jiajun Yao</title>
   <meta name="author" content="jjyao">
 
   
-  <meta name="description" content="For the discussion of this post, response time is the time between a service receiving a request and returning a response. It is the sum of waiting &hellip;">
+  <meta name="description" content="Human beings generally take pleasure in a task when it falls in a sort of optimal-challenge zone; not so easy as to be boring, not too hard to &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.jjyao.me/blog/2021/04/04/response-time-and-throughput">
+  <link rel="canonical" href="http://blog.jjyao.me/blog/2021/07/10/a-good-manager-slash-leader-from-a-developers-perspective">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Jiajun Yao" type="application/atom+xml">
@@ -82,7 +82,7 @@
   
   <header>
     
-      <h1 class="entry-title">Response Time and Throughput</h1>
+      <h1 class="entry-title">A Good Manager/Leader From a Developer's Perspective</h1>
     
     
       <p class="meta">
@@ -91,41 +91,24 @@
 
 
 
-<time class='entry-date' datetime='2021-04-04T13:43:32-07:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2021</span></span> <span class='time'>1:43 pm</span></time>
+<time class='entry-date' datetime='2021-07-10T12:12:38-07:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2021</span></span> <span class='time'>12:12 pm</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>For the discussion of this post, response time is the time between a service receiving a request and returning a response. It is the sum of waiting time and processing time. Waiting time is how long the request waits in queues before being processed. Processing time is the time to actually do the work of the request. Throughput is the number of requests that are completed per unit time. This post discusses how they can be possibly related.</p>
+<div class="entry-content"><ol>
+<li><p>Human beings generally take pleasure in a task when it falls in a sort of optimal-challenge zone; not so easy as to be boring, not too hard to achieve. A happy programmer is one who is neither underutilized nor weighed down with ill-formulated goals and stressful process friction. Enjoyment predicts efficiency. [The Cathedral &amp; the Bazaar]</p></li>
+<li><p>Multiplier</p></li>
+<li><p>Quarterly challenge from manager</p></li>
+<li><p>Questions only</p></li>
+<li><p>Explain rationales behind decisions</p></li>
+<li><p>Action on any feedback. If the feedback is not token, need to tell why</p></li>
+<li><p>Convey the explicit expectation</p></li>
+<li><p>Show vernerability</p></li>
+</ol>
 
-<!-- more -->
-
-
-<h2>Lower Processing Time &amp; Higher Throughput</h2>
-
-<p>If we reduce the processing time, the throughput might be higher. For example, the throughput is 10 requests per second if the processing time is 100ms CPU time assuming it&rsquo;s a single CPU system. If the processing time is reduced to 10ms CPU time, the throughput is increased to 100 requests per second.</p>
-
-<h2>Higher Processing Time &amp; Lower Throughput</h2>
-
-<p>This is the opposite of lower processing time &amp; higher throughput. This is undesirable since we lose both processing time and throughput.</p>
-
-<h2>Lower Processing Time &amp; Lower Throughput</h2>
-
-<p>By optimizing the part of the system that&rsquo;s not the throughput bottleneck, the throughput keeps the same or is even lower. For example, the request processing time is 100ms CPU time and 10ms IO time. Since the request is CPU bound, reducing the IO time will bring down the overall processing time but throughput will still be the same: 10 requests per second. If reducing the IO time comes with the cost of increasing the CPU time (say CPU time becomes 101ms and IO time becomes 5ms), the throughput is actually lower even though the processing time is also lower.</p>
-
-<h2>Higher Processing Time &amp; Higher Throughput</h2>
-
-<p>If we can reduce the time spent on the bottleneck part of the system at the cost of increasing overall processing time, we can get higher throughput. Lets still use the request with 100ms CPU time and 10ms IO time as an example. If we can reduce the CPU time to 90ms at the cost of increasing the IO time to 30ms, the throughput is higher now even though the overall processing time is also higher.</p>
-
-<h2>Higher Waiting Time &amp; Higher Throughput</h2>
-
-<p>The maximum throughput we can get is 10 requests per second if the processing time is 100ms CPU time. To achieve that maximum throughput, we need to make sure the CPU is busy all the time (i.e. 100% utilization). In other words, there is always a request in the queue waitting to be processed as soon as the CPU finishes the current request. Basically we want requests to wait for CPU instead of CPU waiting for requests. By having requests wait for CPU, we incur some waiting time to achieve the higher (maximum) throughput.</p>
-
-<h2>Lower Waiting Time &amp; Lower Throughput</h2>
-
-<p>This is the opposite of higher waiting time &amp; higher throughput. To make sure the waiting time is zero, we need to make sure the CPU is idle and there is no other requests in the queue by the time when the request is received. By having CPU idle for some time, the throughput will be lower than the maximum throughput.</p>
 </div>
 
 
@@ -141,7 +124,7 @@
 
 
 
-<time class='entry-date' datetime='2021-04-04T13:43:32-07:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2021</span></span> <span class='time'>1:43 pm</span></time>
+<time class='entry-date' datetime='2021-07-10T12:12:38-07:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2021</span></span> <span class='time'>12:12 pm</span></time>
       
 
 
@@ -156,10 +139,10 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2021/02/26/nondeterministic-code/" title="Previous Post: Nondeterministic Code">&laquo; Nondeterministic Code</a>
+        <a class="basic-alignment left" href="/blog/2021/04/04/response-time-and-throughput/" title="Previous Post: Response Time and Throughput">&laquo; Response Time and Throughput</a>
       
       
-        <a class="basic-alignment right" href="/blog/2021/07/10/a-good-manager-slash-leader-from-a-developers-perspective/" title="Next Post: A Good Manager/Leader From a Developer's Perspective">A Good Manager/Leader From a Developer's Perspective &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2021/08/18/keep-your-eyes-open/" title="Next Post: Keep Your Eyes Open">Keep Your Eyes Open &raquo;</a>
       
     </p>
   </footer>
@@ -202,8 +185,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.jjyao.me/blog/2021/04/04/response-time-and-throughput/';
-        var disqus_url = 'http://blog.jjyao.me/blog/2021/04/04/response-time-and-throughput/';
+        var disqus_identifier = 'http://blog.jjyao.me/blog/2021/07/10/a-good-manager-slash-leader-from-a-developers-perspective/';
+        var disqus_url = 'http://blog.jjyao.me/blog/2021/07/10/a-good-manager-slash-leader-from-a-developers-perspective/';
         var disqus_script = 'embed.js';
       
     (function () {

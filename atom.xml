@@ -4,7 +4,7 @@
   <title><![CDATA[Jiajun Yao]]></title>
   <link href="http://blog.jjyao.me/atom.xml" rel="self"/>
   <link href="http://blog.jjyao.me/"/>
-  <updated>2021-04-08T19:33:16-07:00</updated>
+  <updated>2021-08-19T08:02:32-07:00</updated>
   <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -12,6 +12,52 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Keep Your Eyes Open]]></title>
+    <link href="http://blog.jjyao.me/blog/2021/08/18/keep-your-eyes-open/"/>
+    <updated>2021-08-18T08:10:01-07:00</updated>
+    <id>http://blog.jjyao.me/blog/2021/08/18/keep-your-eyes-open</id>
+    <content type="html"><![CDATA[<p>As engineers, our job is to solve problems. In order to do that, we need to discover them first. To me, the best way to find problems is through doing things while keeping the eyes open.</p>
+
+<!-- more -->
+
+
+<p>Problems are everywhere, it&rsquo;s just whether we can find them or not. Whenever we are doing some task, it&rsquo;s not just about finishing the task itself, it&rsquo;s also about discovering new problems along the way. Here we have a cycle of <code>doing things -&gt; discovering problems -&gt; doing more things</code>. Through this cycle, we make whatever we are building better and better.</p>
+
+<p>If we treat everything we do as an opportunity of discovering new problems, then we will find tons of them. To make this more concrete, let me give some examples:</p>
+
+<ul>
+<li>Whenever we touch a piece of code, even just one line, it&rsquo;s an opportunity to look at the surrounding code and see if we can refactor to make it better.</li>
+<li>Whenever we do some repetitive work, it&rsquo;s an opportunity to automate it.</li>
+<li>Whenever we talk to clients, it&rsquo;s an opportunity to learn their pain points.</li>
+</ul>
+
+
+<p>Amar Bose also told an interesting <a href="https://www.youtube.com/watch?v=ySAXW-7WrDg">story</a> where the student with the eyes open saw a huge opportunity while doing a quite tedious work.</p>
+
+<p>Keep your eyes open, problems and opportunities are around you.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[A Good Manager/Leader From a Developer's Perspective]]></title>
+    <link href="http://blog.jjyao.me/blog/2021/07/10/a-good-manager-slash-leader-from-a-developers-perspective/"/>
+    <updated>2021-07-10T12:12:38-07:00</updated>
+    <id>http://blog.jjyao.me/blog/2021/07/10/a-good-manager-slash-leader-from-a-developers-perspective</id>
+    <content type="html"><![CDATA[<ol>
+<li><p>Human beings generally take pleasure in a task when it falls in a sort of optimal-challenge zone; not so easy as to be boring, not too hard to achieve. A happy programmer is one who is neither underutilized nor weighed down with ill-formulated goals and stressful process friction. Enjoyment predicts efficiency. [The Cathedral &amp; the Bazaar]</p></li>
+<li><p>Multiplier</p></li>
+<li><p>Quarterly challenge from manager</p></li>
+<li><p>Questions only</p></li>
+<li><p>Explain rationales behind decisions</p></li>
+<li><p>Action on any feedback. If the feedback is not token, need to tell why</p></li>
+<li><p>Convey the explicit expectation</p></li>
+<li><p>Show vernerability</p></li>
+</ol>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Response Time and Throughput]]></title>
@@ -2218,235 +2264,6 @@ The source code of ActivityThread, ActivityManagerService, ActivityStackSupervis
 <h2>防止中间人攻击</h2>
 
 <p>为了防止中间人攻击，客户端需要检查SSL握手时获得的证书确实来自其想要连接的服务器，使用的技术叫做Certificate and Public Key Pinning。最简单的做法就是在客户端存放服务器的证书，然后每次建立SSL连接的时候都将远程获得的证书和本地的相比较，只有两者完全一样才认为没有受到中间人攻击，否则就应该拒绝建立连接。这种做法虽然实现简单，但问题是证书的内容很容易改变（比如证书过期后就需要重新获得一个全新的证书），因此每当证书变化时旧版应用就无法连接服务器了，需要让用户升级应用，对用户来说这显然不够好。另一种较好的方法是只比较证书中subjectPublicKeyInfo部分而不是整个证书。相对于整个证书而言，这个部分变动概率很小并且其包含了要验证的最主要东西也就是服务器的公钥，因为只要公钥对了，那么加密的数据就只有拥有对应私钥的服务器才能解密了。对于pinning的更多资料请参见<a href="https://www.owasp.org/index.php/Certificate_and_Public_Key_Pinning">这里</a>。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Review on American Dreams in China]]></title>
-    <link href="http://blog.jjyao.me/blog/2013/06/16/review-on-american-dreams-in-china/"/>
-    <updated>2013-06-16T11:35:00-07:00</updated>
-    <id>http://blog.jjyao.me/blog/2013/06/16/review-on-american-dreams-in-china</id>
-    <content type="html"><![CDATA[<p>这两天看了陈可辛导演的《中国合伙人》和柴静对新东方三位联合创始人的采访，感受颇多。创业奋斗路上风风雨雨，有太多的东西值得我们去学习，去感悟。下面就聊聊我所感悟到的东西：</p>
-
-<ol>
-<li>合伙人的品质</li>
-<li>老大的品质</li>
-<li>和比自己优秀的人在一起</li>
-<li>老俞的安眠药</li>
-</ol>
-
-
-<!-- more -->
-
-
-<h2>合伙人的品质</h2>
-
-<p>创业之艰辛困难，非一人之力可以完成，必须依靠整个团队的努力，因此找到优秀的合伙人就非常重要。从电影和采访中可以看出俞敏洪找到了两位非常优秀的合伙人，共同奠定了新东方的基业。王强和徐小平所具有的合伙人品质值得所有想要创业的人去了解，对于像俞敏洪这样位置的人可以参考这些品质去选择自己的合伙人，而对于想要成为合伙人的人则可以从中寻找可以借鉴的品质，使自己成为一名优秀的合伙人。首先王强和徐小平自身的个人能力非常出众，这也就成功避免了猪队友的问题，同时他们的能力能和俞敏洪的互补，达到1+1>2的效果，这个对我们的启发就是在找合伙人的时候，一定要选优秀有能力的人才，这样才能促进公司的发展。当然在选择普通员工的时候也需要坚守同样的标准，一定要宁缺毋滥。另外王强和徐小平会尽一切努力去帮助俞敏洪管理好新东方。如果俞敏洪是刘备的话，那么王强和徐小平就是辅佐他的诸葛亮。徐小平在采访中说过他在新东方的使命就是要指导俞敏洪、批判俞敏洪，改造俞敏洪。尽管在这个过程中有争吵、有冲突、有对抗，但是最终的目的始终没有变过那就是帮助俞敏洪把新东方做的更好。正是三人齐心协力，才有了新东方的巨大成功。也就是说合伙人要有共同的目标，不能各怀心思，只有这样才能力往一处使，才能获得成功。</p>
-
-<h2>老大的品质</h2>
-
-<p>合伙人有合伙人应有的品质，而老大也需要有一些特殊的品质。俞敏洪这样一位新东方的老大，身上的品质也同样值得所有想要创业的人去了解。首先俞敏洪懂得寻找优秀的人才并能管理他们，他知道新东方要成功靠的不是他一个人而是一群人。新东方的明星教师很多，有罗永浩、陈虎平和杜昶旭等，这些人共同铸就了新东方的辉煌。和俞敏洪相反的就是李阳，他虽然能力很强，但不善于吸收优秀人才，有点个人英雄主义，他的疯狂英语没听说有什么著名教师（除了他自己）。这两者的差别在一定程度上造成了新东方和李阳疯狂英语在英语教育领域截然不同的地位。从这可以看出，作为老大需要有吸收和管理人才的能力，一个充满战斗力的团队（而不是个人）才是成功的关键。另外俞敏洪能忍，有承受能力。一方面他能忍受王强和徐小平对他的尖锐批评，这是需要一定胸怀的，一般人不一定能够承受的住。但就像采访中王强所说的那样“大家的怨气其实不是怨气是期望”，俞敏洪需要承受大家对他的期望，并努力提升自己以达到众人的期望。如果达不到大家的期望，俞敏洪又怎么能够领导他们呢？另一方面俞敏洪也要忍受创业中作为老大所面临的种种压力。采访中提到俞敏洪的家摆了一排安眠药的瓶子，他长期失眠，从这个侧面可以看出在创业过程中俞敏洪承受的巨大精神压力。另外徐小平也提到当时在新东方骂完老俞后自己就回家睡觉了，睡不着是老俞的事，而现在他自己做了老大，失眠的就是他了，由此可见老大的压力是巨大的。采访中还提到股东们轮流坐庄体会完老大的滋味后，没人愿意干了，俞敏洪又被请了回来，可见当老大可不是件轻松的事情。从俞敏洪忍受的这些压力来看，他拿45%的股份而王强和徐小平各拿10%也是很合理的，因为他们所承受的不一样。从这可以看出作为老大要能忍，要能忍受团队成员对他的批评，要能忍受创业过程中的种种压力。</p>
-
-<h2>和比自己优秀的人在一起</h2>
-
-<p>不管是在电影中还是采访中，俞敏洪都被人认为是“农民”、“土鳖”，而王强和徐小平则才华横溢，光彩耀人。在北大读书的时候，俞敏洪就跟着两人学习。他虚心接受王强班长的教诲，当知道王强最近看过什么书后就会立即补上，深怕落下。在王强和徐小平面前，俞敏洪就是个学生，总是抱着学习的心态去向两人请教。这不就是我们常说的“和比自己优秀的人在一起”吗。在学习生活中，我们需要和比自己优秀的人在一起，这样可以拓宽我们的视野，激励我们努力奋斗。和比自己优秀的人在一起可以让我们有机会聆听他们的教诲，这会让我们受益匪浅。和比自己优秀的人在一起可以让我们近距离观察他们，从而有机会发现他们身上的优良品质并获得它们。和比自己优秀的人在一起可以有效地防止成为井底之蛙，让我们清楚地认识到天外有天，人外有人。有了这种清醒的认识之后，我们就不会有自负的心理，就能静下心来努力学习，向这些比我们优秀的人看齐。但与此同时我们也需要调整心态防止自卑心理的产生，除了横向比较，我们更要纵向比较。和这些比自己优秀的人在一起后，虽然相对于他们自己仍是个“土鳖”，但是so what，只要自己本身有了成长和进步那就足够了。在生活中，还有一类人由于面子问题，不愿意承认别人比自己优秀，不愿放下面子虚心向别人学习，这时想想老俞就行了，他能虚心向王强和徐小平学习，能承认自己是“土鳖”，我们为什么不可以？</p>
-
-<h2>老俞的安眠药</h2>
-
-<p>人们往往只注意到那些成功人士（每个人对成功的定义不同，在这里姑且指那些创业成功的人吧）人前风光的一面，而没有看到他们背后付出的艰辛。就比如说人们往往只看到老俞在万千大学生面前做人生导师的风光，却没有看到他背后那一排安眠药。当然这个还能延伸到其他方面，比如人们往往只看到学霸那恐怖的成绩，却没有看到他们那日日夜夜蹲图书馆的日子。再比如人们往往只看到就业之星那令人羡慕的offer，却没有看到他们多年来为之做出的准备。很多人看到那些成功人士很是羡慕，都想要成为他们那样的人，但他们不知道要想成为这些成功人士，要付出多少的艰辛。所以当我们看那些成功人士时，除了要看他们表面的风光，还要特别留意他们背后的那排安眠药。当我们想要创业时，要想想我们已经准备好吃下老俞的安眠药了吗。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[A Close Look Into PHP Zval]]></title>
-    <link href="http://blog.jjyao.me/blog/2013/03/17/a-close-look-into-php-zval/"/>
-    <updated>2013-03-17T13:43:00-07:00</updated>
-    <id>http://blog.jjyao.me/blog/2013/03/17/a-close-look-into-php-zval</id>
-    <content type="html"><![CDATA[<p>最近研究了一下PHP variable的内部实现也就是zval，以及引申出来的Copy on Write, Reference等概念和机制。为了检验一下我是不是真的弄懂了，一个好的方法就是看能不能把它清楚地写下来并让人能够读懂。</p>
-
-<!-- more -->
-
-
-<h2>什么是zval</h2>
-
-<p>简单的来说zval就是PHP variable的value在低层C的表示。大家都知道PHP主要是用C语言来写的，于是所有东西应该都有一个C的对应，PHP variable的value对应就是zval struct。首先先来看一下zval struct的定义：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">struct</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">union</span> <span class="p">{</span>
-</span><span class='line'>        <span class="kt">long</span> <span class="n">lval</span><span class="p">;</span>
-</span><span class='line'>        <span class="kt">double</span> <span class="n">dval</span><span class="p">;</span>
-</span><span class='line'>        <span class="k">struct</span> <span class="p">{</span>
-</span><span class='line'>            <span class="kt">char</span> <span class="o">*</span><span class="n">val</span><span class="p">;</span>
-</span><span class='line'>            <span class="kt">int</span> <span class="n">len</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span> <span class="n">str</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">HashTable</span> <span class="o">*</span><span class="n">ht</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">zend_object_value</span> <span class="n">obj</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span> <span class="n">value</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">zend_uint</span> <span class="n">refcount</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">zend_uchar</span> <span class="n">type</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">zend_uchar</span> <span class="n">is_ref</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span> <span class="n">zval</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>接下来我们就从最简单的开始，逐一解释一下各个字段的含义。</p>
-
-<h3>type</h3>
-
-<p>首先是<code>type</code>字段，这个顾名思义就是表示PHP variable是什么类型的。由于PHP是动态类型语言，因此需要这个字段来标识，同时根据这个字段可以判断出<code>value</code>字段里的值到底是什么。</p>
-
-<h3>value</h3>
-
-<p><code>value</code>字段存放的是PHP variable的值，可以看出这是个union类型，也就是说这个字段可以有多种解释，关键看<code>type</code>的值是什么，这不就有点像多态么。接下里我们就看看<code>type</code>和<code>value</code>的对应关系是什么：</p>
-
-<table>
-<thead>
-<tr>
-<th style="text-align:center;">PHP variable type </th>
-<th style="text-align:center;"> zval value            </th>
-<th style="text-align:center;"> Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center;">Long              </td>
-<td style="text-align:center;"> long lval             </td>
-<td></td>
-</tr>
-<tr>
-<td style="text-align:center;">Double            </td>
-<td style="text-align:center;"> double dval           </td>
-<td></td>
-</tr>
-<tr>
-<td style="text-align:center;">String            </td>
-<td style="text-align:center;"> struct{…} str         </td>
-<td></td>
-</tr>
-<tr>
-<td style="text-align:center;">Resource          </td>
-<td style="text-align:center;"> long lval             </td>
-<td style="text-align:center;"> 存放的只是resource的identifier,而不是resource本身</td>
-</tr>
-<tr>
-<td style="text-align:center;">Boolean           </td>
-<td style="text-align:center;"> long lval             </td>
-<td style="text-align:center;"> 0表示FALSE，1表示TRUE</td>
-</tr>
-<tr>
-<td style="text-align:center;">Array             </td>
-<td style="text-align:center;"> HashTable *ht         </td>
-<td style="text-align:center;"> PHP的很多东西都是用HashTable来实现的</td>
-</tr>
-<tr>
-<td style="text-align:center;">Ojbect            </td>
-<td style="text-align:center;"> zend_object_value obj </td>
-<td></td>
-</tr>
-<tr>
-<td style="text-align:center;">NULL              </td>
-<td style="text-align:center;">                       </td>
-<td style="text-align:center;"> NULL本身也是一种类型，但它不需要使用<code>value</code>字段</td>
-</tr>
-</tbody>
-</table>
-
-
-<p>其中Long, Double, String, Boolean, NULL应该是很清晰了，用zval可以完全表示，略复杂一点的是Object,Array和Resource。在这里我们就只讨论Ojbect和Array。</p>
-
-<h4>Object</h4>
-
-<p>从上面的对应表可以看出Object的value是用<code>zend_object_value</code>这个struct来表示的，我们就看看这个struct的定义：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">struct</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">zend_object_handle</span> <span class="n">handle</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">zend_object_handlers</span> <span class="o">*</span><span class="n">handlers</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span> <span class="n">zend_object_value</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在这里要说明的是一个ojbect的data并不是直接存放在zend_object_value里面的，而是放在object store中，也就是说每个object都有一个对应的object store（这应该也是用HashTable来实现的吧），里面放着object的data，也就是object属性的值，这些值本身也是一个个的zval。接下里PHP要做的就是建立object和object store的一一对应关系，而这个就是通过<code>zend_object_handle handle</code>来实现的，这是一个long值，相当于object store的identifier,通过这个<code>handle</code>就可以找到object的data在那里了。而<code>zend_object_handlers *handlers</code>指向了一些处理函数，比如用来访问object属性的函数等等，这个在这里就不再详述了，有兴趣的可以看<a href="https://wiki.php.net/internals/engine/objects">这里</a>。讲到这里，我们应该知道了对于object的zval来说本身并没有存放object的data，而只是存放了一个整数型的handle。认识到这一点很重要，因为这会对接下来讨论的copy by reference和copy by value产生直接的影响。</p>
-
-<h4>Array</h4>
-
-<p>PHP的Array是用HashTable来实现的，通过这个就可以存放Array中的Key-Value了。关于这个HashTable具体是如何实现的，可以看<a href="http://nikic.github.com/2012/03/28/Understanding-PHPs-internal-array-implementation.html">这里</a>。我根据那个tutorial画了个示意图如下：</p>
-
-<p><img src="http://blog.jjyao.me/images/post/a-close-look-into-php-zval/zval.6.png"></p>
-
-<p>在这里我们要知道的是Key-Value中的value也就是一个个的zval，就和object的属性值一样，HashTable中就存放着指向这些zval的指针。</p>
-
-<h3>refcount &amp; if_ref</h3>
-
-<p>看完了<code>type</code>和<code>value</code>字段，接下来就看看<code>refcount</code>和<code>if_ref</code>字段，这两个字段关系到gc,关系到copy by value和copy by reference，所以非常重要，需要仔细讲解。<code>refcount</code>表明当前有多少个variable指向了这个zval，这个信息就可以用来gc，当<code>refcount</code>变为0后，这个zval就可以被回收。<code>if_ref</code>表明当前指向这个zval的variable是不是reference。在PHP中一个variable可以是value type就像这样<code>$b = $a</code>或者是reference type就像这样<code>$b = &amp;$a</code>。在语义上这两者是不同的，因此也就拥有不同的行为，我们首先要区分这两种类型的variable，这个通过代码解释最好不过了。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='PHP'><span class='line'><span class="nv">$a</span> <span class="o">=</span> <span class="s1">&#39;hello&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$b</span> <span class="o">=</span> <span class="nv">$a</span><span class="p">;</span> <span class="c1">// $b is value type</span>
-</span><span class='line'><span class="nv">$a</span> <span class="o">=</span> <span class="s1">&#39;world&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nb">var_dump</span><span class="p">(</span><span class="nv">$a</span><span class="p">);</span> <span class="c1">// &#39;world&#39;</span>
-</span><span class='line'><span class="nb">var_dump</span><span class="p">(</span><span class="nv">$b</span><span class="p">);</span> <span class="c1">// &#39;hello&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$a</span> <span class="o">=</span> <span class="s1">&#39;hello&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$b</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nv">$a</span><span class="p">;</span> <span class="c1">// $b is reference type</span>
-</span><span class='line'><span class="nv">$a</span> <span class="o">=</span> <span class="s1">&#39;world&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nb">var_dump</span><span class="p">(</span><span class="nv">$a</span><span class="p">);</span> <span class="c1">// &#39;world&#39;</span>
-</span><span class='line'><span class="nb">var_dump</span><span class="p">(</span><span class="nv">$b</span><span class="p">);</span> <span class="c1">// &#39;world&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>从上面一段代码可以看出如果$b是value type的话，它的值并不会随着$a的改变而改变，就好像在执行<code>$b = $a</code>时，<code>$a</code>的值(zval)被复制了一份，也就是说<code>$a</code>和<code>$b</code>拥有自己独立的zval，两者互不影响。而如果是reference type的话，就如同<code>$a</code>和<code>$b</code>共用了一个zval，不管是改变<code>$a</code>，还是<code>$b</code>，其实都是改变一个zval。但事实没有这么简单，如果真像上面所说的那样执行<code>$b = $a</code>时，zval复制了一份，那么效率也太低了，因为有可能<code>$b</code>和<code>$a</code>在接下来的使用过程中都是只读的，它们本可以共用一个zval而不会出问题。那么PHP究竟是如何实现的呢，答案就是通过<code>refcount</code>和<code>if_ref</code>实现了copy on write机制。而这个copy on write机制对于不同<code>type</code>的变量也会有些不同的表现，接下来我们就通过一系列的图例来理解这个机制。</p>
-
-<p><img src="http://blog.jjyao.me/images/post/a-close-look-into-php-zval/zval.1.png">
-<img src="http://blog.jjyao.me/images/post/a-close-look-into-php-zval/zval.2.png">
-<img src="http://blog.jjyao.me/images/post/a-close-look-into-php-zval/zval.3.png"></p>
-
-<p>前两张图大家应该很好理解，可以清楚的看到copy on write的发生并可以看到<code>if_ref</code>和<code>refcount</code>的作用，PHP正是依赖于<code>if_ref</code>和<code>refcount</code>来决定是否需要copy on write。而从第三张图中可以看到在没有<code>write</code>发生的情况下就发生了<code>copy</code>，而这是为什么呢，貌似<code>$a</code>、<code>$b</code>和<code>$c</code>可以共用一个zval的呀。原因其实很简单，那就是如果这三个变量共用一个zval那么<code>is_ref</code>的值就不知道该填什么了，<code>0</code>或<code>1</code>都不正确，因为这三个变量中既有value type又有reference type。如果<code>is_ref</code>为<code>0</code>那么<code>$a</code>和<code>$c</code>是reference关系这个信息就无法表达,PHP会认为<code>$a</code>、<code>$b</code>和<code>$c</code>是value type，改变其中任何一个的值并不会对另外两个造成影响，这显然不对。如果<code>is_ref</code>为<code>1</code>那么PHP会认为<code>$a</code>、<code>$b</code>和<code>$c</code>是reference type，改变其中任何一个的值都会反映在另外两个上，这显然也是不对的。综上所述在这种情况下只能copy出一份zval出来，这样才能保证接下来不管是操作<code>$a</code>、<code>$b</code>或者<code>$c</code>都不会出问题。之前的这三种图展示的是type为Long的variable的情况，而Boolean、Double、String和Long是一样的，就不再画出来了，而Array和Object比较复杂，情况也特殊，所以拿出来单独讨论。</p>
-
-<p><img src="http://blog.jjyao.me/images/post/a-close-look-into-php-zval/zval.4.png">
-<img src="http://blog.jjyao.me/images/post/a-close-look-into-php-zval/zval.5.png"></p>
-
-<p>从上面两张图看出Array和Object的行为存在着显著的不同，Array拥有<code>by-value semantics</code>而Object拥有<code>by-reference semantics</code>。Array的表现更像之前提到的Long type，也会有Copy on Write行为，而它的Copy从上图中可以看出比较智能，只Copy那些必须的zval。而Object则不一样，不管是value type还是reference type，它们都共用一个object store，也就是说任何属性的值发生了变化，所有指向这个object的variable都能知道，就好像Copy on Write对Object不起作用了。为了强制Copy，最后执行了<code>$c = &amp;$a</code>这条语句，为什么这条语句能强制使zval copy一份的原理在上面已经讲过了，这里就不再复述。这里有趣的是zval确实copy了一份，但是两个zval还是指向了同一个object store，也就是说不管通过<code>$a</code>、<code>$b</code>或者<code>$c</code>改变了某个属性，这三个变量都能知道。那么zval的copy到底做了什么呢？还记得上面提到过<code>zend_object_value</code>中只是存放了一个整型的<code>handle</code>字段，而通过这个字段可以找到object store在哪，那么zval的copy也就只会将这个<code>handle</code>字段copy一份，于是两个zval中拥有同样的<code>handle</code>值，它们就当然指向了同一个object store。那么如何让Object发生像Array那样类似的Copy呢，PHP为此提供了<code>clone</code>关键字。</p>
-
-<p>说到这差不多把zval给讲清楚了，同时也讲了一下Copy on Write机制，Value type和Reference type的区别。有了上面的解释，我们也应该能知道函数传参的Pass by Value和Pass by Reference的区别了，在这里就不多说了。如果有人想看更多类似我上面的图的话，可以看<a href="http://andrey.hristov.com/projects/php_stuff/Internals%20Exposed.pdf">这里</a>。如果有人想问我是怎么知道低层zval的变化的话，可以看<a href="http://www.php.net/manual/en/function.debug-zval-dump.php">这里</a>。最后还可以看看这个和zval有关的<a href="http://stackoverflow.com/questions/10057671/how-foreach-actually-works/">问题</a>。</p>
-
-<h2>参考资料</h2>
-
-<ol>
-<li><a href="http://devzone.zend.com/317/extension-writing-part-ii-parameters-arrays-and-zvals/">Extension Writing Part II: Parameters, Arrays, and ZVALs</a></li>
-<li><a href="http://blog.ircmaxell.com/2012/03/phps-source-code-for-php-developers_21.html">PHP&rsquo;s Source Code For PHP Developers - Part 3 - Variables</a></li>
-<li><a href="http://andrey.hristov.com/projects/php_stuff/Internals%20Exposed.pdf">Zend Engine 2 - Internals Exposed</a></li>
-<li><a href="http://nikic.github.com/2012/03/28/Understanding-PHPs-internal-array-implementation.html">Understanding PHP&rsquo;s internal array implementation (PHP&rsquo;s Source Code for PHP Developers - Part 4 )</a></li>
-</ol>
-
 ]]></content>
   </entry>
   
