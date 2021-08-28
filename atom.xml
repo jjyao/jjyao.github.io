@@ -4,7 +4,7 @@
   <title><![CDATA[Jiajun Yao]]></title>
   <link href="http://blog.jjyao.me/atom.xml" rel="self"/>
   <link href="http://blog.jjyao.me/"/>
-  <updated>2021-08-19T08:06:00-07:00</updated>
+  <updated>2021-08-28T16:06:24-07:00</updated>
   <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -12,6 +12,60 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[What I Have Learned From the LinkedIn Graph Database Team]]></title>
+    <link href="http://blog.jjyao.me/blog/2021/08/22/what-i-have-learned-from-the-linkedin-graph-database-team/"/>
+    <updated>2021-08-22T19:48:33-07:00</updated>
+    <id>http://blog.jjyao.me/blog/2021/08/22/what-i-have-learned-from-the-linkedin-graph-database-team</id>
+    <content type="html"><![CDATA[<p>I had worked for the LinkedIn graph database team for 5+ years and we successfully built a <a href="https://engineering.linkedin.com/blog/2020/liquid-the-soul-of-a-new-graph-database-part-1">graph database</a> serving the entire LinkedIn economic graph. In this post, I want to share what I have learned. Disclaimer: many of the words and wisdom are from my great colleagues.</p>
+
+<!-- more -->
+
+
+<h3>All incidents are gifts</h3>
+
+<p>Incidents are opportunities for us to fix bugs, improve the stability of the system and improve the process of handling incidents. We should treat them as gifts and learn as much as possible out of them.</p>
+
+<h3>All incidents should be novel</h3>
+
+<p>This basically means that we should never make the same mistake twice. Once an incident happens, we try as hard as we can to fix it and make sure it will never happen again with the same root cause.</p>
+
+<h3>Hardware failure is common at scale</h3>
+
+<p>We have, on average, 2 DIMM failures per week so we should design our software in a fault tolerant way.</p>
+
+<h3>API is sticky</h3>
+
+<p>Once clients start to use the exposed APIs, they become extremely sticky. That means we need to design them carefully since changing them afterwards is <a href="https://www.joelonsoftware.com/2004/06/13/how-microsoft-lost-the-api-war/">costly</a>.</p>
+
+<h3>Logging is talking to the user/operator</h3>
+
+<p>How programs talk to humans has a huge impact on the rate at which mistakes can be fixed. If programs tell humans exactly what is wrong, that rate can be very fast. If programs are silent or overwhelm humans with too much information, that rate can be extremely slow. When there are too many spurious errors, people get alerts fatigue and they will overlook the real problems.</p>
+
+<p>When we write logs in our code, we need to remember that the audience is not just us but also people that may not be familiar with the entire codebase like SREs. That means the log messages should be crystal clear and actionable. Imagining how frustrating it is when oncalls get paged at 2am and they have no clue what those log messages mean and how to act on them. <a href="https://spark.apache.org/error-message-guidelines.html">Here</a> is a guideline of how to write good error messages.</p>
+
+<h3>Comment on why</h3>
+
+<p>Code comments should say why the code is there instead of what the code does. What the code does should be clear from the code itself. If it is not the case, then we should refactor the code to make it clear instead of adding a comment. A large decaying comment is frequently just an apology for crappy code. Don&rsquo;t accept the apology. Fix the code. Don&rsquo;t give up until you try your best. Then, as a last resort, write the comment.</p>
+
+<h3>Good enough is not enough</h3>
+
+<p>The math is simple: 0.8 * 0.8 * 0.8 * &hellip;.. = 0. If every time we just achieve good enough, then eventually it will become zero/failure. We should never settle and always try to do as best as we can.</p>
+
+<h3>Conduct code review</h3>
+
+<p>Code review is not just about finding bugs. We should also think about how we can rewrite the code in a better way that is easily understandable and unlikely to cause future bugs.</p>
+
+<p>Also reading other people&rsquo;s good reviews allows us to learn not only from our own mistakes but also the mistakes of others.</p>
+
+<h3>Write design document</h3>
+
+<p>&ldquo;Writing is nature’s way of letting you know how sloppy your thinking is&rdquo; by Leslie Lamport. The very act of writing the design document helps to clarify the design itself. It also helps people to learn or understand the system in the future.</p>
+
+<h3><a href="http://blog.jjyao.me/blog/2021/08/18/keep-your-eyes-open/">Keep your eyes open</a></h3>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Keep Your Eyes Open]]></title>
@@ -2245,42 +2299,6 @@ The source code of ActivityThread, ActivityManagerService, ActivityStackSupervis
 <h2>防止中间人攻击</h2>
 
 <p>为了防止中间人攻击，客户端需要检查SSL握手时获得的证书确实来自其想要连接的服务器，使用的技术叫做Certificate and Public Key Pinning。最简单的做法就是在客户端存放服务器的证书，然后每次建立SSL连接的时候都将远程获得的证书和本地的相比较，只有两者完全一样才认为没有受到中间人攻击，否则就应该拒绝建立连接。这种做法虽然实现简单，但问题是证书的内容很容易改变（比如证书过期后就需要重新获得一个全新的证书），因此每当证书变化时旧版应用就无法连接服务器了，需要让用户升级应用，对用户来说这显然不够好。另一种较好的方法是只比较证书中subjectPublicKeyInfo部分而不是整个证书。相对于整个证书而言，这个部分变动概率很小并且其包含了要验证的最主要东西也就是服务器的公钥，因为只要公钥对了，那么加密的数据就只有拥有对应私钥的服务器才能解密了。对于pinning的更多资料请参见<a href="https://www.owasp.org/index.php/Certificate_and_Public_Key_Pinning">这里</a>。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Review on American Dreams in China]]></title>
-    <link href="http://blog.jjyao.me/blog/2013/06/16/review-on-american-dreams-in-china/"/>
-    <updated>2013-06-16T11:35:00-07:00</updated>
-    <id>http://blog.jjyao.me/blog/2013/06/16/review-on-american-dreams-in-china</id>
-    <content type="html"><![CDATA[<p>这两天看了陈可辛导演的《中国合伙人》和柴静对新东方三位联合创始人的采访，感受颇多。创业奋斗路上风风雨雨，有太多的东西值得我们去学习，去感悟。下面就聊聊我所感悟到的东西：</p>
-
-<ol>
-<li>合伙人的品质</li>
-<li>老大的品质</li>
-<li>和比自己优秀的人在一起</li>
-<li>老俞的安眠药</li>
-</ol>
-
-
-<!-- more -->
-
-
-<h2>合伙人的品质</h2>
-
-<p>创业之艰辛困难，非一人之力可以完成，必须依靠整个团队的努力，因此找到优秀的合伙人就非常重要。从电影和采访中可以看出俞敏洪找到了两位非常优秀的合伙人，共同奠定了新东方的基业。王强和徐小平所具有的合伙人品质值得所有想要创业的人去了解，对于像俞敏洪这样位置的人可以参考这些品质去选择自己的合伙人，而对于想要成为合伙人的人则可以从中寻找可以借鉴的品质，使自己成为一名优秀的合伙人。首先王强和徐小平自身的个人能力非常出众，这也就成功避免了猪队友的问题，同时他们的能力能和俞敏洪的互补，达到1+1>2的效果，这个对我们的启发就是在找合伙人的时候，一定要选优秀有能力的人才，这样才能促进公司的发展。当然在选择普通员工的时候也需要坚守同样的标准，一定要宁缺毋滥。另外王强和徐小平会尽一切努力去帮助俞敏洪管理好新东方。如果俞敏洪是刘备的话，那么王强和徐小平就是辅佐他的诸葛亮。徐小平在采访中说过他在新东方的使命就是要指导俞敏洪、批判俞敏洪，改造俞敏洪。尽管在这个过程中有争吵、有冲突、有对抗，但是最终的目的始终没有变过那就是帮助俞敏洪把新东方做的更好。正是三人齐心协力，才有了新东方的巨大成功。也就是说合伙人要有共同的目标，不能各怀心思，只有这样才能力往一处使，才能获得成功。</p>
-
-<h2>老大的品质</h2>
-
-<p>合伙人有合伙人应有的品质，而老大也需要有一些特殊的品质。俞敏洪这样一位新东方的老大，身上的品质也同样值得所有想要创业的人去了解。首先俞敏洪懂得寻找优秀的人才并能管理他们，他知道新东方要成功靠的不是他一个人而是一群人。新东方的明星教师很多，有罗永浩、陈虎平和杜昶旭等，这些人共同铸就了新东方的辉煌。和俞敏洪相反的就是李阳，他虽然能力很强，但不善于吸收优秀人才，有点个人英雄主义，他的疯狂英语没听说有什么著名教师（除了他自己）。这两者的差别在一定程度上造成了新东方和李阳疯狂英语在英语教育领域截然不同的地位。从这可以看出，作为老大需要有吸收和管理人才的能力，一个充满战斗力的团队（而不是个人）才是成功的关键。另外俞敏洪能忍，有承受能力。一方面他能忍受王强和徐小平对他的尖锐批评，这是需要一定胸怀的，一般人不一定能够承受的住。但就像采访中王强所说的那样“大家的怨气其实不是怨气是期望”，俞敏洪需要承受大家对他的期望，并努力提升自己以达到众人的期望。如果达不到大家的期望，俞敏洪又怎么能够领导他们呢？另一方面俞敏洪也要忍受创业中作为老大所面临的种种压力。采访中提到俞敏洪的家摆了一排安眠药的瓶子，他长期失眠，从这个侧面可以看出在创业过程中俞敏洪承受的巨大精神压力。另外徐小平也提到当时在新东方骂完老俞后自己就回家睡觉了，睡不着是老俞的事，而现在他自己做了老大，失眠的就是他了，由此可见老大的压力是巨大的。采访中还提到股东们轮流坐庄体会完老大的滋味后，没人愿意干了，俞敏洪又被请了回来，可见当老大可不是件轻松的事情。从俞敏洪忍受的这些压力来看，他拿45%的股份而王强和徐小平各拿10%也是很合理的，因为他们所承受的不一样。从这可以看出作为老大要能忍，要能忍受团队成员对他的批评，要能忍受创业过程中的种种压力。</p>
-
-<h2>和比自己优秀的人在一起</h2>
-
-<p>不管是在电影中还是采访中，俞敏洪都被人认为是“农民”、“土鳖”，而王强和徐小平则才华横溢，光彩耀人。在北大读书的时候，俞敏洪就跟着两人学习。他虚心接受王强班长的教诲，当知道王强最近看过什么书后就会立即补上，深怕落下。在王强和徐小平面前，俞敏洪就是个学生，总是抱着学习的心态去向两人请教。这不就是我们常说的“和比自己优秀的人在一起”吗。在学习生活中，我们需要和比自己优秀的人在一起，这样可以拓宽我们的视野，激励我们努力奋斗。和比自己优秀的人在一起可以让我们有机会聆听他们的教诲，这会让我们受益匪浅。和比自己优秀的人在一起可以让我们近距离观察他们，从而有机会发现他们身上的优良品质并获得它们。和比自己优秀的人在一起可以有效地防止成为井底之蛙，让我们清楚地认识到天外有天，人外有人。有了这种清醒的认识之后，我们就不会有自负的心理，就能静下心来努力学习，向这些比我们优秀的人看齐。但与此同时我们也需要调整心态防止自卑心理的产生，除了横向比较，我们更要纵向比较。和这些比自己优秀的人在一起后，虽然相对于他们自己仍是个“土鳖”，但是so what，只要自己本身有了成长和进步那就足够了。在生活中，还有一类人由于面子问题，不愿意承认别人比自己优秀，不愿放下面子虚心向别人学习，这时想想老俞就行了，他能虚心向王强和徐小平学习，能承认自己是“土鳖”，我们为什么不可以？</p>
-
-<h2>老俞的安眠药</h2>
-
-<p>人们往往只注意到那些成功人士（每个人对成功的定义不同，在这里姑且指那些创业成功的人吧）人前风光的一面，而没有看到他们背后付出的艰辛。就比如说人们往往只看到老俞在万千大学生面前做人生导师的风光，却没有看到他背后那一排安眠药。当然这个还能延伸到其他方面，比如人们往往只看到学霸那恐怖的成绩，却没有看到他们那日日夜夜蹲图书馆的日子。再比如人们往往只看到就业之星那令人羡慕的offer，却没有看到他们多年来为之做出的准备。很多人看到那些成功人士很是羡慕，都想要成为他们那样的人，但他们不知道要想成为这些成功人士，要付出多少的艰辛。所以当我们看那些成功人士时，除了要看他们表面的风光，还要特别留意他们背后的那排安眠药。当我们想要创业时，要想想我们已经准备好吃下老俞的安眠药了吗。</p>
 ]]></content>
   </entry>
   
