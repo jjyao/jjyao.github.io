@@ -3,7 +3,7 @@ layout: post
 title: "Good Economics for Hard Times"
 date: 2020-12-20 14:04:45 -0800
 comments: true
-categories:
+categories: Book
 ---
 
 2020，世界很复杂。贸易战，美国大选，全球气候变暖，贫富差距扩大化等热点问题影响着我们每一个人。如果你也对这些问题感兴趣，我推荐你阅读《Good Economics for Hard Times》。这本书可能会带给你一些不同的角度来看待这些问题，有些甚至可能完全颠覆你以往的认知。以下是我的读书笔记：
