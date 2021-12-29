@@ -4,7 +4,7 @@
   <title><![CDATA[Category: book | Jiajun Yao]]></title>
   <link href="http://blog.jjyao.me/blog/categories/book/atom.xml" rel="self"/>
   <link href="http://blog.jjyao.me/"/>
-  <updated>2021-09-05T20:03:12-07:00</updated>
+  <updated>2021-12-28T16:31:38-08:00</updated>
   <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -12,6 +12,80 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Crossing the Chasm]]></title>
+    <link href="http://blog.jjyao.me/blog/2021/12/27/crossing-the-chasm/"/>
+    <updated>2021-12-27T20:26:25-08:00</updated>
+    <id>http://blog.jjyao.me/blog/2021/12/27/crossing-the-chasm</id>
+    <content type="html"><![CDATA[<p>For B2B high-tech startup, there is a period when the product is already successful in the early market and is trying to enter the mainstream market. This period is called crossing-the-chasm period and it&rsquo;s peril. Many startups die during this period and never reach the mainstream market. This book tells us why there is such a period and why it&rsquo;s dangerous. It also shows how we can get through this period and be successful in the mainstream market.</p>
+
+<!-- more -->
+
+
+<h2>Technology Adoption Life Cycle</h2>
+
+<p><img src="/images/post/crossing-the-chasm/technology-adoption-life-cycle.png"></p>
+
+<p>For the technology or product offered by a company, its adoption goes through several phases from left to right.</p>
+
+<h4>Innovators (Technology Enthusiasts)</h4>
+
+<p>This is a group of people who are techies. They just like new technologies for its own sake and are willing to try them. They don&rsquo;t represent a significant market in themselves, nor do they have enough buying power. However they are still important to win over because 1) they are the sounding board and test bed for the new technology or product 2) they are the reference base for early adopters.</p>
+
+<h4>Early Adopters (Visionaries)</h4>
+
+<p>This group of people treat the new technology or product as an opportunity to have a strategic leap forward. They want fundamental breakthrough enabled by the new technology and are willing to take high risks due to the potential order-of-magnitude return on investment. These people have big budget to implement their strategic initiative so they are an important source of high-tech development capital.</p>
+
+<h4>Early Majority (Pragmatists)</h4>
+
+<p>These people represent the mainstream market that any startup wants to win due to its volume. Unlike visionaries, they want incremental, predictable improvements instead of disruptive ones. They have the following characteristics: 1) they are loyal once won and will even help you to defend new comers 2) they want to buy the <em>whole product</em> from the <em>market leader</em> 3) they reference other pragmatists not visionaries.</p>
+
+<h4>Late Majority (Conservatives)</h4>
+
+<p>They buy the extremely mature product with low cost just to stay on par with the rest of the world. They are the low-margin end of the market but have high volume.</p>
+
+<h4>Laggards (Skeptics)</h4>
+
+<p>Even though they may not buy products, they do point continually to the discrepancies between the sales claims and the delivered product. Startups should use their feedbacks to continuously improving the products.</p>
+
+<h2>Word of Mouth</h2>
+
+<p>In the high-tech buying process, word of mouth is the number-one source of information that buyers reference. People reference each other during the buying decision.</p>
+
+<h2>Whole Product</h2>
+
+<p><img src="/images/post/crossing-the-chasm/whole-product.png"></p>
+
+<p>In the mainstream market, people want to buy whole product not core product. In other words, they want to buy the product that has a surrounding ecosystem, which radically reduces their burden of support. Since whole products grow up around the market leading products and not around the others, pragmatists buy from market leaders.</p>
+
+<h2>Chasm</h2>
+
+<p>The chasm between visionaries and pragmatists exists because visionaries is a very poor reference base for pragmatists. They are fundamentally different groups of people for the following reasons: 1) visionaries don&rsquo;t need many references to buy a product, rather they want to be the first to buy the product and create competitive advantage; pragmatists, on the other hand, need extensive reference to prove the validity of the new product 2) visionaries care more about the future, in fact, they are defining the future, while pragmatists don&rsquo;t put a lot of stake in futuristic things 3) visionaries don&rsquo;t expect the existence of the whole product and they are willing to piece together one themselves in return for getting a jump on their competition, while pragmatists only want to buy the whole product 4) visionaries, successful or not, don&rsquo;t plan to stick around long while pragmatists are cautious about their decisions since they know they will have to live with the results. This effectively means that when we try to win over pragmatists, there is effectively no reference base to start with.</p>
+
+<h2>D-Day</h2>
+
+<p>The way to cross the chasm successfully is by launching a D-Day type of invasion focusing on a highly specific target segment within a mainstream marketplace.</p>
+
+<h4>Target the Point of Attack</h4>
+
+<p>The first thing to do is finding the target niche market segment which is also called the beachhead segment. The segment should be <em>big enough to matter, small enough to win and good fit with your crown jewels</em>. Customers in that segment should have compelling reason to buy the product or in other words, feel enough pain. Instead of picking the optimal beachhead to be successful, which is very hard if not impossible, what more important is winning whatever good enough beachhead that&rsquo;s picked.</p>
+
+<p>It&rsquo;s very important to pick a very specific beachhead to conquer instead of the entire mainstream market when we are crossing the chasm for the following reasons: 1) word-of-mouth has boundaries which is ususally within a market segment so winning over one or two customers in each of five or ten different segments is worse than winning four or five customers in one segment in terms of word-of-mouth effect 2) it&rsquo;s easier to become <em>a big fish in a small pond</em> and achieve market leadership given that pragmatists want to buy from market leaders 3) our scarce resource is only enough to build the whole product for a single niche market.</p>
+
+<h4>Assemble the Invasion Force</h4>
+
+<p>The next thing is creating the ecosystem around our core product, namely the whole product. This often requires bringing in partners and allies needed to make it a reality.</p>
+
+<h4>Define the Battle</h4>
+
+<p>Then we need to create the competition and positioning in order for our product to be <em>easy to buy</em>. Viable competition is important since where there is no competition, there is no market. <em>Market alternatives</em> indicate the existence of the budget dollars to buy our products and <em>product alternatives</em> call out the differentiation. The positioning of our product should be short enough to pass the elevator test so that it can successfully create and occupy a space inside the target customers&#8217; head.</p>
+
+<h4>Launch the Invasion</h4>
+
+<p>Finally we need to select the intended distribution channel and set pricing to give us motivational leverage over that channel.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Multipliers: How the Best Leaders Make Everyone Smarter]]></title>
