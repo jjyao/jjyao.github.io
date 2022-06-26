@@ -4,7 +4,7 @@
   <title><![CDATA[Category: book | Jiajun Yao]]></title>
   <link href="http://blog.jjyao.me/blog/categories/book/atom.xml" rel="self"/>
   <link href="http://blog.jjyao.me/"/>
-  <updated>2021-12-28T16:31:38-08:00</updated>
+  <updated>2022-06-25T23:14:17-07:00</updated>
   <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -12,6 +12,66 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[The Design of Everyday Things]]></title>
+    <link href="http://blog.jjyao.me/blog/2022/06/21/the-design-of-everyday-things/"/>
+    <updated>2022-06-21T22:40:54-07:00</updated>
+    <id>http://blog.jjyao.me/blog/2022/06/21/the-design-of-everyday-things</id>
+    <content type="html"><![CDATA[<p>What&rsquo;s a good design? How to produce a good design? This book provides some answers.</p>
+
+<!-- more -->
+
+
+<h2>Human-centered Design</h2>
+
+<p>A good design should be human-centered. It should put human needs, capabilities, and behavior first, then accommodate those needs, capabilities, and ways of behaving. <em>The design should adapt to people, not the opposite</em>.</p>
+
+<p>A good design should be understandable and usable. The design should help users establish a concept model of the system that is an explanation, usually highly simplified, of how the system works. There are seven design principles to achieve a good design:</p>
+
+<ul>
+<li>Discoverability: It is possible to determine what actions are possible and the current state of the device.</li>
+<li>Feedback: There is full and continuous information about the results of actions and the current state of the product or service. After an action has been executed, it is easy to determine the new state.</li>
+<li>Conceptual model: The design projects all the information needed to create a good conceptual model of the system, leading to understanding and a feeling of control. The conceptual model enhances both discoverability and evaluation of results.</li>
+<li>Affordances: The proper affordances exist to make the desired actions possible.</li>
+<li>Signifiers: Effective use of signifiers ensures discoverability and that the feedback is well communicated and intelligible.</li>
+<li>Mappings: The relationship between controls and their actions follows the principles of good mapping, enhanced as much as possible through spatial layout and temporal contiguity.</li>
+<li>Constraints: Providing physical, logical, semantic, and cultural constraints guides actions and eases interpretation.</li>
+</ul>
+
+
+<h2>The Double-Diamond Model of Design</h2>
+
+<p>Finding the right problem and finding the right solution are the two components of design and this corresponds to the two phases of the design process. The double-diamond model of design describes these two phases.</p>
+
+<p><img src="/images/post/the-design-of-everyday-things/double-diamond-model-of-design.png"></p>
+
+<p>To find the real, ROOT problem to solve, we can use the <em>five whys</em> approach. We should keep asking why until we find the real, fundamental, root problem. Don&rsquo;t rely on whatever people tell you because they will tell you that they want &ldquo;a faster horse&rdquo;. In fact, the author has a somewhat counterintuitive rule for himself: never solve the problem I am asked to solve. Because the problem being asked to solve, invariably, is not the real, fundamental, root problem.</p>
+
+<h2>No Human Error, Only Bad Design</h2>
+
+<p>Human error usually is a result of poor design. Whenever human errors happen, we should think about how we can design better to eliminate those errors or reduce the impact if complete elimination is impossible. This is an important mindset to have: if a system lets you make the error, it&rsquo;s badly designed.</p>
+
+<p>There are several design practices to prevent human errors:</p>
+
+<ul>
+<li>Avoid procedures that have identical opening steps but then diverge.</li>
+<li>Ensure that controls and displays for different purposes are significantly different from one another.</li>
+<li>Try to avoid modes. If they are necessary, the equipment must make it obvious which mode is invoked.</li>
+<li>People will be interrupted during their activities and they may need assistance in resuming their operations.</li>
+<li>Don&rsquo;t count on much being retained in people&rsquo;s short-term memory. The most effective way of helping people remember is to make it unnecessary.</li>
+</ul>
+
+
+<h2>Successful Product, Successful Design</h2>
+
+<p>The author argues that the design is successful only if the final product is successful —— if people buy it, use it and enjoy it. It doesn&rsquo;t matter how great the design is if people don&rsquo;t buy it.</p>
+
+<p>To create a successful product, people should focus on strengths, not weaknesses. If the product has real strengths, it can afford to just be &ldquo;good enough&rdquo; in the other areas. People should also focus on the true needs of the people who use the product and ignore competing voices.</p>
+
+<p>To turn a good idea into a successful product requires <em>timing</em>. Good ideas that appear too early will fail even if eventually others introduce them successfully. It takes a long time (may be decades), for good ideas to traverse the distance from conception to successful products. We should <em>ride the wave</em> to make the product more likely to be successful.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Crossing the Chasm]]></title>
