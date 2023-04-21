@@ -4,7 +4,7 @@
   <title><![CDATA[Jiajun Yao]]></title>
   <link href="http://blog.jjyao.me/atom.xml" rel="self"/>
   <link href="http://blog.jjyao.me/"/>
-  <updated>2022-06-25T23:14:17-07:00</updated>
+  <updated>2023-04-20T22:14:05-07:00</updated>
   <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -12,6 +12,65 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[The 4 Disciplines of Execution]]></title>
+    <link href="http://blog.jjyao.me/blog/2023/04/16/the-4-disciplines-of-execution/"/>
+    <updated>2023-04-16T21:21:10-07:00</updated>
+    <id>http://blog.jjyao.me/blog/2023/04/16/the-4-disciplines-of-execution</id>
+    <content type="html"><![CDATA[<p>This book shows how a team can execute an important goal successfully in the face of massive amount of day-to-day operations that are urgently required to keep the business running.</p>
+
+<!-- more -->
+
+
+<p>There are lots of urgent things (whirlwind) to do every day to keep the lights on. Failure to do so can kill the business today. However, there are also important things to take the business to the next level. Failure to do those can kill the business tomorrow. As a result, being able to execute important things successfully while doing the day job is critical for the success of the business in the long term. To help teams to do so, this book presents a methodology called 4DX that consists of four disciplines.</p>
+
+<h2>Discipline 1: Focus on the Wildly Important</h2>
+
+<p>The key of the first discipline is <strong>focus</strong>. Attempting to spread the limited capacity across multiple goals is the most common cause of failure in execution. Instead, <strong>one and only one</strong> wildly important goal (WIG) should be identified and executed.</p>
+
+<p>To identify the WIG, one can ask the following question: If every other aspect of our team&rsquo;s performance remained at its current level, what is the one area where significant improvement would have the greatest <strong>impact</strong>? The resulting WIG should be specific, clearly measurable and in the form of <strong>From X to Y by when</strong> (e.g. improve the NPS score from 1 to 6 by end of the year).</p>
+
+<h2>Discipline 2: Act on the Lead Measures</h2>
+
+<p>The key of the second discipline is <strong>leverage</strong>. Lag measures are the tracking measurements of the WIG and they tell you whether you achieve the WIG or not. For example, if the WIG is improving the NPS score from 1 to 6 by end of the year then the lag measure is the NP score. The issue with the lag measure is that you cannot influence it directly and it is lagging in the sense that by the time you get the result, it is already too late and the performance that drove it is in the past. In contrast, lead measures measure things that lead to the WIG and can be influenced by us directly. For example, burning 1000 calories every day is a good lead measure for a WIG of losing 20 pounds in 3 months.</p>
+
+<p>Two basic characteristics of a valid lead measure are <strong>predictive</strong> and <strong>influenceable</strong>: it&rsquo;s predictive of achieving the WIG and can be influenced directly. There could be many lead measures for a WIG and finding the highest-leverage ones is perhaps the toughest and most intriguing challenge for leaders trying to execute a WIG. Finding lead measures requires the involvement of the frontline team members and that involvement brings engagement and commitment. In the end, it&rsquo;s the frontline team that acts on the lead measures. A leader can only veto but not dictate what the final lead measures should be. The resulting lead measures are the team&rsquo;s bet: they bet that by driving these lead measures, the team is going to achieve the WIG.</p>
+
+<p><img src="http://blog.jjyao.me/images/post/the-4-disciplines-of-execution/lead-measure.png"></p>
+
+<h2>Discipline 3: Keep a Compelling Scoreboard</h2>
+
+<p>The key of the third discipline is <strong>engagement</strong>. A compelling player&rsquo;s scoreboard that clearly shows whether a team is winning or losing drives the highest level of engagement and the engagement drives the highest level of performance. The fundamental purpose of a player&rsquo;s scoreboard is to motivate the players to win.</p>
+
+<p>A compelling scoreboard has the following four characteristics:</p>
+
+<ul>
+<li><p>It&rsquo;s simple as a player&rsquo;s scoreboard in a sporting event, not a more complex coach&rsquo;s scoreboard.</p></li>
+<li><p>It can be seen easily. A visible scoreboard makes sure that the WIG and lead measures are not forgotten in the constant urgency of day-to-day responsibilities.</p></li>
+<li><p>It shows both the lead and lag measures. From the scoreboard, the team can see what they are doing (the lead measures) and what they are getting (the lag measures). Once the team sees that the lag measure is moving because of the efforts they have made on the leads, it has a dramatic effect on engagement because they know they are directly impacting the results.</p></li>
+<li><p>It tells if a team is winning or losing immediately. If the team can&rsquo;t quickly determine if they are winning or not by looking at the scoreboard, then it&rsquo;s not a game, it&rsquo;s just data.</p></li>
+</ul>
+
+
+<h2>Discipline 4: Create a Cadence of Accountability</h2>
+
+<p>The key of the fourth discipline is <strong>accountability</strong>. This is where execution actually happens. The previous three disciplines set up the game but until this discipline is applied, the team is not in the game. Without this discipline, there will always be actions the team members know they should perform but never actually do with real consistency due to whirlwind.</p>
+
+<p>To create a cadence of accountability, a WIG session is held on the same day and at the same time every week with the following agenda:</p>
+
+<ol>
+<li><p>Account. Report on last week&rsquo;s commitments.</p></li>
+<li><p>Review the scoreboard. Learn from successes and failures.</p></li>
+<li><p>Plan. Clear the path and make new commitments.</p></li>
+</ol>
+
+
+<p>To figure out the <em>high-impact</em> commitments for the week, ask the question &ldquo;What are the one or two most important things I can do this week to impact the lead measures?&rdquo; Once the commitments are made from team members, they are <em>unconditional</em> regardless of the whirlwind and the team member is accountable to each other.</p>
+
+<p>Finally, a successful 4DX not only helps the team to achieve the specific WIG but also produces a winning team that performs at the next level and is ready for the next WIG.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[The Design of Everyday Things]]></title>
@@ -2156,58 +2215,6 @@ Source: <a href="https://github.com/giltene/jHiccup">https://github.com/giltene/
 <h2>Professors</h2>
 
 <p>在CMU，教授有Teaching Professor, Research Professor和Professor。擅长教书和擅长做研究的都可以找到适合自己的职位。这样可以避免让不擅长教书的人去教书这样的情况发生，对教授和学生都是一件好事。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[What I Have Learned From Writing a Kernel From Scratch]]></title>
-    <link href="http://blog.jjyao.me/blog/2015/06/15/what-i-have-learned-from-writing-a-kernel-from-scratch/"/>
-    <updated>2015-06-15T21:45:49-07:00</updated>
-    <id>http://blog.jjyao.me/blog/2015/06/15/what-i-have-learned-from-writing-a-kernel-from-scratch</id>
-    <content type="html"><![CDATA[<p>Last semester, I took the course <a href="https://www.cs.cmu.edu/~410/">15410</a> and wrote a kernel from scratch with my partner. I learned a lot from this course and the kernel project. Following is what I have learned:</p>
-
-<ol>
-<li>Never Failed Functions</li>
-<li>Comment on Why</li>
-<li>Synchronization</li>
-<li>Error Handling</li>
-<li>Why Writing a Kernel From Scratch</li>
-<li>Misc.</li>
-</ol>
-
-
-<!-- more -->
-
-
-<h2>Never Failed Functions</h2>
-
-<p>There are cases where some functions cannot fail, which means that they cannot return errors and let callers handle these errors. For example, the <code>free()</code> function is a never failed function. Why? Because callers have no way to do something reasonable to handle the failure. What can we do when <code>free()</code> returns an error code? Retry, ignore or exit? Obviously, none of these solutions are acceptable. Similarly, <code>exit()</code> can never fail. To implement these never failed functions, we need to allocate resources needed by these functions in advance. For example, we should <strong>preallocate</strong> resources (e.g. memory that stores exit status) that are necessary for <code>exit()</code> to succeed when we <code>fork()</code> the process even if <code>fork()</code> itself doesn&rsquo;t need those resources. If <code>fork()</code> cannot preallocate needed resources, it can just returns an error as callers can do reasonable things to handle errors from it. Similarly, if <code>free()</code> needs some resources to succeed, we should acquire them inside <code>malloc()</code>. Another implication of never failed functions is that we should consider if a function can fail when we design the interface of the function. To make the decision, we should put ourselves in the shoe of callers. Can callers do something reasonable to handle returned errors? If the answer is not, then we should probably implement the function in a way that it never fails using techniques like preallocation.</p>
-
-<h2>Comment on Why</h2>
-
-<p>When we write comments, we should answer the question why we write this code. <strong>It&rsquo;s easier to figure out what the code does than why it is written.</strong> For the kernel, there are some code that is written to handle special cases that only happen in a special execution path. For example, some concurrency issues can only be triggered when interrupts or context switches happen in a particular time (e.g. before the execution of a particular instruction). To address these issues, we need to write some special code and it&rsquo;s important for us to write comments explaining why we write this code. If we don&rsquo;t write comments, then next time no one understands this piece of code (it&rsquo;s hard, if not impossible, to recall the particular execution path that causes concurrency issues).</p>
-
-<h2>Synchronization</h2>
-
-<p>Writing a kernel is all about synchronization, concurrency, race conditions and deadlock. <strong>Interrupts can happen at any time</strong>, and as a result, CPU is switched to execute interrupt handlers. What happens if CPU is executing a critical section when an interrupt happens? What happens if an interrupt handler tries to acquire a lock that has already been acquired by the interrupted code? As application programmers, we use synchronization primitives such as mutex to protect critical sections. However, these primitives cannot solve all the concurrency problems happening in the kernel. For example, we cannot use mutex to protect data accessed by both of an interrupt handler and some other code because it can cause deadlock. A typical example is the scan code buffer used by the keyboard interrupt handler. When a key is pressed or released, the keyboard handler is invoked to handle the event. What it does is store the scan code to a buffer so that some program can retrieve it later. As keyboard interrupts can happen when some program is accessing the scan code buffer to retrieve data and the keyboard interrupt handler also accesses the buffer to put data, the shared buffer should be protected. A normal mutex doesn&rsquo;t help in this case because it causes deadlock. Imagining that some code acquires the mutex and is accessing the scan code buffer and at that time, keyboard interrupt handler is invoked, the handler wants to acquire the mutex to access the buffer but it has already been acquired so the hanlder has to wait for the mutex to be released. However, the interrupted code cannot resume execution before the interrupt handler returns and as a result, we have the deadlock. To solve this problem, we can disable interrupts instead of using mutex. Disabling interrupts is the easiest way to address concurrency issues but it doesn&rsquo;t mean that we should use it everywhere. The problem of disabling interrupts is that the kernel may miss interrupts (e.g. timer interrupts) and becomes less preemptible, so we should avoid disabling interrupts if there are other methods to solve concurrency issues (e.g. avoid sharing data).</p>
-
-<h2>Error Handling</h2>
-
-<p>To write robust software (e.g. kernel), we have to handle <strong>all</strong> possible errors correctly. For example, we should assume that all <code>malloc()</code> invocations may fail and write code to handle these failures. It seems to be tedious to handle every possible error (especially errors that we think are unlikely to happen), but it is crucial for writing robust software (according to Murphy&rsquo;s law, errors will happen eventually). Some errors are expected and current code can recover from them. In this case, current code should resolve these errors. Some errors are expected and current code doesn&rsquo;t have enough knowledge to resolve them. In this case, current code should propagate errors up and let callers handle these errors. Some errors are unexpected and usually indicate program bugs (e.g. unexpected null pointer parameters). In this case, programs should log enough information and exit immediately, which helps programmers find bugs quickly.</p>
-
-<h2>Why Writing a Kernel From Scratch</h2>
-
-<p>Many people ask the question why we should take 15410 and write a kernel from scratch, after all we are highly unlikely to be asked to implement a new operating system during our lifetime. Here is my answer to this question. Writing a kenel from scratch lets us have a deep understanding of current operating systems (e.g. Unix) and know how they work. Compared with Unix, our kernel is a toy but concepts are similar. A toy kernel also implements context switch, virtual memory, paging, copy-on-write, zero-filled on demand, drivers, interrupt handlers, scheduler, processes, threads, synchronization primitives, and system calls. Through implementing these concepts, we know why context swith is costly, why system call is costly, why process is heavyweight, and so on. As all application software runs on top of an operating system, having a good understanding of these things helps us write performant software. For example, knowing that context switch is costly and process is heavyweight, Nginx developers use an <a href="http://nginx.com/blog/thread-pools-boost-performance-9x/">asynchronous, event-driven approach to handling connections</a>, which makes Nginx a high performance web server. What&rsquo;s more, through implementing a kernel, we learn how to write robust, well-documented code. The same techniques can also be applied to writing other code. In a word, <strong>writing a kernel from scratch helps us write better application software</strong>.</p>
-
-<h2>Misc.</h2>
-
-<ol>
-<li>After <code>cond_wait()</code>, the code needs to check the condition <strong>again</strong>, which means we should warp <code>cond_wait()</code> with <code>while</code> instead of <code>if</code>.</li>
-<li>Solving a problem using <code>sleep()</code> is bad. N-1 times it&rsquo;s much too short. Nth time it&rsquo;s much too long. The magic number doesn&rsquo;t work well every time.</li>
-<li>To have an efficient meeting, we should have our own thoughts and ideas before the meeting.</li>
-<li>Any problem in computer science can be solved with another level of indirection. —— David Wheeler</li>
-</ol>
-
 ]]></content>
   </entry>
   
