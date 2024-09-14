@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: source | Jiajun Yao]]></title>
+  <link href="http://blog.jjyao.me/blog/categories/source/atom.xml" rel="self"/>
+  <link href="http://blog.jjyao.me/"/>
+  <updated>2024-09-13T22:40:09-07:00</updated>
+  <id>http://blog.jjyao.me/</id>
+  <author>
+    <name><![CDATA[jjyao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Learning Neural Networks]]></title>
+    <link href="http://blog.jjyao.me/blog/2023/05/07/learning-neural-networks/"/>
+    <updated>2023-05-07T00:00:00-07:00</updated>
+    <id>http://blog.jjyao.me/blog/2023/05/07/learning-neural-networks</id>
+    <content type="html"><![CDATA[<p>f</p>
+]]></content>
+  </entry>
+  
+</feed>

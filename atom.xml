@@ -4,7 +4,7 @@
   <title><![CDATA[Jiajun Yao]]></title>
   <link href="http://blog.jjyao.me/atom.xml" rel="self"/>
   <link href="http://blog.jjyao.me/"/>
-  <updated>2023-04-20T22:14:05-07:00</updated>
+  <updated>2024-09-13T22:40:09-07:00</updated>
   <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -12,6 +12,162 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Python Heap Dump]]></title>
+    <link href="http://blog.jjyao.me/blog/2024/09/13/python-heap-dump/"/>
+    <updated>2024-09-13T21:42:32-07:00</updated>
+    <id>http://blog.jjyao.me/blog/2024/09/13/python-heap-dump</id>
+    <content type="html"><![CDATA[<p>This post shows how to heap dump a <em>running</em> Python process using <a href="https://pypi.org/project/pyrasite/">pyrasite</a> and <a href="https://pypi.org/project/guppy3/">guppy3</a>.</p>
+
+<!-- more -->
+
+
+<h3>Install pyrasite</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pip install pyrasite
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>pyrasite</code> allows you to attach to a running Python process and run arbitrary Python code. It needs ptrace to function properly and the way to enable it varies depending on your OS. For Ubuntu, you can do:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo sysctl -w kernel.yama.ptrace_scope<span class="o">=</span>0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you use <code>Conda</code>, you might need to run <code>unset LD_LIBRARY_PATH</code> so that <code>gdb</code> can use the system <code>libstdc++.so</code> instead of the one installed inside your conda env which can be incompatible.</p>
+
+<h3>Install guppy3</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pip install guppy3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>guppy3</code> has a subpackage <code>heapy</code> that allows you to inspect the heap.</p>
+
+<h3>Dump Heap</h3>
+
+<p>Once everything is installed, we can then use pyrasite to attach to the target running Python process:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pyrasite-shell &lt;pid&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This attaches to the process and opens a REPL that you can run the heap dump code using <code>guppy3</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">guppy</span> <span class="kn">import</span> <span class="n">hpy</span>
+</span><span class='line'><span class="n">h</span> <span class="o">=</span> <span class="n">hpy</span><span class="p">()</span>
+</span><span class='line'><span class="n">heap</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">heap</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">heap</span><span class="o">.</span><span class="n">all</span><span class="p">)</span> <span class="c"># print the heap dump</span>
+</span><span class='line'><span class="sd">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="sd">Partition of a set of 222038 objects. Total size = 26540189 bytes.</span>
+</span><span class='line'><span class="sd"> Index  Count   %     Size   % Cumulative  % Kind (class / dict of class)</span>
+</span><span class='line'><span class="sd">     0  67095  30  6591256  25   6591256  25 str</span>
+</span><span class='line'><span class="sd">     1  50143  23  3623400  14  10214656  38 tuple</span>
+</span><span class='line'><span class="sd">     2  14415   6  2563320  10  12777976  48 types.CodeType</span>
+</span><span class='line'><span class="sd">     3  28124  13  2205321   8  14983297  56 bytes</span>
+</span><span class='line'><span class="sd">     4   2175   1  2064360   8  17047657  64 type</span>
+</span><span class='line'><span class="sd">     5   4816   2  1962952   7  19010609  72 dict (no owner)</span>
+</span><span class='line'><span class="sd">     6  13577   6  1846472   7  20857081  79 function</span>
+</span><span class='line'><span class="sd">     7   2175   1  1087024   4  21944105  83 dict of type</span>
+</span><span class='line'><span class="sd">     8    690   0  1019024   4  22963129  87 dict of module</span>
+</span><span class='line'><span class="sd">     9  10472   5   312536   1  23275665  88 int</span>
+</span><span class='line'><span class="sd">    10    273   0   244608   1  23520273  89 google._upb._message.MessageMeta</span>
+</span><span class='line'><span class="sd">&quot;&quot;&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="n">heap</span><span class="o">.</span><span class="n">all</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">shpaths</span><span class="p">)</span> <span class="c"># print the shortest path from root to object with index 10</span>
+</span><span class='line'><span class="sd">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="sd"> 0: hp.Root.i0_modules[&#39;ray._private.gcs_utils&#39;].__dict__[&#39;ActorTableData&#39;]</span>
+</span><span class='line'><span class="sd"> 1: hp.Root.i0_modules[&#39;ray._private.gcs_utils&#39;].__dict__[&#39;AvailableResources&#39;]</span>
+</span><span class='line'><span class="sd"> 2: hp.Root.i0_modules[&#39;ray._private.gcs_utils&#39;].__dict__[&#39;ErrorTableData&#39;]</span>
+</span><span class='line'><span class="sd"> 3: hp.Root.i0_modules[&#39;ray._private.gcs_utils&#39;].__dict__[&#39;GcsEntry&#39;]</span>
+</span><span class='line'><span class="sd"> 4: hp.Root.i0_modules[&#39;ray._private.gcs_utils&#39;].__dict__[&#39;GcsNodeInfo&#39;]</span>
+</span><span class='line'><span class="sd"> 5: hp.Root.i0_modules[&#39;ray._private.gcs_utils&#39;].__dict__[&#39;JobConfig&#39;]</span>
+</span><span class='line'><span class="sd"> 6: hp.Root.i0_modules[&#39;ray._private.gcs_utils&#39;].__dict__[&#39;JobTableData&#39;]</span>
+</span><span class='line'><span class="sd"> 7: hp.Root.i0_modules[&#39;ray._private.gcs_utils&#39;].__dict__[&#39;PlacementGroupTableData&#39;]</span>
+</span><span class='line'><span class="sd"> 8: hp.Root.i0_modules[&#39;ray._private.gcs_utils&#39;].__dict__[&#39;PubSubMessage&#39;]</span>
+</span><span class='line'><span class="sd"> 9: hp.Root.i0_modules[&#39;ray._private.gcs_utils&#39;].__dict__[&#39;ResourceDemand&#39;]</span>
+</span><span class='line'><span class="sd">&lt;... 271 more paths ...&gt;</span>
+</span><span class='line'><span class="sd">&quot;&quot;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Learning Neural Networks]]></title>
+    <link href="http://blog.jjyao.me/blog/2023/05/07/learning-neural-networks/"/>
+    <updated>2023-05-07T21:54:04-07:00</updated>
+    <id>http://blog.jjyao.me/blog/2023/05/07/learning-neural-networks</id>
+    <content type="html"><![CDATA[<p>This post lists materials that I find useful during my journey of learning neural networks from scratch.</p>
+
+<!-- more -->
+
+
+<h3>Victor Zhou&rsquo;s Neural Networks From Scratch</h3>
+
+<p><a href="https://victorzhou.com/series/neural-networks-from-scratch/">Neural Networks From Scratch</a> is a 4-post series
+that introduces classic neural networks, recurrent neural networks (RNNs) and convolutional neural networks (CNNs).
+It doesn&rsquo;t require any prior knowledge except for some math. One good thing about this series is that it&rsquo;s very hands-on and you will learn, step-by-step, how to write a simple nueral network from scratch using only numpy to solve a real problem.</p>
+
+<h3>Michael Nielsen&rsquo;s Visual proof that neural nets can compute any function</h3>
+
+<p><a href="http://neuralnetworksanddeeplearning.com/chap4.html">Visual proof that neural nets can compute any function</a> gives a visual explanation of the <a href="https://en.wikipedia.org/wiki/Universal_approximation_theorem">universal approximation theorem</a> that neural networks can be used to approximate any continuous function to any desired precision.</p>
+
+<h3>Andrej Karpathy&rsquo;s Neural Networks: Zero to Hero</h3>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Learning Neural Networks]]></title>
+    <link href="http://blog.jjyao.me/blog/2023/05/07/learning-neural-networks/"/>
+    <updated>2023-05-07T00:00:00-07:00</updated>
+    <id>http://blog.jjyao.me/blog/2023/05/07/learning-neural-networks</id>
+    <content type="html"><![CDATA[<p>f</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[The 4 Disciplines of Execution]]></title>
@@ -2077,144 +2233,6 @@ Source: <a href="https://github.com/giltene/jHiccup">https://github.com/giltene/
 <h2>Solution</h2>
 
 <p>Change the <code>std::ifstream</code> read size by providing a user-provided buffer so that read won&rsquo;t cross the hugepage boundary or upgrade the Linux kernel version to include the fix.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Jonathan Lee]]></title>
-    <link href="http://blog.jjyao.me/blog/2017/09/10/jonathan-lee/"/>
-    <updated>2017-09-10T22:13:16-07:00</updated>
-    <id>http://blog.jjyao.me/blog/2017/09/10/jonathan-lee</id>
-    <content type="html"><![CDATA[<p>我说我喜欢你的歌，我不知道这算不算是一件好事。
-我说我喜欢你的词，总是道出我心中不欲人知的事。</p>
-
-<!-- more -->
-
-
-<p>念念不忘必有回响，我终于见到了李宗盛，在我人生参加的第一场演唱会上。在等待了多年以后，我终于在现场听到了那些陪伴了我无数个日夜的歌，那些叫做“词曲：李宗盛”的歌。</p>
-
-<p><img src="http://blog.jjyao.me/images/post/jonathan-lee/concert.jpeg">
-<img src="http://blog.jjyao.me/images/post/jonathan-lee/live.jpeg"></p>
-
-<p>下一次，我飘洋过海来看你。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[You Don't Exist, Go Away!]]></title>
-    <link href="http://blog.jjyao.me/blog/2017/08/30/you-dont-exist-go-away/"/>
-    <updated>2017-08-30T21:10:41-07:00</updated>
-    <id>http://blog.jjyao.me/blog/2017/08/30/you-dont-exist-go-away</id>
-    <content type="html"><![CDATA[<p>SSH asks me to go way because of ntp clock skew</p>
-
-<!-- more -->
-
-
-<h2>Scenario</h2>
-
-<p>When I try to ssh to a remote server from my linux desktop, I get:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>[jyao@localhost]$ ssh eng-portal
-</span><span class='line'>You don't exist, go away!</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then I realize that my shell prompt changes to <code>[I have no name!@localhost]$</code>. Apparently, <code>whoami</code> stops working:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>[I have no name!@localhost]$ whoami
-</span><span class='line'>whoami: cannot find name for user ID 16195</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Another thing I find accidentally is that if I disconnect my desktop from internet, <code>whoami</code> works again. So my guess is that <code>whoami</code> tries to get name from a remote server if there is internet connection. Otherwise, it falls back to use a local database which contains the correct data. My first theory is that the data on the remote server is corrupted. To figure out the remote server that <code>whoami</code> talks to, I run <code>strace</code>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>[I have no name!@localhost]$ strace -f -e trace=network -s 10000 whoami
-</span><span class='line'>...
-</span><span class='line'>connect(3, {sa_family=AF_FILE, path="/var/lib/likewise/.lsassd"}, 110) = 0
-</span><span class='line'>...</span></code></pre></td></tr></table></div></figure>
-
-
-<p>So <code>whoami</code> talks to <code>lsassd</code> daemon which then talks to <code>Active Directory</code> server. Based on my first theory, it looks like the data on the <code>Active Directory</code> server is corrupted. To confirm this, I run <code>lw-find-user-by-id</code>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>[I have no name!@localhost]$ /opt/likewise/bin/lw-find-user-by-id 16195
-</span><span class='line'>Clock skew detected with active directory server</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Hmm, this means that my first theory is wrong. To confirm the clock skew, I run <code>ntpq</code>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>[I have no name!@localhost]$ ntpq -p
-</span><span class='line'>remote           refid      st t when poll reach   delay   offset  jitter
-</span><span class='line'>==============================================================================
-</span><span class='line'>*lmn1-d1-infra01 10.251.184.29    2 u   44   64  177    1.612  -364830 129.863
-</span><span class='line'>+lmn1-d1-infra02 10.251.184.29    2 u   47   64  177    1.512  -364831 129.060</span></code></pre></td></tr></table></div></figure>
-
-
-<p>It turns out that the desktop clock is off by 6 minutes. Now the question arises: why <code>ntpd</code> fails to sync up the correct time with the ntp server after the clock skew happens? After googling, I find that <code>ntpd</code> indeed tries to fix the clock skew but just in a slow speed (<a href="https://serverfault.com/a/608157">https://serverfault.com/a/608157</a>). It takes <code>ntpd</code> more than 1 week to fix 6 minutes skew.</p>
-
-<h2>Solution</h2>
-
-<p>Force <code>ntpd</code> to do sync up using <code>-g</code> option:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>// disconnect from internet first as sudo needs whoami to be working
-</span><span class='line'>[I have no name!@localhost]$ sudo service ntpd stop
-</span><span class='line'>// connect to internet
-</span><span class='line'>[I have no name!@localhost]$ sudo ntpd -gq
-</span><span class='line'>[I have no name!@localhost]$ sudo service ntpd start</span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[What I Have Learned From CMU CS Education]]></title>
-    <link href="http://blog.jjyao.me/blog/2015/12/23/what-i-have-learned-from-cmu-cs-education/"/>
-    <updated>2015-12-23T20:51:02-08:00</updated>
-    <id>http://blog.jjyao.me/blog/2015/12/23/what-i-have-learned-from-cmu-cs-education</id>
-    <content type="html"><![CDATA[<p>在南京大学软件学院读完本科后我到CMU读了硕士。虽然在CMU只有短短的一年半时间，但我还是从多个方面体验到了CMU（美国）的计算机教育。这其中有很多东西值得国内的高校学习借鉴。</p>
-
-<!-- more -->
-
-
-<h2>Internship</h2>
-
-<p>美国的本科生有比国内本科生更多的实习机会。每年暑假他们都可以到一个公司（这其中不乏Google，Facebook这样的大公司）实习，这样下来他们在本科阶段就有3次实习机会（加拿大滑铁卢大学因为有co-op，所以学生有6次实习机会）。相反，国内学生暑假的时候一般都回家休息，只有大四的时候有一次实习机会。更多更早的实习机会对学生们来说意味着他们有机会运用学校所学知识去解决实际问题并且还能从工业界获得在学校里学不到的知识和经验。多次实习也让他们有机会对多个公司有更深入的了解，这样等到毕业选公司的时候可以做出更适合自己的选择。同时实习经历也能让他们毕业后更顺利地从学生身份过渡到员工身份。从另一个方面来讲，实习对公司也是有利的。相比面试而言，公司可以通过实习更全面地了解学生并从中挑出优秀适合公司的给出offer。同时实习也给了公司一个展示企业文化等的机会，以此来帮助公司吸引优秀的实习生毕业后回到公司。</p>
-
-<h2>Sabbatical</h2>
-
-<p>Sabbatical制度是指教授每工作几年后都有一次休假的机会。教授往往会借着这个机会到工业界工作一段时间。在我CMU读书期间，就有一个CS的教授利用Sabbatical的机会到Google Brain组工作了一年。这种Sabbatical机会促进了工业界和学术界的交流，让教授有机会了解到工业界的需求同时也让工业界有机会使用学术界的成果。</p>
-
-<h2>Guests</h2>
-
-<p>CMU很注重学术交流，经常会请各种guests来做讲座。有些课程会特地安排几节课来请外面的人到学校做讲座。比如我在CMU上的Storage课就请过GFS（Google File System）的开发者来做过讲座。又比如说CMU DB Group曾举办过&#8221;Seven Databases in Seven Weeks&#8221; Seminar活动，请来了知名的数据库开发人员来介绍他们的数据库。这些guests有来自工业界的也有来自学术界的。通过和他们的交流，我们能够扩展我们的视野，从多方面学习到相关知识。</p>
-
-<h2>TA</h2>
-
-<p>在CMU，上过一门课后就可以申请成为那门课的TA。当TA需要在office hour的时候解答学生的问题也需要批改作业和试卷。对于老师来讲，TA分担了一部分的工作。对于TA来讲，一方面可以增加点收入另一方面也会在答疑的过程中巩固所学知识。</p>
-
-<h2>Industry</h2>
-
-<p>和工业界的紧密联系是我对CMU计算机教育的另一个印象。Intel的Research Center就在校园里，研究员们会和PhD们共同参与研究。每年Parall Data Lab会举办一个为期三天的Retreat，邀请工业界的人来参加Workshop，向他们展示最新的研究成果，并给学生和教授一个和工业界深入交流的机会。同时每年会有大量工业界的guests受邀来学校做讲座。这样的紧密联系促进了知识的共享也能让学生多了些工业界的人脉。</p>
-
-<h2>Professors</h2>
-
-<p>在CMU，教授有Teaching Professor, Research Professor和Professor。擅长教书和擅长做研究的都可以找到适合自己的职位。这样可以避免让不擅长教书的人去教书这样的情况发生，对教授和学生都是一件好事。</p>
 ]]></content>
   </entry>
   
