@@ -15,12 +15,6 @@
   </url>
   
   <url>
-    <loc>http://blog.jjyao.me/blog/2023/05/07/learning-neural-networks/</loc>
-    <lastmod>2023-05-07T00:00:00-07:00</lastmod>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
     <loc>http://blog.jjyao.me/blog/2023/04/16/the-4-disciplines-of-execution/</loc>
     <lastmod>2023-04-16T21:21:10-07:00</lastmod>
     <priority>0.8</priority>
@@ -227,28 +221,28 @@
   
   <url>
     <loc>http://blog.jjyao.me/blog/archives/</loc>
-    <lastmod>2025-08-22T23:05:17-07:00</lastmod>
+    <lastmod>2025-08-22T23:13:33-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/</loc>
-    <lastmod>2025-08-22T23:05:17-07:00</lastmod>
+    <lastmod>2025-08-22T23:13:33-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/quotes/it-quotes.html</loc>
-    <lastmod>2025-08-22T23:05:17-07:00</lastmod>
+    <lastmod>2025-08-22T23:13:33-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.jjyao.me/quotes/quotes.html</loc>
-    <lastmod>2025-08-22T23:05:17-07:00</lastmod>
+    <lastmod>2025-08-22T23:13:33-07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
