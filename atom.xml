@@ -4,7 +4,7 @@
   <title><![CDATA[Jiajun Yao]]></title>
   <link href="http://blog.jjyao.me/atom.xml" rel="self"/>
   <link href="http://blog.jjyao.me/"/>
-  <updated>2025-10-06T00:51:33-07:00</updated>
+  <updated>2025-10-16T23:04:43-07:00</updated>
   <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -12,6 +12,46 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[LLM Learning Resources]]></title>
+    <link href="http://blog.jjyao.me/blog/2025/10/16/llm-learning-resources/"/>
+    <updated>2025-10-16T21:54:04-07:00</updated>
+    <id>http://blog.jjyao.me/blog/2025/10/16/llm-learning-resources</id>
+    <content type="html"><![CDATA[<p>This post lists resources that I find useful during my journey of learning LLM as a system enginer.</p>
+
+<!-- more -->
+
+
+<h2>Neural Networks</h2>
+
+<p>LLMs are large neural networks so having a basic understanding of what neural networks are is helpful.</p>
+
+<h4>Victor Zhou&rsquo;s Neural Networks From Scratch</h4>
+
+<p><a href="https://victorzhou.com/series/neural-networks-from-scratch/">Neural Networks From Scratch</a> is a 4-post series
+that introduces classic neural networks, recurrent neural networks (RNNs) and convolutional neural networks (CNNs).
+It doesn&rsquo;t require any prior knowledge except for some math. One good thing about this series is that it&rsquo;s very hands-on and you will learn, step-by-step, how to write a simple nueral network from scratch using only numpy to solve a real problem.</p>
+
+<h4>Michael Nielsen&rsquo;s Visual proof that neural nets can compute any function</h4>
+
+<p><a href="http://neuralnetworksanddeeplearning.com/chap4.html">Visual proof that neural nets can compute any function</a> gives a visual explanation of the <a href="https://en.wikipedia.org/wiki/Universal_approximation_theorem">universal approximation theorem</a> that neural networks can be used to approximate any continuous function to any desired precision.</p>
+
+<h2>LLM</h2>
+
+<h4>Andrej Karpathy&rsquo;s Neural Networks: Zero to Hero</h4>
+
+<p><a href="https://karpathy.ai/zero-to-hero.html">Neural Networks: Zero to Hero</a> is a hands-on course that starts with building a simple neural network from scratch and ends with building a GPT from scratch. It&rsquo;s a great course to learn LLM progressively.</p>
+
+<h3>Inference</h3>
+
+<p>The best way to learn LLM inference is writing an inference engine from scratch IMO and this helps you better understand model architectures as well.</p>
+
+<h4>Andrej Karpathy&rsquo;s llama2.c</h4>
+
+<p><a href="https://github.com/karpathy/llama2.c">llama2.c</a> is an inference engine for Llama 2 in one file of pure C. It can give you a taste of what LLM inference looks like. Based on it, I wrote a <a href="https://github.com/jjyao/llama2.rs">Rust implementation</a> with optimizations like tensor parallelism.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[High Output Management]]></title>
@@ -2279,26 +2319,6 @@ Source: <a href="https://github.com/giltene/jHiccup">https://github.com/giltene/
 <h2>Solution</h2>
 
 <p>Change the <code>std::ifstream</code> read size by providing a user-provided buffer so that read won&rsquo;t cross the hugepage boundary or upgrade the Linux kernel version to include the fix.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Jonathan Lee]]></title>
-    <link href="http://blog.jjyao.me/blog/2017/09/10/jonathan-lee/"/>
-    <updated>2017-09-10T22:13:16-07:00</updated>
-    <id>http://blog.jjyao.me/blog/2017/09/10/jonathan-lee</id>
-    <content type="html"><![CDATA[<p>我说我喜欢你的歌，我不知道这算不算是一件好事。
-我说我喜欢你的词，总是道出我心中不欲人知的事。</p>
-
-<!-- more -->
-
-
-<p>念念不忘必有回响，我终于见到了李宗盛，在我人生参加的第一场演唱会上。在等待了多年以后，我终于在现场听到了那些陪伴了我无数个日夜的歌，那些叫做“词曲：李宗盛”的歌。</p>
-
-<p><img src="http://blog.jjyao.me/images/post/jonathan-lee/concert.jpeg">
-<img src="http://blog.jjyao.me/images/post/jonathan-lee/live.jpeg"></p>
-
-<p>下一次，我飘洋过海来看你。</p>
 ]]></content>
   </entry>
   
