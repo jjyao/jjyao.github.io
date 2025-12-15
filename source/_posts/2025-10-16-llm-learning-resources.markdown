@@ -36,4 +36,4 @@ The best way to learn LLM inference is writing an inference engine from scratch 
 
 #### Andrej Karpathy's llama2.c
 
-[llama2.c](https://github.com/karpathy/llama2.c) is an inference engine for Llama 2 in one file of pure C. It can give you a taste of what LLM inference looks like. Based on it, I wrote a [Rust implementation](https://github.com/jjyao/llama2.rs) with optimizations like tensor parallelism.
+[llama2.c](https://github.com/karpathy/llama2.c) is an inference engine for Llama 2 in one file of pure C. It can give you a taste of what LLM inference looks like. Based on it, I wrote a [Rust implementation](https://github.com/jjyao/llm.edu/tree/main/llama2.rs) with optimizations like tensor parallelism.
