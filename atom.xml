@@ -4,7 +4,7 @@
   <title><![CDATA[Jiajun Yao]]></title>
   <link href="http://blog.jjyao.me/atom.xml" rel="self"/>
   <link href="http://blog.jjyao.me/"/>
-  <updated>2025-10-16T23:04:43-07:00</updated>
+  <updated>2025-12-16T10:47:52-08:00</updated>
   <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -12,6 +12,407 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Demystify Smaps]]></title>
+    <link href="http://blog.jjyao.me/blog/2025/12/14/demystify-smaps/"/>
+    <updated>2025-12-14T22:19:03-08:00</updated>
+    <id>http://blog.jjyao.me/blog/2025/12/14/demystify-smaps</id>
+    <content type="html"><![CDATA[<p>This post demystifies the Linux <code>/proc/&lt;pid&gt;/smaps</code> file and its <code>Shared_Clean</code>, <code>Shared_Dirty</code>, <code>Private_Clean</code> and <code>Private_Dirty</code> fields.</p>
+
+<!-- more -->
+
+
+<h2>What is smaps</h2>
+
+<p>The smaps file in Linux provides detailed information for each of the process&rsquo;s VMAs (Virtual Memory Areas), represented by <a href="https://github.com/torvalds/linux/blob/v5.15/include/linux/mm_types.h#L319">struct vm_area_struct</a>. The content of smaps file of a process is constructed by <a href="https://github.com/torvalds/linux/blob/v5.15/fs/proc/task_mmu.c#L955">iterating</a> through each VMA and calling <a href="https://github.com/torvalds/linux/blob/v5.15/fs/proc/task_mmu.c#L811">show_smap</a>. The <code>Shared_Clean</code>, <code>Shared_Dirty</code>, <code>Private_Clean</code> and <code>Private_Dirty</code> fields are printed <a href="https://github.com/torvalds/linux/blob/v5.15/fs/proc/task_mmu.c#L790">here</a> and calculated <a href="https://github.com/torvalds/linux/blob/v5.15/fs/proc/task_mmu.c#L403">here</a>.</p>
+
+<h2>Shared vs Private</h2>
+
+<p>From the perspective of smaps, whether a page is considered shared or private is determined by its <a href="https://github.com/torvalds/linux/blob/v5.15/fs/proc/task_mmu.c#L467C18-L467C31">page_mapcount</a> which is basically <a href="https://github.com/torvalds/linux/blob/v5.15/include/linux/mm.h#L877">page->_mapcount</a> NOT by the <code>MAP_SHARED</code> or <code>MAP_PRIVATE</code> flags used in <a href="https://man7.org/linux/man-pages/man2/mmap.2.html">mmap</a>. <a href="https://github.com/torvalds/linux/blob/v5.15/include/linux/mm_types.h#L201">_mapcount</a> of a page is a counter tracks how many page table entries (PTEs) point to this physical page across ALL processes. A page is considered shared if there are at least 2 PTEs point to it.</p>
+
+<p>Let&rsquo;s verify this with different cases:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>dd <span class="k">if</span><span class="o">=</span>/dev/zero <span class="nv">of</span><span class="o">=</span>/tmp/smaps  <span class="nv">bs</span><span class="o">=</span>1M <span class="nv">count</span><span class="o">=</span>1024
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;stdlib.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;sys/mman.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;sys/stat.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;fcntl.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;string.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="s">&quot;/tmp/smaps&quot;</span><span class="p">,</span> <span class="n">O_RDWR</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">fd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">perror</span><span class="p">(</span><span class="s">&quot;Failed to open&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">const</span> <span class="kt">int</span> <span class="n">num_mmaps</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+</span><span class='line'>  <span class="k">const</span> <span class="kt">bool</span> <span class="n">map_shared</span> <span class="o">=</span> <span class="n">strcmp</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s">&quot;MAP_SHARED&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">const</span> <span class="kt">bool</span> <span class="n">map_populate</span> <span class="o">=</span> <span class="n">strcmp</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="s">&quot;MAP_POPULATE&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Command line args: num_mmaps=%d, map_shared=%d, map_populate=%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+</span><span class='line'>         <span class="n">num_mmaps</span><span class="p">,</span> <span class="n">map_shared</span><span class="p">,</span> <span class="n">map_populate</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">num_mmaps</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="o">*</span><span class="n">map</span> <span class="o">=</span> <span class="n">mmap</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="mi">512</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span> <span class="n">PROT_READ</span> <span class="o">|</span> <span class="n">PROT_WRITE</span><span class="p">,</span>
+</span><span class='line'>                     <span class="p">(</span><span class="n">map_shared</span> <span class="o">?</span> <span class="nl">MAP_SHARED</span> <span class="p">:</span> <span class="n">MAP_PRIVATE</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">map_populate</span> <span class="o">?</span> <span class="nl">MAP_POPULATE</span> <span class="p">:</span> <span class="mi">0</span><span class="p">),</span>
+</span><span class='line'>                     <span class="n">fd</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">map</span> <span class="o">==</span> <span class="n">MAP_FAILED</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">perror</span><span class="p">(</span><span class="s">&quot;Failed to mmap&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">int</span> <span class="o">*</span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span> <span class="n">map</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;data = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">sleep</span><span class="p">(</span><span class="mi">2000000</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is a test program that mmaps 512M out of a 1GB file in various ways.</p>
+
+<h3>Single MAP_SHARED mmap</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./test <span class="m">1</span> MAP_SHARED NO_MAP_POPULATE
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Content of smaps:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>7f418625d000-7f41a625d000 rw-s <span class="m">00000000</span> 103:01 <span class="m">132</span>                       /tmp/smaps
+</span><span class='line'>Size:             <span class="m">524288</span> kB
+</span><span class='line'>KernelPageSize:        <span class="m">4</span> kB
+</span><span class='line'>MMUPageSize:           <span class="m">4</span> kB
+</span><span class='line'>Rss:                  <span class="m">64</span> kB
+</span><span class='line'>Pss:                  <span class="m">64</span> kB
+</span><span class='line'>Shared_Clean:          <span class="m">0</span> kB
+</span><span class='line'>Shared_Dirty:          <span class="m">0</span> kB
+</span><span class='line'>Private_Clean:        <span class="m">64</span> kB
+</span><span class='line'>Private_Dirty:         <span class="m">0</span> kB
+</span><span class='line'>...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Several things to note here:</p>
+
+<ul>
+<li>The mmaped pages are considered private even though we use <code>MAP_SHARED</code> because each physical page only has 1 PTE points to it.</li>
+<li>mmap is lazy and doesn&rsquo;t populate the page table unless MAP_POPULATE is specified and that&rsquo;s why we didn&rsquo;t see 524288 KB in Private_Clean.</li>
+<li>We also didn&rsquo;t see 4 KB in Private_Clean even though we just read one integer from the file and that&rsquo;s due to <a href="https://github.com/torvalds/linux/blob/v5.15/mm/memory.c#L4107">fault-around</a>.</li>
+</ul>
+
+
+<h3>Multiple MAP_SHARED mmaps in single process</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./test <span class="m">2</span> MAP_SHARED NO_MAP_POPULATE
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Content of smaps:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>7f764be9a000-7f766be9a000 rw-s <span class="m">00000000</span> 103:01 <span class="m">132</span>                       /tmp/smaps
+</span><span class='line'>Size:             <span class="m">524288</span> kB
+</span><span class='line'>KernelPageSize:        <span class="m">4</span> kB
+</span><span class='line'>MMUPageSize:           <span class="m">4</span> kB
+</span><span class='line'>Rss:                  <span class="m">64</span> kB
+</span><span class='line'>Pss:                  <span class="m">32</span> kB
+</span><span class='line'>Shared_Clean:         <span class="m">64</span> kB
+</span><span class='line'>Shared_Dirty:          <span class="m">0</span> kB
+</span><span class='line'>Private_Clean:         <span class="m">0</span> kB
+</span><span class='line'>Private_Dirty:         <span class="m">0</span> kB
+</span><span class='line'>...
+</span><span class='line'>7f766be9a000-7f768be9a000 rw-s <span class="m">00000000</span> 103:01 <span class="m">132</span>                       /tmp/smaps
+</span><span class='line'>Size:             <span class="m">524288</span> kB
+</span><span class='line'>KernelPageSize:        <span class="m">4</span> kB
+</span><span class='line'>MMUPageSize:           <span class="m">4</span> kB
+</span><span class='line'>Rss:                  <span class="m">64</span> kB
+</span><span class='line'>Pss:                  <span class="m">32</span> kB
+</span><span class='line'>Shared_Clean:         <span class="m">64</span> kB
+</span><span class='line'>Shared_Dirty:          <span class="m">0</span> kB
+</span><span class='line'>Private_Clean:         <span class="m">0</span> kB
+</span><span class='line'>Private_Dirty:         <span class="m">0</span> kB
+</span><span class='line'>...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In this case, we mmaps the same file twice in the same process so each page now has 2 PTEs point to it and that&rsquo;s why they are considered shared.</p>
+
+<h3>Multiple MAP_SHARED mmaps in multiple processes</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./test <span class="m">1</span> MAP_SHARED NO_MAP_POPULATE
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./test <span class="m">1</span> MAP_SHARED NO_MAP_POPULATE
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Content of smaps:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>7fb76d49e000-7fb78d49e000 rw-s <span class="m">00000000</span> 103:01 <span class="m">132</span>                       /tmp/smaps
+</span><span class='line'>Size:             <span class="m">524288</span> kB
+</span><span class='line'>KernelPageSize:        <span class="m">4</span> kB
+</span><span class='line'>MMUPageSize:           <span class="m">4</span> kB
+</span><span class='line'>Rss:                  <span class="m">64</span> kB
+</span><span class='line'>Pss:                  <span class="m">32</span> kB
+</span><span class='line'>Shared_Clean:         <span class="m">64</span> kB
+</span><span class='line'>Shared_Dirty:          <span class="m">0</span> kB
+</span><span class='line'>Private_Clean:         <span class="m">0</span> kB
+</span><span class='line'>Private_Dirty:         <span class="m">0</span> kB
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>7f4e1eb61000-7f4e3eb61000 rw-s <span class="m">00000000</span> 103:01 <span class="m">132</span>                       /tmp/smaps
+</span><span class='line'>Size:             <span class="m">524288</span> kB
+</span><span class='line'>KernelPageSize:        <span class="m">4</span> kB
+</span><span class='line'>MMUPageSize:           <span class="m">4</span> kB
+</span><span class='line'>Rss:                  <span class="m">64</span> kB
+</span><span class='line'>Pss:                  <span class="m">32</span> kB
+</span><span class='line'>Shared_Clean:         <span class="m">64</span> kB
+</span><span class='line'>Shared_Dirty:          <span class="m">0</span> kB
+</span><span class='line'>Private_Clean:         <span class="m">0</span> kB
+</span><span class='line'>Private_Dirty:         <span class="m">0</span> kB
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In this case, we mmaps the same file once in two processes so each page also has 2 PTEs point to it and that&rsquo;s why they are considered shared.</p>
+
+<h3>Multiple MAP_PRIVATE mmaps in single process</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./test <span class="m">2</span> MAP_PRIVATE NO_MAP_POPULATE
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Content of smaps:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>7f726c909000-7f728c909000 rw-p <span class="m">00000000</span> 103:01 <span class="m">132</span>                       /tmp/smaps
+</span><span class='line'>Size:             <span class="m">524288</span> kB
+</span><span class='line'>KernelPageSize:        <span class="m">4</span> kB
+</span><span class='line'>MMUPageSize:           <span class="m">4</span> kB
+</span><span class='line'>Rss:                  <span class="m">64</span> kB
+</span><span class='line'>Pss:                  <span class="m">32</span> kB
+</span><span class='line'>Shared_Clean:         <span class="m">64</span> kB
+</span><span class='line'>Shared_Dirty:          <span class="m">0</span> kB
+</span><span class='line'>Private_Clean:         <span class="m">0</span> kB
+</span><span class='line'>Private_Dirty:         <span class="m">0</span> kB
+</span><span class='line'>...
+</span><span class='line'>7f728c909000-7f72ac909000 rw-p <span class="m">00000000</span> 103:01 <span class="m">132</span>                       /tmp/smaps
+</span><span class='line'>Size:             <span class="m">524288</span> kB
+</span><span class='line'>KernelPageSize:        <span class="m">4</span> kB
+</span><span class='line'>MMUPageSize:           <span class="m">4</span> kB
+</span><span class='line'>Rss:                  <span class="m">64</span> kB
+</span><span class='line'>Pss:                  <span class="m">32</span> kB
+</span><span class='line'>Shared_Clean:         <span class="m">64</span> kB
+</span><span class='line'>Shared_Dirty:          <span class="m">0</span> kB
+</span><span class='line'>Private_Clean:         <span class="m">0</span> kB
+</span><span class='line'>Private_Dirty:         <span class="m">0</span> kB
+</span><span class='line'>...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Since MAP_PRIVATE is copy-on-write (COW) and we only read from the file so the two VMAs are backed by the same physical pages and hence those pages are considered shared.</p>
+
+<h3>Multiple MAP_PRIVATE mmaps with MAP_POPULATE in single process</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./test <span class="m">2</span> MAP_PRIVATE MAP_POPULATE
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Content of smaps:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>7fafbaabe000-7fafdaabe000 rw-p <span class="m">00000000</span> 103:01 <span class="m">132</span>                       /tmp/smaps
+</span><span class='line'>Size:             <span class="m">524288</span> kB
+</span><span class='line'>KernelPageSize:        <span class="m">4</span> kB
+</span><span class='line'>MMUPageSize:           <span class="m">4</span> kB
+</span><span class='line'>Rss:              <span class="m">524288</span> kB
+</span><span class='line'>Pss:              <span class="m">524288</span> kB
+</span><span class='line'>Shared_Clean:          <span class="m">0</span> kB
+</span><span class='line'>Shared_Dirty:          <span class="m">0</span> kB
+</span><span class='line'>Private_Clean:         <span class="m">0</span> kB
+</span><span class='line'>Private_Dirty:    <span class="m">524288</span> kB
+</span><span class='line'>...
+</span><span class='line'>7fafdaabe000-7faffaabe000 rw-p <span class="m">00000000</span> 103:01 <span class="m">132</span>                       /tmp/smaps
+</span><span class='line'>Size:             <span class="m">524288</span> kB
+</span><span class='line'>KernelPageSize:        <span class="m">4</span> kB
+</span><span class='line'>MMUPageSize:           <span class="m">4</span> kB
+</span><span class='line'>Rss:              <span class="m">524288</span> kB
+</span><span class='line'>Pss:              <span class="m">524288</span> kB
+</span><span class='line'>Shared_Clean:          <span class="m">0</span> kB
+</span><span class='line'>Shared_Dirty:          <span class="m">0</span> kB
+</span><span class='line'>Private_Clean:         <span class="m">0</span> kB
+</span><span class='line'>Private_Dirty:    <span class="m">524288</span> kB
+</span><span class='line'>...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If the mmap is PROT_WRITE, MAP_PRIVATE and MAP_POPULATE, then kernel will not only populate the page tables but also <a href="https://github.com/torvalds/linux/blob/v5.15/mm/gup.c#L1477">eagerly triggers COW</a> so each VMA is backed by their own private physcial pages.</p>
+
+<h2>Clean vs Dirty</h2>
+
+<p>From the perspective of smaps, whether a page is considered clean or dirty is determined by <a href="https://github.com/torvalds/linux/blob/v5.15/fs/proc/task_mmu.c#L419">this</a>. Conceptually a page is dirty if it cannot just be discarded without data loss, which means it has dirty writes that haven&rsquo;t been flushed to the underlying file or swap space yet.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[LLM Learning Resources]]></title>
@@ -49,7 +450,7 @@ It doesn&rsquo;t require any prior knowledge except for some math. One good thin
 
 <h4>Andrej Karpathy&rsquo;s llama2.c</h4>
 
-<p><a href="https://github.com/karpathy/llama2.c">llama2.c</a> is an inference engine for Llama 2 in one file of pure C. It can give you a taste of what LLM inference looks like. Based on it, I wrote a <a href="https://github.com/jjyao/llama2.rs">Rust implementation</a> with optimizations like tensor parallelism.</p>
+<p><a href="https://github.com/karpathy/llama2.c">llama2.c</a> is an inference engine for Llama 2 in one file of pure C. It can give you a taste of what LLM inference looks like. Based on it, I wrote a <a href="https://github.com/jjyao/llm.edu/tree/main/llama2.rs">Rust implementation</a> with optimizations like tensor parallelism.</p>
 ]]></content>
   </entry>
   
@@ -2143,182 +2544,6 @@ Source: <a href="https://github.com/giltene/jHiccup">https://github.com/giltene/
 </span><span class='line'>awk -F<span class="s2">&quot;: &quot;</span> <span class="s1">&#39;/\[GC/ {t = $2; l = 1; while ((l == 1) &amp;&amp; index($0, &quot;Total time&quot;) == 0) { l = getline; } if (l == 1) {print t*1000.0, $4*1000.0;}}&#39;</span> gc.log
 </span></code></pre></td></tr></table></div></figure>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[HugeTLBFS Read Bug]]></title>
-    <link href="http://blog.jjyao.me/blog/2017/11/27/hugetlbfs-read-bug/"/>
-    <updated>2017-11-27T22:29:46-08:00</updated>
-    <id>http://blog.jjyao.me/blog/2017/11/27/hugetlbfs-read-bug</id>
-    <content type="html"><![CDATA[<p>Hit a Linux kernel bug that <code>read()</code> returns wrong data if it crosses a hugepage boundary.</p>
-
-<!-- more -->
-
-
-<h2>Scenario</h2>
-
-<p>When I read a file in the <code>hugetlbfs</code> using <code>std::ifstream</code>, I fail to get the exact data of the file.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">file</span> <span class="o">=</span> <span class="s">&quot;/mnt/huge/foo&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="n">std</span><span class="o">::</span><span class="n">ifstream</span> <span class="n">fin</span><span class="p">;</span>
-</span><span class='line'><span class="n">fin</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">ifstream</span><span class="o">::</span><span class="n">binary</span><span class="p">);</span>
-</span><span class='line'><span class="kt">char</span> <span class="n">c</span><span class="p">;</span>
-</span><span class='line'><span class="k">while</span> <span class="p">(</span><span class="n">fin</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">c</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="n">fin</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>However, if I use <code>fread()</code> I can get the correct data:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">file</span> <span class="o">=</span> <span class="s">&quot;/mnt/huge/foo&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="kt">FILE</span><span class="o">*</span> <span class="n">fin</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="n">file</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="s">&quot;rb&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="kt">char</span> <span class="n">c</span><span class="p">;</span>
-</span><span class='line'><span class="k">while</span> <span class="p">(</span><span class="n">fread</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">fin</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">c</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="n">fclose</span><span class="p">(</span><span class="n">fin</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>To figure out the reason, I <code>strace</code> these two programs:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">open</span><span class="p">(</span><span class="s">&quot;/mnt/huge/foo&quot;</span><span class="p">,</span> <span class="n">O_RDONLY</span><span class="p">)</span>         <span class="o">=</span> <span class="mi">3</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\220</span><span class="s">N</span><span class="se">\210\344\36\227\276\303\305\301\334\346\246\245\371</span><span class="s">7tmg/</span><span class="se">\25\235</span><span class="s">C</span><span class="se">\365</span><span class="s">k</span><span class="se">\7\273</span><span class="s">T2</span><span class="se">\266\220\327</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">8191</span><span class="p">)</span> <span class="o">=</span> <span class="mi">8191</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;%</span><span class="se">\361</span><span class="s">!</span><span class="se">\253</span><span class="s">lek&amp;</span><span class="se">\30\306\370\333</span><span class="s">f</span><span class="se">\304\357</span><span class="s">L6@z</span><span class="se">\224</span><span class="s">W&lt;ef</span><span class="se">\335\206\225\246\342</span><span class="s">!</span><span class="se">\327\6</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">8191</span><span class="p">)</span> <span class="o">=</span> <span class="mi">8191</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;B</span><span class="se">\222\327</span><span class="s">-</span><span class="se">\17</span><span class="s">`&#39;</span><span class="se">\250</span><span class="s">E[]</span><span class="se">\327</span><span class="s">mi</span><span class="se">\37\330</span><span class="s">8u</span><span class="se">\250\231</span><span class="s">F</span><span class="se">\200\250\35</span><span class="s">-</span><span class="se">\v\276\245</span><span class="s">&gt;H</span><span class="se">\321</span><span class="s">R&quot;</span><span class="p">...,</span> <span class="mi">8191</span><span class="p">)</span> <span class="o">=</span> <span class="mi">8191</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;u</span><span class="se">\311</span><span class="s">w</span><span class="se">\336\10</span><span class="s">h</span><span class="se">\374\f\214\301\376</span><span class="s">-</span><span class="se">\025</span><span class="s">8&#39;</span><span class="se">\263</span><span class="s">;Iu1</span><span class="se">\273\267\345\313\246\22</span><span class="s">O</span><span class="se">\320\335\254</span><span class="s">&#39;</span><span class="se">\7</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">8191</span><span class="p">)</span> <span class="o">=</span> <span class="mi">8191</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\342\265\263\314\222\265</span><span class="s">rr</span><span class="se">\265</span><span class="s">*A</span><span class="se">\27\34</span><span class="s">&lt;</span><span class="se">\342\344</span><span class="s">F</span><span class="se">\244</span><span class="s">|</span><span class="se">\371\f\231\345\331\343</span><span class="s">=</span><span class="se">\321</span><span class="s">SZx</span><span class="se">\273\240</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">8191</span><span class="p">)</span> <span class="o">=</span> <span class="mi">8191</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;=?</span><span class="se">\241\337\20\235\367\233\10\234</span><span class="s">;^</span><span class="se">\234\337\274\322\237\242\346\32\32\233</span><span class="s">gb</span><span class="se">\231\236</span><span class="s">DZ</span><span class="se">\336</span><span class="s">t</span><span class="se">\364</span><span class="s">]&quot;</span><span class="p">...,</span> <span class="mi">8191</span><span class="p">)</span> <span class="o">=</span> <span class="mi">8191</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;1</span><span class="se">\233\21</span><span class="s">z</span><span class="se">\345\355</span><span class="s">?</span><span class="se">\243\342\361</span><span class="s">e</span><span class="se">\335\334\246\363\316</span><span class="s">A</span><span class="se">\267\361</span><span class="s">Nv</span><span class="se">\304\250\225\240</span><span class="s">Q</span><span class="se">\267\31\r\265\314</span><span class="s">&#39;&quot;</span><span class="p">...,</span> <span class="mi">8191</span><span class="p">)</span> <span class="o">=</span> <span class="mi">8191</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;$</span><span class="se">\24\277\\\213\320</span><span class="s">jGj</span><span class="se">\n</span><span class="s">b4</span><span class="se">\317\370</span><span class="s">p</span><span class="se">\216</span><span class="s">&gt;5V</span><span class="se">\331\1\256</span><span class="s">1</span><span class="se">\275\24\233\326</span><span class="s">d+</span><span class="se">\1</span><span class="s">UM&quot;</span><span class="p">...,</span> <span class="mi">8191</span><span class="p">)</span> <span class="o">=</span> <span class="mi">8191</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\262\355\327</span><span class="s">!</span><span class="se">\2</span><span class="s">h</span><span class="se">\303\332\373\16\257\3\32</span><span class="s">y!O</span><span class="se">\303</span><span class="s">]5</span><span class="se">\331\256</span><span class="s">?Q</span><span class="se">\277</span><span class="s">t</span><span class="se">\27\262\223\316\357</span><span class="s">j(&quot;</span><span class="p">...,</span> <span class="mi">8191</span><span class="p">)</span> <span class="o">=</span> <span class="mi">8191</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;pd</span><span class="se">\204</span><span class="s">3</span><span class="se">\261\350</span><span class="s">C</span><span class="se">\313\356\200\366</span><span class="s">}</span><span class="se">\17\25\335\240</span><span class="s">?</span><span class="se">\357\225</span><span class="s">Fs</span><span class="se">\226</span><span class="s">qKW</span><span class="se">\241</span><span class="s">r</span><span class="se">\227</span><span class="s">b</span><span class="se">\242</span><span class="s">4</span><span class="se">\347</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">8191</span><span class="p">)</span> <span class="o">=</span> <span class="mi">8191</span>
-</span><span class='line'><span class="p">...</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">open</span><span class="p">(</span><span class="s">&quot;/mnt/huge/foo&quot;</span><span class="p">,</span> <span class="n">O_RDONLY</span><span class="p">)</span>         <span class="o">=</span> <span class="mi">3</span>
-</span><span class='line'><span class="n">fstat</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="p">{</span><span class="n">st_mode</span><span class="o">=</span><span class="n">S_IFREG</span><span class="o">|</span><span class="mo">0644</span><span class="p">,</span> <span class="n">st_size</span><span class="o">=</span><span class="mi">5242880</span><span class="p">,</span> <span class="p">...})</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span class='line'><span class="n">mmap</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="mi">4096</span><span class="p">,</span> <span class="n">PROT_READ</span><span class="o">|</span><span class="n">PROT_WRITE</span><span class="p">,</span> <span class="n">MAP_PRIVATE</span><span class="o">|</span><span class="n">MAP_ANONYMOUS</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="mh">0x7f9328b03000</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\220</span><span class="s">N</span><span class="se">\210\344\36\227\276\303\305\301\334\346\246\245\371</span><span class="s">7tmg/</span><span class="se">\25\235</span><span class="s">C</span><span class="se">\365</span><span class="s">k</span><span class="se">\7\273</span><span class="s">T2</span><span class="se">\266\220\327</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\v\327\265</span><span class="s">M</span><span class="se">\276\253\357\325</span><span class="s">m</span><span class="se">\244\253\351\237\350\273\21</span><span class="s">E&lt;</span><span class="se">\326\356\030</span><span class="s">03</span><span class="se">\210\5\277\210</span><span class="s">h</span><span class="se">\200</span><span class="s">V5</span><span class="se">\376</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\361</span><span class="s">!</span><span class="se">\253</span><span class="s">lek&amp;</span><span class="se">\30\306\370\333</span><span class="s">f</span><span class="se">\304\357</span><span class="s">L6@z</span><span class="se">\224</span><span class="s">W&lt;ef</span><span class="se">\335\206\225\246\342</span><span class="s">!</span><span class="se">\327\6\t</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\343\300\202</span><span class="s">/</span><span class="se">\343\t\300\340\332\215\214</span><span class="s">8</span><span class="se">\226\342\251\377\f</span><span class="s">q_</span><span class="se">\21</span><span class="s">n</span><span class="se">\370\212\273</span><span class="s">tn</span><span class="se">\305\210</span><span class="s">#</span><span class="se">\320</span><span class="s">@`&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\327</span><span class="s">-</span><span class="se">\17</span><span class="s">`&#39;</span><span class="se">\250</span><span class="s">E[]</span><span class="se">\327</span><span class="s">mi</span><span class="se">\37\330</span><span class="s">8u</span><span class="se">\250\231</span><span class="s">F</span><span class="se">\200\250\35</span><span class="s">-</span><span class="se">\v\276\245</span><span class="s">&gt;H</span><span class="se">\321</span><span class="s">R</span><span class="se">\277\36</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;t</span><span class="se">\346</span><span class="s">p0</span><span class="se">\204</span><span class="s">OeD</span><span class="se">\211\256\233</span><span class="s">g</span><span class="se">\242\351</span><span class="s">3</span><span class="se">\3</span><span class="s">X</span><span class="se">\367\032</span><span class="s">3</span><span class="se">\332\235\330\215\375\261</span><span class="s">G</span><span class="se">\234\217\17\34\375</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\336\10</span><span class="s">h</span><span class="se">\374\f\214\301\376</span><span class="s">-</span><span class="se">\025</span><span class="s">8&#39;</span><span class="se">\263</span><span class="s">;Iu1</span><span class="se">\273\267\345\313\246\22</span><span class="s">O</span><span class="se">\320\335\254</span><span class="s">&#39;</span><span class="se">\7\205\r\325</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;xK</span><span class="se">\373\233\300\n\354\350</span><span class="s">&gt;s</span><span class="se">\243\270\365</span><span class="s">D</span><span class="se">\276\263\226</span><span class="s">/</span><span class="se">\276\27</span><span class="s">S</span><span class="se">\225\&quot;</span><span class="s">yL</span><span class="se">\4</span><span class="s">V</span><span class="se">\352\272\26</span><span class="s">b</span><span class="se">\261</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\222\265</span><span class="s">rr</span><span class="se">\265</span><span class="s">*A</span><span class="se">\27\34</span><span class="s">&lt;</span><span class="se">\342\344</span><span class="s">F</span><span class="se">\244</span><span class="s">|</span><span class="se">\371\f\231\345\331\343</span><span class="s">=</span><span class="se">\321</span><span class="s">SZx</span><span class="se">\273\240</span><span class="s">)</span><span class="se">\245</span><span class="s">h</span><span class="se">\224</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;P</span><span class="se">\332</span><span class="s">o&gt;+</span><span class="se">\355\17\372\251\275</span><span class="s">n</span><span class="se">\266</span><span class="s"> </span><span class="se">\n\310</span><span class="s">aB</span><span class="se">\210\235\30</span><span class="s">u{</span><span class="se">\365\34\255\367\36\375\365\v\27\331</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\235\367\233\10\234</span><span class="s">;^</span><span class="se">\234\337\274\322\237\242\346\32\32\233</span><span class="s">gb</span><span class="se">\231\236</span><span class="s">DZ</span><span class="se">\336</span><span class="s">t</span><span class="se">\364</span><span class="s">]</span><span class="se">\225\216</span><span class="s">.=C&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
-</span><span class='line'><span class="n">read</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;p$</span><span class="se">\350</span><span class="s">r</span><span class="se">\31\215\&quot;\225\331</span><span class="s">&amp;</span><span class="se">\354\200\361\344\333</span><span class="s">L</span><span class="se">\201\37</span><span class="s">e</span><span class="se">\r\&quot;\353\255\244\250</span><span class="s">?</span><span class="se">\253</span><span class="s">O</span><span class="se">\252</span><span class="s">A3</span><span class="se">\371</span><span class="s">&quot;</span><span class="p">...,</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">=</span> <span class="mi">4096</span>
-</span><span class='line'><span class="p">...</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Based on <code>strace</code>, <code>std::ifstream</code> reads 8191 bytes at a time and <code>fread()</code> reads 4096 bytes at a time. To check if the read size matters, I change the <code>std::ifstream</code> program so that it also reads 4096 bytes:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">file</span> <span class="o">=</span> <span class="s">&quot;/mnt/huge/foo&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="n">std</span><span class="o">::</span><span class="n">ifstream</span> <span class="n">fin</span><span class="p">;</span>
-</span><span class='line'><span class="c1">// with a user-provided buffer, libstdc++ reads n-1 bytes at a time</span>
-</span><span class='line'><span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">4096</span> <span class="o">+</span> <span class="mi">1</span><span class="p">];</span>
-</span><span class='line'><span class="n">fin</span><span class="p">.</span><span class="n">rdbuf</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">pubsetbuf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">));</span>
-</span><span class='line'><span class="n">fin</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">ifstream</span><span class="o">::</span><span class="n">binary</span><span class="p">);</span>
-</span><span class='line'><span class="kt">char</span> <span class="n">c</span><span class="p">;</span>
-</span><span class='line'><span class="k">while</span> <span class="p">(</span><span class="n">fin</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">c</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="n">fin</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>After I change <code>std::ifstream</code> to read 4096 bytes at a time, I&rsquo;m able to read the correct data so the read size matters. <code>read()</code> is a system call and it should handle all kinds of read size so the experiment indicates that there might be a bug somewhere in the kernel. After looking at the kernel commit log, something interesting shows up:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="nl">Author</span><span class="p">:</span> <span class="n">Al</span> <span class="n">Viro</span> <span class="o">&lt;</span><span class="n">viro</span><span class="err">@</span><span class="n">zeniv</span><span class="p">.</span><span class="n">linux</span><span class="p">.</span><span class="n">org</span><span class="p">.</span><span class="n">uk</span><span class="o">&gt;</span>
-</span><span class='line'><span class="nl">Date</span><span class="p">:</span>   <span class="n">Fri</span> <span class="n">Apr</span> <span class="mi">3</span> <span class="mi">11</span><span class="o">:</span><span class="mi">31</span><span class="o">:</span><span class="mi">35</span> <span class="mi">2015</span> <span class="o">-</span><span class="mo">0400</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">switch</span> <span class="n">hugetlbfs</span> <span class="n">to</span> <span class="o">-&gt;</span><span class="n">read_iter</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="p">...</span> <span class="n">and</span> <span class="n">fix</span> <span class="n">the</span> <span class="k">case</span> <span class="n">when</span> <span class="n">the</span> <span class="n">area</span> <span class="n">we</span> <span class="n">are</span> <span class="n">asked</span> <span class="n">to</span> <span class="n">read</span> <span class="n">crosses</span>
-</span><span class='line'>    <span class="n">a</span> <span class="n">hugepage</span> <span class="n">boundary</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">Signed</span><span class="o">-</span><span class="n">off</span><span class="o">-</span><span class="nl">by</span><span class="p">:</span> <span class="n">Al</span> <span class="n">Viro</span> <span class="o">&lt;</span><span class="n">viro</span><span class="err">@</span><span class="n">zeniv</span><span class="p">.</span><span class="n">linux</span><span class="p">.</span><span class="n">org</span><span class="p">.</span><span class="n">uk</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>So I actually hit a kernel bug.</p>
-
-<h2>Solution</h2>
-
-<p>Change the <code>std::ifstream</code> read size by providing a user-provided buffer so that read won&rsquo;t cross the hugepage boundary or upgrade the Linux kernel version to include the fix.</p>
 ]]></content>
   </entry>
   
