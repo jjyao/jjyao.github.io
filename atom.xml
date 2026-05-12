@@ -4,7 +4,7 @@
   <title><![CDATA[Jiajun Yao]]></title>
   <link href="http://blog.jjyao.me/atom.xml" rel="self"/>
   <link href="http://blog.jjyao.me/"/>
-  <updated>2025-12-16T10:47:52-08:00</updated>
+  <updated>2026-05-12T06:27:59-07:00</updated>
   <id>http://blog.jjyao.me/</id>
   <author>
     <name><![CDATA[jjyao]]></name>
@@ -12,6 +12,189 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Python Exception Reference Cycle]]></title>
+    <link href="http://blog.jjyao.me/blog/2026/05/11/python-exception-reference-cycle/"/>
+    <updated>2026-05-11T20:59:07-07:00</updated>
+    <id>http://blog.jjyao.me/blog/2026/05/11/python-exception-reference-cycle</id>
+    <content type="html"><![CDATA[<p>This post talks about Python exception reference cycles: what they are, why they can be problematic and how to avoid them.</p>
+
+<!-- more -->
+
+
+<h2>What are Python exception reference cycles</h2>
+
+<p>A Python exception has a reference cycle when it has a reference chain back to itself (i.e. &ldquo;exc -> &hellip; -> exc&rdquo;). The following code shows an example of the cycle:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">inner</span><span class="p">():</span>
+</span><span class='line'>    <span class="n">exc</span> <span class="o">=</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">raise</span> <span class="n">exc</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">try</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">inner</span><span class="p">()</span>
+</span><span class='line'><span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+</span><span class='line'>  <span class="k">assert</span> <span class="n">exc</span><span class="o">.</span><span class="n">__traceback__</span><span class="o">.</span><span class="n">tb_next</span><span class="o">.</span><span class="n">tb_frame</span><span class="o">.</span><span class="n">f_locals</span><span class="p">[</span><span class="s">&#39;exc&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="n">exc</span>
+</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="s">&quot;Found Python exception reference cycle!&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Why are Python exception reference cycles bad</h2>
+
+<p>To understand why Python exception reference cycles are bad, we need to understand some behaviors of Python GC and Python exceptions.</p>
+
+<h3>Python GC</h3>
+
+<p>Python has two ways to find objects to deallocate: reference counting finds objects whose ref counts are zero and the garbage collector finds objects with circular references. For exceptions with reference cycles, only the garbage collector can deallocate them.</p>
+
+<p>Unless manually triggered by <code>gc.collect()</code>, Python GC runs every <a href="https://docs.python.org/3/library/gc.html#gc.set_threshold">X (allocations - deallocations)</a>. Unlike other languages, it&rsquo;s not triggered under memory pressure so it&rsquo;s purely count based. The implication is that a program can hold lots of memory in a few large objects with reference cycles and doesn&rsquo;t trigger GC because the count threshold isn&rsquo;t reached. In the worst case, the program can OOM.</p>
+
+<h3>Python exceptions</h3>
+
+<p>Unlike many other languages, a raised Python exception has references to all frames of the call stack from main all the way to where the exception is raised, and each frame has references to all local variables. As a result, a Python exception can keep lots of objects alive (i.e. prevent ref counts from going down to zero).</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">inner</span><span class="p">():</span>
+</span><span class='line'>  <span class="n">big</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
+</span><span class='line'>  <span class="n">exc</span> <span class="o">=</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">raise</span> <span class="n">exc</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">outer</span><span class="p">():</span>
+</span><span class='line'>  <span class="n">large</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
+</span><span class='line'>  <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">inner</span><span class="p">()</span>
+</span><span class='line'>  <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">assert</span> <span class="n">exc</span><span class="o">.</span><span class="n">__traceback__</span><span class="o">.</span><span class="n">tb_next</span><span class="o">.</span><span class="n">tb_frame</span><span class="o">.</span><span class="n">f_locals</span><span class="p">[</span><span class="s">&#39;big&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
+</span><span class='line'>    <span class="k">assert</span> <span class="n">exc</span><span class="o">.</span><span class="n">__traceback__</span><span class="o">.</span><span class="n">tb_frame</span><span class="o">.</span><span class="n">f_locals</span><span class="p">[</span><span class="s">&#39;large&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
+</span><span class='line'>    <span class="k">assert</span> <span class="n">exc</span><span class="o">.</span><span class="n">__traceback__</span><span class="o">.</span><span class="n">tb_frame</span><span class="o">.</span><span class="n">f_back</span><span class="o">.</span><span class="n">f_locals</span><span class="p">[</span><span class="s">&#39;huge&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
+</span><span class='line'>    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Exception has reference to big, large and huge objects!&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">huge</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
+</span><span class='line'><span class="n">outer</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The net effect is that an exception with a reference cycle can hold lots of objects alive until the next GC happens which can be greatly delayed and the program may just OOM or run out of resources (e.g. open files) before that.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">gc</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Giant</span><span class="p">:</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>    <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Giant __del__ is called&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">inner</span><span class="p">():</span>
+</span><span class='line'>  <span class="n">exc</span> <span class="o">=</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">raise</span> <span class="n">exc</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">outer</span><span class="p">():</span>
+</span><span class='line'>  <span class="n">giant</span> <span class="o">=</span> <span class="n">Giant</span><span class="p">()</span>
+</span><span class='line'>  <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">inner</span><span class="p">()</span>
+</span><span class='line'>  <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">pass</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">outer</span><span class="p">()</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&quot;Calling GC&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you run the above program, you will get</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">Calling</span> <span class="n">GC</span>
+</span><span class='line'><span class="n">Giant</span> <span class="n">__del__</span> <span class="ow">is</span> <span class="n">called</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and this shows that we now rely on GC to deallocate the Giant object which is undesirable.</p>
+
+<h2>How to avoid Python exception reference cycles</h2>
+
+<p>It turns out the issue we described above is well known to the Python developers and there is a <a href="https://peps.python.org/pep-3110/">PEP</a> that&rsquo;s implemented to help us break the exception reference cycle. Basically we should avoid having local variables point to the exception. In our example, we can do the following to break the reference cycle:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">inner</span><span class="p">():</span> <span class="c"># BAD, has cycle</span>
+</span><span class='line'>  <span class="n">exc</span> <span class="o">=</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">raise</span> <span class="n">exc</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">inner</span><span class="p">():</span> <span class="c"># GOOD, no cycle</span>
+</span><span class='line'>  <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">inner</span><span class="p">():</span> <span class="c"># GOOD, no cycle</span>
+</span><span class='line'>  <span class="n">exc</span> <span class="o">=</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">raise</span> <span class="n">exc</span>
+</span><span class='line'>  <span class="k">finally</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">del</span> <span class="n">exc</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Demystify Smaps]]></title>
@@ -2511,39 +2694,6 @@ It doesn&rsquo;t require any prior knowledge except for some math. One good thin
 
 
 <p>This shows the overhead of getting time in both C++ and Java. They are not free!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[One-Liners]]></title>
-    <link href="http://blog.jjyao.me/blog/2018/11/07/one-liners/"/>
-    <updated>2018-11-07T22:06:28-08:00</updated>
-    <id>http://blog.jjyao.me/blog/2018/11/07/one-liners</id>
-    <content type="html"><![CDATA[<ol>
-<li><a href="#get_java_gc_stw_time">Get Java GC Related Application Stopped Time</a></li>
-</ol>
-
-
-<!-- more -->
-
-
-<h2><a id="get_java_gc_stw_time"></a>Get Java GC Related Application Stopped Time</h2>
-
-<p>If Java application is started with <code>-XX:+PrintGCApplicationStoppedTime</code>, gc log will contain the application stopped time (STW) caused by different reasons (e.g. GC is just one common reason). This one-liner parses the gc log and only prints out the stopped time caused by GC. <br/>
-Source: <a href="https://github.com/giltene/jHiccup">https://github.com/giltene/jHiccup</a></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='Bash'><span class='line'>// gc log with +PrintGCTimeStamps
-</span><span class='line'>awk -F<span class="s2">&quot;: &quot;</span> <span class="s1">&#39;/\[GC/ {t = $1; l = 1; while ((l == 1) &amp;&amp; index($0, &quot;Total time&quot;) == 0) { l = getline; } if (l == 1) {print t*1000.0, $3*1000.0;}}&#39;</span> gc.log
-</span><span class='line'>
-</span><span class='line'>// gc log with +PrintGCTimeStamps and +PrintGCDateStamps
-</span><span class='line'>awk -F<span class="s2">&quot;: &quot;</span> <span class="s1">&#39;/\[GC/ {t = $2; l = 1; while ((l == 1) &amp;&amp; index($0, &quot;Total time&quot;) == 0) { l = getline; } if (l == 1) {print t*1000.0, $4*1000.0;}}&#39;</span> gc.log
-</span></code></pre></td></tr></table></div></figure>
-
 ]]></content>
   </entry>
   
